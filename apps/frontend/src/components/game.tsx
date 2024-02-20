@@ -1,5 +1,6 @@
 'use client';
-import { onPlayerJoin, setState } from 'playroomkit';
+import { getState, me, onPlayerJoin, setState } from 'playroomkit';
+import { toast } from 'sonner';
 
 export default function Game() {
   (async () => {
@@ -7,6 +8,7 @@ export default function Game() {
     await insertCoin({
       matchmaking: true,
       turnBased: true,
+      reconnectGracePeriod: 10000,
       defaultPlayerStates: {
         score: 0,
       },
@@ -15,11 +17,24 @@ export default function Game() {
 
   // Handle players joining the game
   onPlayerJoin((player) => {
-    console.log(`${player.getProfile().name} joined the game`);
+    const isOtherPlayer = player.getProfile().name !== me().getProfile().name;
+    if (isOtherPlayer) {
+      toast(`${player.getProfile().name} joined the game`);
+    }
+    setState('timeLeft', 60);
 
     player.onQuit(() => {
-      console.log(`${player.getProfile().name} quit the game`);
+      if (isOtherPlayer) {
+        toast(`${player.getProfile().name} left the game`);
+      }
     });
   });
-  setState('timeLeft', 60);
+
+  const timeLeft = getState('timeLeft');
+  console.log('Time left:', timeLeft);
+  return (
+    <div>
+      <h1>Game</h1>
+    </div>
+  );
 }
