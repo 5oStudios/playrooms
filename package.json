@@ -5,10 +5,15 @@
   "scripts": {},
   "private": true,
   "dependencies": {
+    "@tailwindcss/aspect-ratio": "^0.4.2",
+    "clsx": "^2.1.0",
+    "framer-motion": "^11.0.5",
     "next": "14.0.4",
     "playroomkit": "^0.0.67",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "sonner": "^1.4.0",
+    "tailwind-merge": "^2.2.1",
     "tslib": "^2.3.0"
   },
   "devDependencies": {

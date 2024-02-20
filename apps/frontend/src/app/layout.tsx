@@ -1,4 +1,6 @@
 import './global.css';
+import { Toaster } from 'sonner';
+import { BackgroundBeams } from '../components/ui/background-beams';
 
 export const metadata = {
   title: 'Welcome to frontend',
@@ -12,7 +14,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <BackgroundBeams />
+        <Toaster />
+        {children}
+      </body>
     </html>
   );
 }
