@@ -1,85 +1,97 @@
 'use client';
-import { myPlayer, onPlayerJoin, useMultiplayerState } from 'playroomkit';
-import { toast } from 'sonner';
-import React from 'react';
-import { Button, Card, CardBody, CardHeader } from '@nextui-org/react';
+import {
+  me,
+  myPlayer,
+  useMultiplayerState,
+  usePlayersList,
+  usePlayerState,
+} from 'playroomkit';
+import React, { useEffect } from 'react';
+import { Card, CardBody, CardHeader } from '@nextui-org/react';
 import Countdown from 'react-countdown';
+import questions from '../../mocks/questions.json';
 
 export default function Game() {
-  // (async () => {
-  //   const { insertCoin } = await import('playroomkit');
-  //   await insertCoin({
-  //     matchmaking: true,
-  //     turnBased: true,
-  //     reconnectGracePeriod: 10000,
-  //     defaultPlayerStates: {
-  //       score: 0,
-  //     },
-  //   });
-  // })();
-  const [timer, setTimer] = useMultiplayerState('timer', 3);
-
-  // Handle players joining the game
-  onPlayerJoin((player) => {
-    const isOtherPlayer =
-      player.getProfile().name !== myPlayer().getProfile().name;
-    if (isOtherPlayer) {
-      toast(`${player.getProfile().name} joined the game`);
-    }
-
-    player.onQuit(() => {
-      if (isOtherPlayer) {
-        toast(`${player.getProfile().name} left the game`);
+  const [isGameStarted, setIsGameStarted] = React.useState(false);
+  (async () => {
+    const { insertCoin } = await import('playroomkit');
+    await insertCoin(
+      {
+        matchmaking: true,
+        turnBased: true,
+        reconnectGracePeriod: 10000,
+        defaultPlayerStates: {
+          score: 0,
+        },
+      },
+      () => {
+        setIsGameStarted(true);
       }
-    });
-  });
-  const startTimer = () => {
-    const delay = 1000; // Delay in milliseconds
+    );
+  })();
 
-    if (timer > 0) {
-      const intervalId = setInterval(() => {
-        setTimer(timer - 1);
-      }, delay);
+  const [timer, setTimer] = useMultiplayerState('timer', 60);
+  const [currentQuestion, setCurrentQuestion] = useMultiplayerState(
+    'currentQuestion',
+    0
+  );
+  const [isGameOver, setIsGameOver] = useMultiplayerState('isGameOver', false);
+  useEffect(() => {
+    if (currentQuestion === questions.length) {
+      console.log('Game over');
+      setIsGameOver(true);
+    }
+  }, [currentQuestion]);
 
-      console.log('Timer started');
-
-      // Clear interval when timer reaches 0 to prevent unnecessary execution
-      setTimeout(() => {
-        clearInterval(intervalId);
-        console.log('Timer stopped');
-        // Restart the timer
-        startTimer();
-      }, timer * delay);
-    } else {
-      console.log('Timer value should be greater than 0 to start.');
+  const handleAnswer = (answer: Answer) => {
+    console.log(answer);
+    switch (answer.isCorrect) {
+      case true:
+        setTimer(timer + 10);
+        setCurrentQuestion(currentQuestion + 1);
+        myPlayer().setState('score', myPlayer().getState('score') + 1);
+        break;
+      case false:
+        setTimer(timer - 10);
+        break;
     }
   };
 
-  const Counter = ({
-    total = 0,
-    days = 0,
-    hours = 0,
-    minutes = 0,
-    seconds = 0,
-    milliseconds = 0,
-    completed = false,
-  }: {
-    total: number;
-    days: number;
-    hours: number;
-    minutes: number;
-    seconds: number;
-    milliseconds: number;
-    completed: boolean;
-  }) => {
-    return seconds;
-  };
-  const Completionist = () => <span>You are good to go!</span>;
+  const activePlayers = usePlayersList();
+
+  // const myScore = usePlayerStore((state) => state.score);
+  // Handle players joining the game
+  // onPlayerJoin((player) => {
+  //   const isOtherPlayer =
+  //     player.getProfile().name !== myPlayer().getProfile().name;
+  //   if (isOtherPlayer) {
+  //     toast(`${player.getProfile().name} joined the game`);
+  //   }
+  //
+  //   player.onQuit(() => {
+  //     if (isOtherPlayer) {
+  //       toast(`${player.getProfile().name} left the game`);
+  //     }
+  //   });
+  // });
+  if (isGameOver) {
+    return <div>Game Over</div>;
+  }
+  if (!isGameStarted) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div>
-      <Button onClick={startTimer} className="mb-4">
-        Decrease timer
-      </Button>
+      {activePlayers.map((player) => (
+        <div key={player.id}>
+          <h1>{player.getProfile().name}</h1>
+          <h2>{player.getState('score')}</h2>
+        </div>
+      ))}
+      <h1 className="text-4xl font-bold mb-4">
+        score: {myPlayer().getState('score')}
+      </h1>
       <div>
         <h1 className="text-4xl font-bold mb-4">Quiz Game</h1>
         <p className="text-lg">
@@ -93,16 +105,10 @@ export default function Game() {
           </span>
         </p>
       </div>
+
       <Question
-        questionData={{
-          question: 'What is the capital of France?',
-          answers: [
-            { option: 'New York', isCorrect: false },
-            { option: 'London', isCorrect: false },
-            { option: 'Paris', isCorrect: true },
-            { option: 'Dublin', isCorrect: false },
-          ],
-        }}
+        questionData={questions[currentQuestion]}
+        onClick={handleAnswer}
       />
     </div>
   );
@@ -120,9 +126,10 @@ export interface QuestionData {
 
 interface Props {
   questionData: QuestionData;
+  onClick: (answer: Answer) => void;
 }
 
-const Question: React.FC<Props> = ({ questionData }) => {
+const Question: React.FC<Props> = ({ questionData, onClick }) => {
   const { question, answers } = questionData;
 
   return (
@@ -137,7 +144,7 @@ const Question: React.FC<Props> = ({ questionData }) => {
       <CardBody>
         <div className="grid grid-cols-2 gap-4">
           {answers.map((answer, index) => (
-            <Answer key={index} answer={answer} />
+            <Answer key={index} answer={answer} onClick={onClick} />
           ))}
         </div>
       </CardBody>
@@ -145,21 +152,19 @@ const Question: React.FC<Props> = ({ questionData }) => {
   );
 };
 
-const Answer: React.FC<{ answer: Answer }> = ({ answer }) => {
-  const handleClick = async () => {
-    myPlayer().setState(
-      'score',
-      (score: number) => score + (answer.isCorrect ? 1 : 0)
-    );
-  };
-
-  // const myPhoto = myPlayer().getProfile().photo;
+const Answer: React.FC<{
+  answer: Answer;
+  onClick: (answer: Answer) => void;
+}> = ({ answer, onClick }) => {
+  const [score, setScore] = usePlayerState(me(), 'score', 0);
+  // const increaseScore = usePlayerStore((state) => state.increaseScore);
+  // const nextQuestion = useQuestionStore((state) => state.nextQuestion);
   return (
     <div>
       <button
         className="w-full p-4 rounded-lg bg-background/20 dark:bg-default-100/20 text-lg font-bold"
-        style={{ backdropFilter: 'blur(10px)' }}
-        onClick={handleClick}
+        style={{ backdropFilter: 'blur(4px)' }}
+        onClick={() => onClick(answer)}
       >
         {answer.option}
       </button>
@@ -175,3 +180,45 @@ const Answer: React.FC<{ answer: Answer }> = ({ answer }) => {
     </div>
   );
 };
+function Counter({
+  total = 0,
+  days = 0,
+  hours = 0,
+  minutes = 0,
+  seconds = 0,
+  milliseconds = 0,
+  completed = false,
+}: {
+  total: number;
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+  milliseconds: number;
+  completed: boolean;
+}) {
+  return seconds;
+}
+
+// const usePlayerStore = create<{
+//   score: number;
+//   setScore: (score: number) => void;
+//   increaseScore: () => void;
+// }>((set) => {
+//   return {
+//     score: 0,
+//     setScore: (score: number) => set({ score }),
+//     increaseScore: () => set((state) => ({ score: state.score + 1 })),
+//   };
+// });
+//
+// const useQuestionStore = create<{
+//   currentQuestion: number;
+//   nextQuestion: () => void;
+// }>((set) => {
+//   return {
+//     currentQuestion: 0,
+//     nextQuestion: () =>
+//       set((state) => ({ currentQuestion: state.currentQuestion + 1 })),
+//   };
+// });
