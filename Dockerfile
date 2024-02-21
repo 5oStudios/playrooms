@@ -10,6 +10,8 @@ COPY pnpm-lock.yaml ./
 ENV DOCKER_BUILDKIT=1
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --ignore-scripts
 
+RUN npm install -g nx
+
 COPY . .
 
 RUN nx build frontend:production
