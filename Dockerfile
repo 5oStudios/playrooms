@@ -28,7 +28,7 @@ USER $USERNAME
 WORKDIR /app
 
 COPY --from=deps --chown=${USERNAME}:${GROUP_NAME} /app/node_modules ./node_modules
-COPY /app/ ./
+COPY . .
 
 EXPOSE 3000
 
