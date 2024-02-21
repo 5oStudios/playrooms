@@ -14,10 +14,10 @@ RUN npm install -g nx
 
 COPY . .
 
-RUN nx build frontend:production
+RUN nx run frontend:build:production
 
 EXPOSE 3000
 
 ENV NODE_ENV production
 
-CMD ["nx", "serve", "frontend:production"]
+CMD ["nx", "run", "frontend:serve:production"]
