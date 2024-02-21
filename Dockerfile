@@ -34,4 +34,6 @@ EXPOSE 3000
 
 ENV NODE_ENV production
 
-CMD ["nx", "run", "frontend:dev"]
+RUN nx run frontend:build:production
+
+CMD ["nx", "run", "frontend:serve:production"]

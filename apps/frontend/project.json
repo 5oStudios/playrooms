@@ -3,6 +3,51 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/frontend",
   "projectType": "application",
-  "targets": {},
+  "targets": {
+      "build": {
+        "executor": "@nx/next:build",
+        "outputs": [
+          "{options.outputPath}"
+        ],
+        "defaultConfiguration": "production",
+        "options": {
+          "outputPath": "dist/apps/frontend/next"
+        },
+        "configurations": {
+          "development": {
+            "outputPath": "apps/frontend/next"
+          },
+          "production": {
+
+          }
+        }
+      },
+      "serve": {
+        "executor": "@nx/next:server",
+        "defaultConfiguration": "development",
+        "options": {
+          "buildTarget": "frontend:build",
+          "dev": true,
+          "port": 3035,
+          "postcssConfig": "apps/frontend/next/postcss.config.js"
+        },
+        "configurations": {
+          "development": {
+            "buildTarget": "frontend:build:development",
+            "dev": true
+          },
+          "production": {
+            "buildTarget": "frontend:build:production",
+            "dev": false
+          }
+        }
+      },
+      "export": {
+        "executor": "@nx/next:export",
+        "options": {
+          "buildTarget": "frontend:build:production"
+        }
+    }
+  },
   "tags": []
 }
