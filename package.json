@@ -27,6 +27,7 @@
     "@nx/jest": "18.0.4",
     "@nx/js": "18.0.4",
     "@nx/next": "18.0.4",
+    "@nx/react": "18.0.4",
     "@nx/workspace": "18.0.4",
     "@swc-node/register": "~1.8.0",
     "@swc/core": "~1.3.107",
