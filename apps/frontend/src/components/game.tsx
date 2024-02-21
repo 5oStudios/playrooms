@@ -1,67 +1,74 @@
 'use client';
-import { myPlayer, useMultiplayerState, usePlayersList } from 'playroomkit';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import {
+  myPlayer,
+  onPlayerJoin,
+  PlayerState,
+  setState,
+  useMultiplayerState,
+  usePlayersList,
+} from 'playroomkit';
 import { Card, CardBody, CardHeader } from '@nextui-org/react';
-import Countdown from 'react-countdown';
 import questions from '../../mocks/questions.json';
+import { toast } from 'sonner';
+import Countdown from 'react-countdown';
 
 export default function Game() {
-  const [isGameStarted, setIsGameStarted] = React.useState(false);
-  (async () => {
-    const { insertCoin } = await import('playroomkit');
-    await insertCoin(
-      {
-        matchmaking: true,
-        turnBased: true,
-        reconnectGracePeriod: 10000,
-        defaultPlayerStates: {
-          score: 0,
-        },
-      },
-      () => {
-        setIsGameStarted(true);
-      }
-    );
-  })();
+  const [isGameStarted, setIsGameStarted] = useState(false);
 
-  const [timer, setTimer] = useMultiplayerState('timer', 60);
+  useEffect(() => {
+    const initializeGame = async () => {
+      const { insertCoin } = await import('playroomkit');
+      await insertCoin(
+        {
+          matchmaking: true,
+          turnBased: true,
+          reconnectGracePeriod: 10000,
+          defaultPlayerStates: {
+            score: 0,
+          },
+        },
+        () => setIsGameStarted(true)
+      );
+    };
+    initializeGame();
+  }, []);
+
   const [currentQuestion, setCurrentQuestion] = useMultiplayerState(
     'currentQuestion',
     0
   );
 
+  const [timer, setTimer] = useMultiplayerState('timer', 60);
   const handleAnswer = (answer: Answer) => {
-    console.log(answer);
-    switch (answer.isCorrect) {
-      case true:
-        setTimer(timer + 10);
-        setCurrentQuestion(currentQuestion + 1);
-        myPlayer().setState('score', myPlayer().getState('score') + 1);
-        break;
-      case false:
-        setTimer(timer - 10);
-        break;
+    if (answer.isCorrect) {
+      setCurrentQuestion(currentQuestion + 1);
+      myPlayer().setState('score', myPlayer().getState('score') + 1);
+    } else {
+      setState('timer', timer - 4);
     }
   };
 
-  const activePlayers = usePlayersList();
+  const currentPlayers = usePlayersList();
 
-  // const myScore = usePlayerStore((state) => state.score);
-  // Handle players joining the game
-  // onPlayerJoin((player) => {
-  //   const isOtherPlayer =
-  //     player.getProfile().name !== myPlayer().getProfile().name;
-  //   if (isOtherPlayer) {
-  //     toast(`${player.getProfile().name} joined the game`);
-  //   }
-  //
-  //   player.onQuit(() => {
-  //     if (isOtherPlayer) {
-  //       toast(`${player.getProfile().name} left the game`);
-  //     }
-  //   });
-  // });
-  if (currentQuestion === questions.length - 1) {
+  useEffect(() => {
+    const handlePlayerJoin = (player: PlayerState) => {
+      const isOtherPlayer = player.id !== myPlayer().id;
+      if (isOtherPlayer) {
+        toast(`${player.getProfile().name} joined the game`);
+      }
+
+      player.onQuit(() => {
+        if (isOtherPlayer) {
+          toast(`${player.getProfile().name} left the game`);
+        }
+      });
+    };
+
+    onPlayerJoin(handlePlayerJoin);
+  }, []);
+
+  if (currentQuestion === questions.length - 1 || timer === 0) {
     return <div>Game Over</div>;
   }
   if (!isGameStarted) {
@@ -70,7 +77,7 @@ export default function Game() {
 
   return (
     <div>
-      {activePlayers.map((player) => (
+      {currentPlayers.map((player) => (
         <div key={player.id}>
           <h1>{player.getProfile().name}</h1>
           <h2>{player.getState('score')}</h2>
@@ -88,7 +95,16 @@ export default function Game() {
         <p className="text-lg">
           Time remaining:{' '}
           <span className="font-bold" id="score">
-            <Countdown renderer={Counter} date={Date.now() + timer * 1000} />
+            <Countdown
+              renderer={Counter}
+              onTick={(time) => {
+                console.log(time);
+              }}
+              date={Date.now() + timer * 1000}
+              onComplete={() => {
+                setCurrentQuestion(currentQuestion + 1);
+              }}
+            />
           </span>
         </p>
       </div>
@@ -100,7 +116,7 @@ export default function Game() {
     </div>
   );
 }
-// types.ts
+
 export interface Answer {
   option: string;
   isCorrect: boolean;
@@ -164,45 +180,7 @@ const Answer: React.FC<{
     </div>
   );
 };
-function Counter({
-  total = 0,
-  days = 0,
-  hours = 0,
-  minutes = 0,
-  seconds = 0,
-  milliseconds = 0,
-  completed = false,
-}: {
-  total: number;
-  days: number;
-  hours: number;
-  minutes: number;
-  seconds: number;
-  milliseconds: number;
-  completed: boolean;
-}) {
+
+function Counter({ seconds = 0 }) {
   return seconds;
 }
-
-// const usePlayerStore = create<{
-//   score: number;
-//   setScore: (score: number) => void;
-//   increaseScore: () => void;
-// }>((set) => {
-//   return {
-//     score: 0,
-//     setScore: (score: number) => set({ score }),
-//     increaseScore: () => set((state) => ({ score: state.score + 1 })),
-//   };
-// });
-//
-// const useQuestionStore = create<{
-//   currentQuestion: number;
-//   nextQuestion: () => void;
-// }>((set) => {
-//   return {
-//     currentQuestion: 0,
-//     nextQuestion: () =>
-//       set((state) => ({ currentQuestion: state.currentQuestion + 1 })),
-//   };
-// });
