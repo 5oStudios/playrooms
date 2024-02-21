@@ -5,6 +5,7 @@
   "scripts": {},
   "private": true,
   "dependencies": {
+    "@nextui-org/react": "^2.2.9",
     "@tailwindcss/aspect-ratio": "^0.4.2",
     "clsx": "^2.1.0",
     "framer-motion": "^11.0.5",
