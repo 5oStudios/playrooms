@@ -1,12 +1,6 @@
 'use client';
-import {
-  me,
-  myPlayer,
-  useMultiplayerState,
-  usePlayersList,
-  usePlayerState,
-} from 'playroomkit';
-import React, { useEffect } from 'react';
+import { myPlayer, useMultiplayerState, usePlayersList } from 'playroomkit';
+import React from 'react';
 import { Card, CardBody, CardHeader } from '@nextui-org/react';
 import Countdown from 'react-countdown';
 import questions from '../../mocks/questions.json';
@@ -35,13 +29,6 @@ export default function Game() {
     'currentQuestion',
     0
   );
-  const [isGameOver, setIsGameOver] = useMultiplayerState('isGameOver', false);
-  useEffect(() => {
-    if (currentQuestion === questions.length) {
-      console.log('Game over');
-      setIsGameOver(true);
-    }
-  }, [currentQuestion]);
 
   const handleAnswer = (answer: Answer) => {
     console.log(answer);
@@ -74,7 +61,7 @@ export default function Game() {
   //     }
   //   });
   // });
-  if (isGameOver) {
+  if (currentQuestion === questions.length - 1) {
     return <div>Game Over</div>;
   }
   if (!isGameStarted) {
@@ -156,9 +143,6 @@ const Answer: React.FC<{
   answer: Answer;
   onClick: (answer: Answer) => void;
 }> = ({ answer, onClick }) => {
-  const [score, setScore] = usePlayerState(me(), 'score', 0);
-  // const increaseScore = usePlayerStore((state) => state.increaseScore);
-  // const nextQuestion = useQuestionStore((state) => state.nextQuestion);
   return (
     <div>
       <button
