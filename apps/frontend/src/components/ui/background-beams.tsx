@@ -29,13 +29,7 @@ export function BackgroundBeamsDemo() {
   );
 }
 
-export const BackgroundBeams = ({
-  className,
-  children,
-}: {
-  className?: string;
-  children?: React.ReactNode;
-}) => {
+export const BackgroundBeams = ({ className }: { className?: string }) => {
   const paths = [
     'M-380 -189C-380 -189 -312 216 152 343C616 470 684 875 684 875',
     'M-373 -197C-373 -197 -305 208 159 335C623 462 691 867 691 867',
@@ -89,8 +83,7 @@ export const BackgroundBeams = ({
     'M-37 -581C-37 -581 31 -176 495 -49C959 78 1027 483 1027 483',
   ];
   return (
-    <div className="flex-1 h-full  antialiased relative">
-      {children}
+    <div className="antialiased fixed inset-0 -z-10">
       <div
         className={cn(
           'absolute h-full w-full inset-0  [mask-size:40px] [mask-repeat:no-repeat] flex items-center justify-center',

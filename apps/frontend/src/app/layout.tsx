@@ -16,16 +16,13 @@ export default function RootLayout({
   children: ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className="dark bg-primary-900">
       <body className="relative">
         <Providers>
           <Toaster />
-          <div className="flex-col justify-center items-center h-screen w-screen bg-primary-900">
-            <BackgroundBeams>
-              <Navbar />
-              <div className="z-10">{children}</div>
-            </BackgroundBeams>
-          </div>
+          <Navbar />
+          {children}
+          <BackgroundBeams />
         </Providers>
       </body>
     </html>
