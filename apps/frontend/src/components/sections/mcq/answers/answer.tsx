@@ -57,7 +57,7 @@ export const Answer: React.FC<{
           (player) => player.id === myPlayer().id
         )}
         className={cn(
-          `w-full relative rounded-lg bg-neutral-950/90 dark:bg-default-100/20 text-lg font-bold flex text-center items-center justify-center overflow-hidden shadow-md transition duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 focus:ring-offset-neutral-950/90 dark:focus:ring-offset-default-100/20`
+          `w-full relative rounded-lg dark:bg-neutral-950/40 text-lg font-bold flex text-center items-center justify-center overflow-hidden shadow-md transition duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 focus:ring-offset-neutral-950/90 dark:focus:ring-offset-default-100/20`
           // answer.isCorrect
           // ? 'focus:ring-emerald-500 focus:ring-offset-emerald-500/90 dark:focus:ring-offset-emerald-500/20'
           // : 'focus:ring-rose-500 focus:ring-offset-rose-500/90 dark:focus:ring-offset-rose-500/20'
@@ -68,7 +68,7 @@ export const Answer: React.FC<{
         <span className="text-2xl font-bold left-4 absolute top-1.5 text-center bg-gradient-to-r from-emerald-500 to-sky-500 text-transparent bg-clip-text">
           {abbreviation}
         </span>
-        <span className="flex-1">{answer.option}</span>
+        <span className="text-lg font-semibold">{answer.option}</span>
 
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-sky-500 to-transparent w-px" />
       </Button>

@@ -26,7 +26,7 @@ export function Answers({
   return (
     <Card
       isBlurred
-      className="border-none dark:bg-neutral-950/10  max-w-[610px] p-2 rounded-lg backdrop-blur-[2px]"
+      className="border-none dark:bg-primary-500/10 max-w-[610px] rounded-lg backdrop-blur-[2px]"
       shadow="sm"
     >
       <CardBody>
