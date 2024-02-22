@@ -37,7 +37,9 @@ export const Question: React.FC<Props> = ({
       </div>
 
       <CardBody>
-        <h2 className="text-xl font-normal text-center">{questionText}</h2>
+        <h2 className="text-xl font-normal text-center text-wrap">
+          {questionText}
+        </h2>
       </CardBody>
     </Card>
   );

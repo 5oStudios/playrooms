@@ -54,7 +54,6 @@ export default function Game() {
     setCurrentGameState(GAME_STATE.STARTED);
   return (
     <div className={'flex flex-col gap-4 max-w-[610px] w-[100vw] p-4'}>
-      {/*<GiTwoCoins />*/}
       <CurrentPlayers />
       <MCQQuestions questions={questions} />
     </div>

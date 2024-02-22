@@ -1,7 +1,8 @@
-import { AnimatedTooltip } from '../../ui/animated-tooltip';
 import React from 'react';
 import { PLAYER_SCORE_KEY } from '../../game';
 import { myPlayer, usePlayersState } from 'playroomkit';
+import { AnimatedTooltip } from '../../ui/animated-tooltip';
+import { GiTwoCoins } from 'react-icons/gi';
 
 export const STARTING_PLAYER_SCORE = 0;
 
@@ -10,14 +11,27 @@ export default function CurrentPlayers() {
 
   return (
     <div className="flex gap-8">
-      <AnimatedTooltip
-        items={playersScore.map(({ player }) => ({
-          id: player.id,
-          name: player.getProfile().name,
-          designation: `Score: ${player.getState(PLAYER_SCORE_KEY)}`,
-          image: player.getProfile().photo,
-        }))}
-      />
+      {playersScore.map(({ player }) => (
+        <div key={player.id} className="flex gap-6 items-center">
+          <AnimatedTooltip
+            items={[
+              {
+                id: player.id,
+                name: player.getProfile().name,
+                designation: `Score: ${player.getState(PLAYER_SCORE_KEY)}`,
+                image: player.getProfile().photo,
+              },
+            ]}
+          />
+
+          <div className="flex items-center gap-2">
+            <span>Coins: {player.getState(PLAYER_SCORE_KEY)}</span>
+            <div className="text-yellow-500">
+              <GiTwoCoins />
+            </div>
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
