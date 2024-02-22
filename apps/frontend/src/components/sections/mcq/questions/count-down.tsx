@@ -1,17 +1,19 @@
 import React from 'react';
-import { setState, useMultiplayerState } from 'playroomkit';
 import { CountdownCircleTimer } from 'react-countdown-circle-timer';
+import { getState } from 'playroomkit';
+import { CURRENT_GAME_STATE_KEY, GAME_STATE } from '../../../game';
 
 const renderTime = (dimension, time) => {
   return <span className={'text-white text-center'}>{time}</span>;
 };
 
-export function CountDown({ milSecond }: Readonly<{ milSecond: number }>) {
-  const [timer, setTimer] = useMultiplayerState('timer', milSecond);
-
+export function CountDown({
+  milSecond,
+  onUpdate,
+}: Readonly<{ milSecond: number; onUpdate: (remainingTime: number) => void }>) {
   return (
     <CountdownCircleTimer
-      isPlaying={true}
+      isPlaying={getState(CURRENT_GAME_STATE_KEY) === GAME_STATE.STARTED}
       colors={`#0ea5e9`}
       isSmoothColorTransition={true}
       strokeWidth={4}
@@ -19,13 +21,12 @@ export function CountDown({ milSecond }: Readonly<{ milSecond: number }>) {
       duration={milSecond / 1000}
       initialRemainingTime={milSecond / 1000}
       onComplete={() => {
-        setState('isTimeUp', true);
         return {
-          shouldRepeat: false,
+          shouldRepeat: true,
         };
       }}
       onUpdate={(elapsedTime) => {
-        setTimer(elapsedTime);
+        onUpdate(elapsedTime);
       }}
     >
       {({ elapsedTime, color }) => (

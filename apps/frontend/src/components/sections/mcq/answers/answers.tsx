@@ -1,8 +1,8 @@
 import { Card, CardBody } from '@nextui-org/react';
 import { Answer } from './answer';
 import React from 'react';
-import { QuestionState } from '../questions/question';
-import { useMultiplayerState } from 'playroomkit';
+import { getState } from 'playroomkit';
+import { CURRENT_QUESTION_STATE_KEY } from '../../../game';
 
 export function Answers({
   answers,
@@ -11,18 +11,8 @@ export function Answers({
   answers: Answer[];
   onClick: (answer: Answer) => void;
 }>) {
-  const [currentQuestionState, setCurrentQuestionState] = useMultiplayerState(
-    'currentQuestionState',
-    QuestionState.UNANSWERED
-  );
-  const handleAnswer = (answer: Answer) => {
-    onClick(answer);
-    if (answer.isCorrect) {
-      setCurrentQuestionState(QuestionState.CORRECT);
-    } else {
-      setCurrentQuestionState(QuestionState.INCORRECT);
-    }
-  };
+  const currentQuestionState = getState(CURRENT_QUESTION_STATE_KEY);
+
   return (
     <Card
       isBlurred
@@ -35,7 +25,7 @@ export function Answers({
             <Answer
               key={index}
               answer={answer}
-              onClick={handleAnswer}
+              onClick={onClick}
               index={index}
               currentQuestionState={currentQuestionState}
             />
