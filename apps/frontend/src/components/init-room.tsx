@@ -1,6 +1,7 @@
 import { toast } from 'sonner';
 import { myPlayer, onPlayerJoin, PlayerState, setState } from 'playroomkit';
 import { useEffect } from 'react';
+import { CURRENT_GAME_STATE_KEY, GAME_STATE } from './game';
 
 export function InitRoom() {
   (async () => {
@@ -14,7 +15,7 @@ export function InitRoom() {
           score: 0,
         },
       },
-      () => setState('isGameStarted', true),
+      () => setState(CURRENT_GAME_STATE_KEY, GAME_STATE.STARTED),
       (error) => toast.error(error.message)
     );
   })();

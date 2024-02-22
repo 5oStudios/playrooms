@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { myPlayer, useMultiplayerState, usePlayersList } from 'playroomkit';
 import { Card, CardBody, CardHeader } from '@nextui-org/react';
 import questions from '../../mocks/questions.json';
@@ -8,27 +8,43 @@ import { Answer } from './sections/questions/answer';
 import { CountDown } from './sections/questions/count-down';
 import { InitRoom } from './init-room';
 
+export enum GAME_STATE {
+  LOADING = 'LOADING',
+  STARTED = 'STARTED',
+  ENDED = 'ENDED',
+}
+
+export const CURRENT_GAME_STATE_KEY = 'gameState';
+const IS_TIME_UP_KEY = 'isTimeUp';
+const CURRENT_QUESTION_INDEX_KEY = 'currentQuestionIndex';
+
 export default function Game() {
-  const [isGameStarted, setIsGameStarted] = useMultiplayerState(
-    'isGameStarted',
-    false
-  );
-  const [currentQuestion, setCurrentQuestion] = useMultiplayerState(
-    'currentQuestion',
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useMultiplayerState(
+    CURRENT_QUESTION_INDEX_KEY,
     0
   );
-  const [isTimeUp, setIsTimeUp] = useMultiplayerState('isTimeUp', false);
+  const [currentGameState, setCurrentGameState] = useMultiplayerState(
+    CURRENT_GAME_STATE_KEY,
+    GAME_STATE.LOADING
+  );
+  const [isTimeUp] = useMultiplayerState(IS_TIME_UP_KEY, false);
   const currentPlayers = usePlayersList();
+  const myPlayerScore = myPlayer()?.getState('score');
 
   InitRoom();
 
-  const isGameOver = currentQuestion === questions.length - 1 || isTimeUp;
-  if (isGameOver) {
-    return <div>Game Over</div>;
-  }
-  if (!isGameStarted) {
-    return <div>Loading...</div>;
-  }
+  useEffect(() => {
+    const isQuestionsFinished = currentQuestionIndex === questions.length - 1;
+    const isPlayerHaveNoScore = myPlayerScore < 0;
+
+    if (isTimeUp || isQuestionsFinished || isPlayerHaveNoScore) {
+      setCurrentGameState(GAME_STATE.ENDED);
+    }
+  }, [currentQuestionIndex, isTimeUp, myPlayerScore]);
+
+  if (currentGameState === GAME_STATE.ENDED) return <div>Game Over</div>;
+  if (currentGameState === GAME_STATE.LOADING) return <div>Loading...</div>;
+  console.log(CURRENT_QUESTION_INDEX_KEY, currentQuestionIndex);
 
   return (
     <div>
@@ -51,10 +67,10 @@ export default function Game() {
       </div>
 
       <Question
-        questionData={questions[currentQuestion]}
+        questionData={questions[currentQuestionIndex]}
         onClick={(answer: Answer) => {
           if (answer.isCorrect) {
-            setCurrentQuestion(currentQuestion + 1);
+            setCurrentQuestionIndex(currentQuestionIndex + 1);
             myPlayer().setState('score', myPlayer()?.getState('score') + 1);
           }
         }}
