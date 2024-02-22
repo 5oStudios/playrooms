@@ -2,8 +2,8 @@ import React, { useEffect } from 'react';
 import { myPlayer, useMultiplayerState, usePlayersList } from 'playroomkit';
 import { Button } from '@nextui-org/react';
 import { cn } from '../../../utils/cn';
-import { QuestionState } from '../../game';
 import Image from 'next/image';
+import { QuestionState } from './question';
 
 export interface Answer {
   option: string;

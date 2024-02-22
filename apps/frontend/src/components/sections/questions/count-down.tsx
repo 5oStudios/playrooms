@@ -2,8 +2,8 @@ import Countdown from 'react-countdown';
 import React from 'react';
 import { setState, useMultiplayerState } from 'playroomkit';
 
-export function CountDown() {
-  const [timer, setTimer] = useMultiplayerState('timer', 3);
+export function CountDown({ time }: Readonly<{ time: number }>) {
+  const [timer, setTimer] = useMultiplayerState('timer', time);
 
   return (
     <p className="text-lg">

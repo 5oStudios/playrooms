@@ -89,11 +89,11 @@ export const BackgroundBeams = ({
     'M-37 -581C-37 -581 31 -176 495 -49C959 78 1027 483 1027 483',
   ];
   return (
-    <div className="h-screen bg-neutral-900 relative flex flex-col items-center justify-center antialiased">
+    <div className="flex-1 h-full  antialiased relative">
       {children}
       <div
         className={cn(
-          'absolute  h-full w-full inset-0  [mask-size:40px] [mask-repeat:no-repeat] flex items-center justify-center',
+          'absolute h-full w-full inset-0  [mask-size:40px] [mask-repeat:no-repeat] flex items-center justify-center',
           className
         )}
       >
