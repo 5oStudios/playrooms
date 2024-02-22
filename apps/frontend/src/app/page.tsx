@@ -7,7 +7,7 @@ const LazyLoadedGame = dynamic(async () => Game, {
 
 export default function Index() {
   return (
-    <div>
+    <div className="flex justify-center items-center">
       <LazyLoadedGame />
     </div>
   );

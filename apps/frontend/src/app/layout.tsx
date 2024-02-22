@@ -21,7 +21,12 @@ export default function RootLayout({
         <Providers>
           <Toaster />
           <Navbar />
-          <div className="p-4">{children}</div>
+          <div
+            className="p-4 flex justify-center items-center h-[calc(100vh-64px)]"
+            style={{ minHeight: 'calc(100vh - 64px)' }}
+          >
+            {children}
+          </div>
           <BackgroundBeams />
         </Providers>
       </body>

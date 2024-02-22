@@ -21,9 +21,10 @@ export interface Answer {
   option: string;
   isCorrect: boolean;
 }
-const ALLOWED_TIME_IN_MS = 5000;
+const ALLOWED_TIME_IN_MS = 15000;
 const STARTING_QUESTION_INDEX = 0;
 const CURRENT_QUESTION_INDEX_KEY = 'currentQuestionIndex';
+const PLAYER_FINISHED_GAME_KEY = 'playerFinishedGame';
 
 export function MCQQuestions({
   questions,
@@ -38,17 +39,17 @@ export function MCQQuestions({
     CURRENT_QUESTION_STATE_KEY,
     QuestionState.UNANSWERED
   );
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useMultiplayerState(
-    CURRENT_QUESTION_INDEX_KEY,
-    STARTING_QUESTION_INDEX
-  );
+
+  const currentQuestionIndex =
+    myPlayer().getState(CURRENT_QUESTION_INDEX_KEY) || STARTING_QUESTION_INDEX;
 
   // QUESTION SIDE EFFECTS
   useEffect(() => {
-    // console.log('currentQuestionState', currentQuestionState);
-    // console.log('currentQuestionIndex', currentQuestionIndex);
     const nextQuestion = () => {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
+      if (currentQuestionIndex === questions.length - 1) {
+        myPlayer().setState(PLAYER_FINISHED_GAME_KEY, true);
+      }
+      myPlayer().setState(CURRENT_QUESTION_INDEX_KEY, currentQuestionIndex + 1);
       setState(CURRENT_QUESTION_STATE_KEY, QuestionState.UNANSWERED);
     };
     switch (currentQuestionState) {
@@ -63,7 +64,11 @@ export function MCQQuestions({
         );
         break;
     }
-  }, [currentQuestionState]);
+  }, [currentQuestionIndex, currentQuestionState]);
+
+  if (myPlayer().getState(PLAYER_FINISHED_GAME_KEY)) {
+    return <div>Game Over</div>;
+  }
   return (
     <div className="flex flex-col gap-2">
       <Question
