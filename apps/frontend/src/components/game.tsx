@@ -1,81 +1,29 @@
 'use client';
-import React, { useEffect, useState } from 'react';
-import {
-  myPlayer,
-  onPlayerJoin,
-  PlayerState,
-  useMultiplayerState,
-  usePlayersList,
-} from 'playroomkit';
+import React from 'react';
+import { myPlayer, useMultiplayerState, usePlayersList } from 'playroomkit';
 import { Card, CardBody, CardHeader } from '@nextui-org/react';
 import questions from '../../mocks/questions.json';
-import { toast } from 'sonner';
 import { AnimatedTooltip } from './ui/animated-tooltip';
-import * as process from 'process';
 import { Answer } from './sections/questions/answer';
 import { CountDown } from './sections/questions/count-down';
+import { InitRoom } from './init-room';
 
 export default function Game() {
-  const [isGameStarted, setIsGameStarted] = useState(false);
-
-  useEffect(() => {
-    const initializeGame = async () => {
-      const { insertCoin } = await import('playroomkit');
-      await insertCoin(
-        {
-          matchmaking: true,
-          turnBased: true,
-          reconnectGracePeriod: 10000,
-          defaultPlayerStates: {
-            score: 0,
-          },
-        },
-        () => setIsGameStarted(true),
-        (error) => toast.error(error.message)
-      );
-    };
-    initializeGame();
-  }, []);
-
+  const [isGameStarted, setIsGameStarted] = useMultiplayerState(
+    'isGameStarted',
+    false
+  );
   const [currentQuestion, setCurrentQuestion] = useMultiplayerState(
     'currentQuestion',
     0
   );
-
   const [isTimeUp, setIsTimeUp] = useMultiplayerState('isTimeUp', false);
-  const handleAnswer = (answer: Answer) => {
-    if (answer.isCorrect) {
-      setCurrentQuestion(currentQuestion + 1);
-      myPlayer().setState('score', myPlayer()?.getState('score') + 1);
-    }
-  };
-
   const currentPlayers = usePlayersList();
-  console.log(currentPlayers);
 
-  useEffect(() => {
-    const handlePlayerJoin = (player: PlayerState) => {
-      console.log(player);
-      const isOtherPlayer = player.id !== myPlayer()?.id;
-      if (isOtherPlayer) {
-        toast(`${player.getProfile()?.name} joined the game`);
-      }
+  InitRoom();
 
-      player.onQuit(() => {
-        if (isOtherPlayer) {
-          toast(`${player.getProfile()?.name} left the game`);
-        }
-      });
-    };
-
-    onPlayerJoin(handlePlayerJoin);
-  }, []);
-  if (!myPlayer()?.id) return null;
-
-  if (
-    currentQuestion === questions.length - 1 ||
-    (isTimeUp && process.env.NODE_ENV === 'development')
-  ) {
+  const isGameOver = currentQuestion === questions.length - 1 || isTimeUp;
+  if (isGameOver) {
     return <div>Game Over</div>;
   }
   if (!isGameStarted) {
@@ -84,8 +32,6 @@ export default function Game() {
 
   return (
     <div>
-      {/*<h1>{player.getProfile().name}</h1>*/}
-      {/*<h2>{player.getState('score')}</h2>*/}
       <div className="flex gap-8">
         <AnimatedTooltip
           items={currentPlayers.map((player) => ({
@@ -106,7 +52,12 @@ export default function Game() {
 
       <Question
         questionData={questions[currentQuestion]}
-        onClick={handleAnswer}
+        onClick={(answer: Answer) => {
+          if (answer.isCorrect) {
+            setCurrentQuestion(currentQuestion + 1);
+            myPlayer().setState('score', myPlayer()?.getState('score') + 1);
+          }
+        }}
       />
     </div>
   );
