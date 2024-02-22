@@ -12,7 +12,7 @@ export function InitRoom() {
         turnBased: true,
         reconnectGracePeriod: 10000,
         defaultPlayerStates: {
-          score: 0,
+          playerScore: 0,
         },
       },
       () => setState(CURRENT_GAME_STATE_KEY, GAME_STATE.STARTED),

@@ -3,7 +3,7 @@ import { myPlayer, useMultiplayerState, usePlayersList } from 'playroomkit';
 import { Button } from '@nextui-org/react';
 import { cn } from '../../../../utils/cn';
 import Image from 'next/image';
-import { QuestionState } from '../questions/question';
+import { QuestionState } from '../../../game';
 
 export interface Answer {
   option: string;
