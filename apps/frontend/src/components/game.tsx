@@ -17,11 +17,14 @@ export enum GAME_STATE {
 export const CURRENT_GAME_STATE_KEY = 'gameState';
 const IS_TIME_UP_KEY = 'isTimeUp';
 const CURRENT_QUESTION_INDEX_KEY = 'currentQuestionIndex';
+const PLAYER_SCORE_KEY = 'playerScore';
+const STARTING_PLAYER_SCORE = 0;
+const STARTING_QUESTION_INDEX = 0;
 
 export default function Game() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useMultiplayerState(
     CURRENT_QUESTION_INDEX_KEY,
-    0
+    STARTING_QUESTION_INDEX
   );
   const [currentGameState, setCurrentGameState] = useMultiplayerState(
     CURRENT_GAME_STATE_KEY,
@@ -29,22 +32,23 @@ export default function Game() {
   );
   const [isTimeUp] = useMultiplayerState(IS_TIME_UP_KEY, false);
   const currentPlayers = usePlayersList();
-  const myPlayerScore = myPlayer()?.getState('score');
+  const myPlayerScore =
+    myPlayer()?.getState(PLAYER_SCORE_KEY) || STARTING_PLAYER_SCORE;
 
   InitRoom();
 
+  // GAME STATE SIDE EFFECTS
   useEffect(() => {
     const isQuestionsFinished = currentQuestionIndex === questions.length - 1;
-    const isPlayerHaveNoScore = myPlayerScore < 0;
+    const isPlayerHaveNoScore = myPlayerScore < STARTING_PLAYER_SCORE;
 
     if (isTimeUp || isQuestionsFinished || isPlayerHaveNoScore) {
       setCurrentGameState(GAME_STATE.ENDED);
     }
-  }, [currentQuestionIndex, isTimeUp, myPlayerScore]);
+  }, [currentQuestionIndex, isTimeUp, myPlayerScore, setCurrentGameState]);
 
   if (currentGameState === GAME_STATE.ENDED) return <div>Game Over</div>;
   if (currentGameState === GAME_STATE.LOADING) return <div>Loading...</div>;
-  console.log(CURRENT_QUESTION_INDEX_KEY, currentQuestionIndex);
 
   return (
     <div>
@@ -53,14 +57,12 @@ export default function Game() {
           items={currentPlayers.map((player) => ({
             id: player.id,
             name: player.getProfile().name,
-            designation: `Score: ${player.getState('score')}`,
+            designation: `Score: ${player.getState(PLAYER_SCORE_KEY)}`,
             image: player.getProfile().photo,
           }))}
         />
       </div>
-      <h1 className="text-4xl font-bold mb-4">
-        score: {myPlayer()?.getState('score')}
-      </h1>
+      <h1 className="text-4xl font-bold mb-4">score: {myPlayerScore}</h1>
       <div>
         <h1 className="text-4xl font-bold mb-4">Quiz Game</h1>
         <CountDown />
@@ -71,7 +73,7 @@ export default function Game() {
         onClick={(answer: Answer) => {
           if (answer.isCorrect) {
             setCurrentQuestionIndex(currentQuestionIndex + 1);
-            myPlayer().setState('score', myPlayer()?.getState('score') + 1);
+            myPlayer().setState(PLAYER_SCORE_KEY, myPlayerScore + 1);
           }
         }}
       />
