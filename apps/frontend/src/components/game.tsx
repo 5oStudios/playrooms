@@ -4,18 +4,16 @@ import {
   myPlayer,
   onPlayerJoin,
   PlayerState,
-  setState,
   useMultiplayerState,
   usePlayersList,
 } from 'playroomkit';
-import { Button, Card, CardBody, CardHeader } from '@nextui-org/react';
+import { Card, CardBody, CardHeader } from '@nextui-org/react';
 import questions from '../../mocks/questions.json';
 import { toast } from 'sonner';
-import Countdown from 'react-countdown';
 import { AnimatedTooltip } from './ui/animated-tooltip';
 import * as process from 'process';
-import { cn } from '../utils/cn';
-import Image from 'next/image';
+import { Answer } from './sections/questions/answer';
+import { CountDown } from './sections/questions/count-down';
 
 export default function Game() {
   const [isGameStarted, setIsGameStarted] = useState(false);
@@ -44,14 +42,11 @@ export default function Game() {
     0
   );
 
-  const [timer, setTimer] = useMultiplayerState('timer', 30);
-  const [isGameEnded, setIsGameEnded] = useState(false);
+  const [isTimeUp, setIsTimeUp] = useMultiplayerState('isTimeUp', false);
   const handleAnswer = (answer: Answer) => {
     if (answer.isCorrect) {
       setCurrentQuestion(currentQuestion + 1);
       myPlayer().setState('score', myPlayer()?.getState('score') + 1);
-    } else {
-      setState('timer', timer - 4);
     }
   };
 
@@ -79,8 +74,7 @@ export default function Game() {
 
   if (
     currentQuestion === questions.length - 1 ||
-    timer === 0 ||
-    (isGameEnded && process.env.NODE_ENV !== 'development')
+    (isTimeUp && process.env.NODE_ENV === 'development')
   ) {
     return <div>Game Over</div>;
   }
@@ -107,21 +101,7 @@ export default function Game() {
       </h1>
       <div>
         <h1 className="text-4xl font-bold mb-4">Quiz Game</h1>
-        <p className="text-lg">
-          Time remaining:{' '}
-          <span className="font-bold" id="score">
-            <Countdown
-              renderer={Counter}
-              onTick={(time) => {
-                setTimer(time.seconds);
-              }}
-              date={Date.now() + timer * 1000}
-              onComplete={() => {
-                setIsGameEnded(true);
-              }}
-            />
-          </span>
-        </p>
+        <CountDown />
       </div>
 
       <Question
@@ -130,11 +110,6 @@ export default function Game() {
       />
     </div>
   );
-}
-
-export interface Answer {
-  option: string;
-  isCorrect: boolean;
 }
 
 export interface QuestionData {
@@ -147,7 +122,7 @@ interface Props {
   onClick: (answer: Answer) => void;
 }
 
-enum QuestionState {
+export enum QuestionState {
   UNANSWERED = 'UNANSWERED',
   CORRECT = 'CORRECT',
   INCORRECT = 'INCORRECT',
@@ -194,106 +169,3 @@ const Question: React.FC<Props> = ({ questionData, onClick }) => {
     </Card>
   );
 };
-
-const Answer: React.FC<{
-  index: number;
-  answer: Answer;
-  onClick: (answer: Answer) => void;
-  currentQuestionState?: QuestionState;
-}> = ({ answer, onClick, index, currentQuestionState }) => {
-  const [playersChooseThis, setPlayersChooseThis] = useMultiplayerState(
-    `playersChooseThis`,
-    []
-  );
-
-  let abbreviation = '';
-  switch (index) {
-    case 0:
-      abbreviation = 'A';
-      break;
-    case 1:
-      abbreviation = 'B';
-      break;
-    case 2:
-      abbreviation = 'C';
-      break;
-    case 3:
-      abbreviation = 'D';
-      break;
-  }
-
-  const handleAnswer = (answer: Answer) => {
-    setPlayersChooseThis([
-      ...playersChooseThis,
-      {
-        id: myPlayer().id,
-        chosenAnswer: answer,
-      },
-    ]);
-    onClick(answer);
-  };
-
-  useEffect(() => {
-    setPlayersChooseThis([]);
-  }, [currentQuestionState]);
-
-  return (
-    <div>
-      <Button
-        size="lg"
-        disableRipple={true}
-        disabled={playersChooseThis.some(
-          (player) => player.id === myPlayer().id
-        )}
-        className={cn(
-          'w-full rounded-lg bg-neutral-950/90 dark:bg-default-100/20 text-lg font-bold flex text-center items-center justify-center overflow-hidden relative shadow-md transition duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 focus:ring-offset-neutral-950/90 dark:focus:ring-offset-default-100/20'
-          // answer.isCorrect
-          // ? 'focus:ring-emerald-500 focus:ring-offset-emerald-500/90 dark:focus:ring-offset-emerald-500/20'
-          // : 'focus:ring-rose-500 focus:ring-offset-rose-500/90 dark:focus:ring-offset-rose-500/20'
-        )}
-        style={{ backdropFilter: 'blur(4px)' }}
-        onClick={() => handleAnswer(answer)}
-      >
-        <span className="text-2xl font-bold left-0 px-4 py-2 top-0 text-center bg-gradient-to-r from-emerald-500 to-sky-500 text-transparent bg-clip-text">
-          {abbreviation}
-        </span>
-        <span className="flex-1">{answer.option}</span>
-
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-sky-500 to-transparent w-px" />
-      </Button>
-      <PlayersChooseThis
-        playersChooseThis={playersChooseThis}
-        answer={answer}
-      />
-    </div>
-  );
-};
-
-function Counter({ seconds = 0 }) {
-  return seconds;
-}
-
-function PlayersChooseThis({ playersChooseThis, answer }) {
-  const players = usePlayersList();
-  return (
-    <div className={cn('flex gap-2 mt-2')}>
-      {playersChooseThis.map((player, index) => {
-        if (player.chosenAnswer.option !== answer.option) return null;
-        const playerData = players.find(
-          (currentPlayer) => currentPlayer.id === player.id
-        );
-        if (!playerData) return null;
-        return (
-          <Image
-            key={player.id}
-            width={32}
-            height={32}
-            src={playerData.getProfile().photo}
-            alt="playerAvatar"
-            className="h-8 w-8 rounded-full"
-          />
-        );
-      })}
-    </div>
-  );
-}
