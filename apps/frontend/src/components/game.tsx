@@ -1,12 +1,11 @@
 'use client';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { myPlayer, useMultiplayerState, usePlayersList } from 'playroomkit';
 import questions from '../../mocks/questions.json';
 import { AnimatedTooltip } from './ui/animated-tooltip';
-import { CountDown } from './sections/questions/count-down';
-import { InitRoom } from './init-room';
-import { Question } from './sections/questions/question';
+import { Question } from './sections/mcq/questions/question';
 import { GiTwoCoins } from 'react-icons/gi';
+import { Answers } from './sections/mcq/answers/answers';
 
 export enum GAME_STATE {
   LOADING = 'LOADING',
@@ -36,20 +35,20 @@ export default function Game() {
   const myPlayerScore =
     myPlayer()?.getState(PLAYER_SCORE_KEY) || STARTING_PLAYER_SCORE;
 
-  InitRoom();
+  // InitRoom();
 
   // GAME STATE SIDE EFFECTS
-  useEffect(() => {
-    const isQuestionsFinished = currentQuestionIndex === questions.length - 1;
-    const isPlayerHaveNoScore = myPlayerScore < STARTING_PLAYER_SCORE;
-
-    if (isTimeUp || isQuestionsFinished || isPlayerHaveNoScore) {
-      setCurrentGameState(GAME_STATE.ENDED);
-    }
-  }, [currentQuestionIndex, isTimeUp, myPlayerScore, setCurrentGameState]);
+  // useEffect(() => {
+  //   const isQuestionsFinished = currentQuestionIndex === questions.length - 1;
+  //   const isPlayerHaveNoScore = myPlayerScore < STARTING_PLAYER_SCORE;
+  //
+  //   if (isTimeUp || isQuestionsFinished || isPlayerHaveNoScore) {
+  //     setCurrentGameState(GAME_STATE.ENDED);
+  //   }
+  // }, [currentQuestionIndex, isTimeUp, myPlayerScore, setCurrentGameState]);
 
   if (currentGameState === GAME_STATE.ENDED) return <div>Game Over</div>;
-  if (currentGameState === GAME_STATE.LOADING) return <div>Loading...</div>;
+  // if (currentGameState === GAME_STATE.LOADING) return <div>Loading...</div>;
 
   return (
     <>
@@ -63,22 +62,24 @@ export default function Game() {
           }))}
         />
       </div>
-      <h1 className="text-4xl font-bold mb-4">score: {myPlayerScore}</h1>
-      <div>
-        <h1 className="text-4xl font-bold mb-4">Quiz Game</h1>
-      </div>
-      <CountDown time={TIME} />
+      {/*<h1 className="text-4xl font-bold mb-4">score: {myPlayerScore}</h1>*/}
+      {/*<div>*/}
+      {/*  <h1 className="text-4xl font-bold mb-4">Quiz Game</h1>*/}
+      {/*</div>*/}
+      {/*<CountDown time={TIME} />*/}
       <GiTwoCoins />
-
-      <Question
-        questionData={questions[currentQuestionIndex]}
-        onClick={(answer) => {
-          if (answer.isCorrect) {
-            setCurrentQuestionIndex(currentQuestionIndex + 1);
-            myPlayer().setState(PLAYER_SCORE_KEY, myPlayerScore + 1);
-          }
-        }}
-      />
+      <div className="flex flex-col gap-2">
+        <Question questionText={questions[currentQuestionIndex].question} />
+        <Answers
+          answers={questions[currentQuestionIndex].answers}
+          onClick={(answer) => {
+            if (answer.isCorrect) {
+              setCurrentQuestionIndex(currentQuestionIndex + 1);
+              myPlayer().setState(PLAYER_SCORE_KEY, myPlayerScore + 1);
+            }
+          }}
+        />
+      </div>
     </>
   );
 }

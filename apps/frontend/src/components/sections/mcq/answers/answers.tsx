@@ -1,25 +1,16 @@
-import React from 'react';
-import { useMultiplayerState } from 'playroomkit';
+import { Card, CardBody } from '@nextui-org/react';
 import { Answer } from './answer';
-import { Card, CardBody, CardHeader } from '@nextui-org/react';
+import React from 'react';
+import { QuestionState } from '../questions/question';
+import { useMultiplayerState } from 'playroomkit';
 
-interface Props {
-  questionData: QuestionData;
-  onClick: (answer: Answer) => void;
-}
-
-export interface QuestionData {
-  question: string;
+export function Answers({
+  answers,
+  onClick,
+}: Readonly<{
   answers: Answer[];
-}
-export enum QuestionState {
-  UNANSWERED = 'UNANSWERED',
-  CORRECT = 'CORRECT',
-  INCORRECT = 'INCORRECT',
-}
-
-export const Question: React.FC<Props> = ({ questionData, onClick }) => {
-  const { question, answers } = questionData;
+  onClick: (answer: Answer) => void;
+}>) {
   const [currentQuestionState, setCurrentQuestionState] = useMultiplayerState(
     'currentQuestionState',
     QuestionState.UNANSWERED
@@ -35,14 +26,11 @@ export const Question: React.FC<Props> = ({ questionData, onClick }) => {
   return (
     <Card
       isBlurred
-      className="border-none bg-neutral-950/60 dark:bg-default-100/45 max-w-[610px] p-8 rounded-lg backdrop-blur-[2px]"
+      className="border-none dark:bg-neutral-950/10  max-w-[610px] p-2 rounded-lg backdrop-blur-[2px]"
       shadow="sm"
     >
-      <CardHeader className="flex gap-3 mb-6">
-        <h2 className="text-2xl font-bold">{question}</h2>
-      </CardHeader>
       <CardBody>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4">
           {answers.map((answer, index) => (
             <Answer
               key={index}
@@ -56,4 +44,4 @@ export const Question: React.FC<Props> = ({ questionData, onClick }) => {
       </CardBody>
     </Card>
   );
-};
+}

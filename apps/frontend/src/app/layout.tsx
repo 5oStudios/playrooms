@@ -21,7 +21,7 @@ export default function RootLayout({
         <Providers>
           <Toaster />
           <Navbar />
-          {children}
+          <div className="p-4">{children}</div>
           <BackgroundBeams />
         </Providers>
       </body>
