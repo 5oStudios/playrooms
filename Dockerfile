@@ -16,7 +16,7 @@ COPY . .
 
 RUN nx run frontend:build:production
 
-EXPOSE 3000
+EXPOSE 3010
 
 ENV NODE_ENV production
 
