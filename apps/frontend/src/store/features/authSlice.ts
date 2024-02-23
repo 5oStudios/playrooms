@@ -3,7 +3,6 @@ import { RootState } from '../store';
 import { Session } from '@heroiclabs/nakama-js';
 import { nakamaClient, NakamaClient } from '../../clients/nakama';
 
-// Define the state type
 interface AuthState {
   session: Session | null;
   error: string | null;
@@ -14,7 +13,6 @@ const initialState: AuthState = {
   error: null,
 };
 
-// Create a slice
 const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -41,7 +39,7 @@ const authSlice = createSlice({
   },
 });
 
-export const { loginSuccess, loginFailure, logoutSuccess, clearError } =
+const { loginSuccess, loginFailure, logoutSuccess, clearError } =
   authSlice.actions;
 
 export default authSlice.reducer;
@@ -77,7 +75,6 @@ export const authenticateDevice =
     vars?: Record<string, string>;
   }): ThunkAction<void, RootState, NakamaClient, any> =>
   async (dispatch, action) => {
-    console.log('authSlice.ts authenticateDevice');
     try {
       const session: Session = await nakamaClient.authenticateDevice(
         deviceId,
@@ -85,7 +82,6 @@ export const authenticateDevice =
         username,
         vars
       );
-      console.log('authSlice.ts authenticateDevice session', session);
       dispatch(loginSuccess(session));
     } catch (error) {
       dispatch(loginFailure(error.message));
@@ -103,11 +99,3 @@ export const initializeAuth =
       console.log('No session found in local storage');
     }
   };
-
-// export const initializeAuthIfNeeded = (): ThunkAction<void, RootState, NakamaClient, any> => (dispatch, getState) => {
-//   const { session } = getState().auth;
-//   if (!session) {
-//     // If session doesn't exist in the state, initialize auth
-//     dispatch(initializeAuth());
-//   }
-// };

@@ -7,7 +7,7 @@ const serverKey = 'defaultkey',
   timeout = 10000,
   autoRefreshSession = true;
 
-export const nakamaClient = new Client(
+const nakamaClient = new Client(
   serverKey,
   serverAddr,
   serverPort,
@@ -15,6 +15,6 @@ export const nakamaClient = new Client(
   timeout,
   autoRefreshSession
 );
+const nakamaSocket = nakamaClient.createSocket(false);
 
-export type NakamaClient = typeof nakamaClient;
-export const NakamaSocket = nakamaClient.createSocket();
+export { nakamaClient, nakamaSocket };
