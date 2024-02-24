@@ -1,7 +1,7 @@
-import { gameSdk } from './game-client';
+import { GameClient } from './game-client';
 
 describe('gameSdk', () => {
   it('should work', () => {
-    expect(gameSdk()).toEqual('game-client');
+    expect(new GameClient()).toEqual('game-client');
   });
 });

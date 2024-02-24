@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction, ThunkAction } from '@reduxjs/toolkit';
 import { RootState } from '../store';
 import { Session } from '@heroiclabs/nakama-js';
-import { nakamaClient } from '../../clients/nakama';
+import { gameClient } from '@core/game-client';
 
 export const NAKAMA_SESSION_KEY = 'NAKAMA_SESSION_KEY';
 interface AuthState {
@@ -21,65 +21,33 @@ const authSlice = createSlice({
     loginSuccess(state, action: PayloadAction<Session>) {
       state.session = action.payload;
       state.error = null;
-      // Save session in local storage
-      localStorage.setItem('session', JSON.stringify(action.payload));
     },
     loginFailure(state, action: PayloadAction<string>) {
       state.session = null;
       state.error = action.payload;
     },
-    logoutSuccess(state) {
-      state.session = null;
-      state.error = null;
-      // Clear session from local storage
-      localStorage.removeItem('session');
-    },
-    clearError(state) {
-      state.error = null;
-    },
   },
 });
 
-const { loginSuccess, loginFailure, logoutSuccess, clearError } =
-  authSlice.actions;
-
 export default authSlice.reducer;
 
-// Thunks for async actions
-export const authenticateEmail =
-  (email: string, password: string): ThunkAction<void, RootState, any, any> =>
-  async (dispatch, getState) => {
-    try {
-      const session: Session = await nakamaClient.authenticateEmail(
-        email,
-        password
-      );
-      dispatch(loginSuccess(session));
-    } catch (error) {
-      dispatch(loginFailure(error.message));
-    }
-  };
+export const { loginSuccess, loginFailure } = authSlice.actions;
 
+// Thunks for async actions
 export const authenticateDevice =
   ({
-    deviceId,
-    create,
     username,
     vars,
   }: {
-    deviceId: string;
-    create?: boolean;
-    username?: string;
+    username: string;
     vars?: Record<string, string>;
   }): ThunkAction<void, RootState, any, any> =>
   async (dispatch, action) => {
     try {
-      const session: Session = await nakamaClient.authenticateDevice(
-        deviceId,
-        create,
+      const session = await gameClient.authenticateDevice({
         username,
-        vars
-      );
+        vars,
+      });
       dispatch(loginSuccess(session));
     } catch (error) {
       dispatch(loginFailure(error.message));
@@ -89,11 +57,10 @@ export const authenticateDevice =
 export const initializeAuth =
   (): ThunkAction<void, RootState, any, any> =>
   async (dispatch, getState, nakamaClient) => {
-    const storedSession = localStorage.getItem('session');
-    if (storedSession) {
-      const session: Session = JSON.parse(storedSession);
+    if (!localStorage)
+      throw new Error('Local storage is not available in reducer');
+    const session = gameClient.getSessionFromLocalStorage();
+    if (session) {
       dispatch(loginSuccess(session));
-    } else {
-      console.log('No session found in local storage');
     }
   };

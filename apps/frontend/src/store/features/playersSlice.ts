@@ -1,9 +1,21 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-const players = createSlice({
-  name: 'players',
-  initialState: {},
-  reducers: {},
+const player = createSlice({
+  name: 'player',
+  initialState: {
+    username: '',
+    avatarConfig: {},
+  },
+  reducers: {
+    setUsername(state, action) {
+      state.username = action.payload;
+    },
+    setAvatarConfig(state, action) {
+      state.avatarConfig = action.payload;
+    },
+  },
 });
 
-export default players.reducer;
+export default player.reducer;
+
+export const { setUsername, setAvatarConfig } = player.actions;

@@ -1,21 +1,13 @@
 'use client';
 import { Nakama } from '../../../components/nakama';
-import {
-  useTypedDispatch,
-  useTypedSelector,
-} from '../../../hooks/use-redux-typed';
+import { useTypedSelector } from '../../../hooks/use-redux-typed';
+import React from 'react';
+import Lobby from '../../../components/modals/lobby';
 
 export default function Index() {
   const session = useTypedSelector((state) => state.auth.session);
-  const dispatch = useTypedDispatch();
-  // dispatch(
-  //   authenticateDevice({
-  //     deviceId: nanoid(),
-  //     create: true,
-  //     username: 'testuser',
-  //     vars: { score: '1' },
-  //   })
-  // );
+
+  if (!session) return <Lobby />;
 
   console.log(session);
   return (
