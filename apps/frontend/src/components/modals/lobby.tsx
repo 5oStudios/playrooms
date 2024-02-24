@@ -8,13 +8,10 @@ import {
   useDisclosure,
 } from '@nextui-org/react';
 import dynamic from 'next/dynamic';
-import { useAppDispatch, useAppSelector } from '../../hooks/use-redux-typed';
-import {
-  authenticateDevice,
-  setUsername,
-} from '../../store/features/playerSlice';
 import { genConfig } from 'react-nice-avatar';
-import { LOCAL_STORAGE_SESSION_KEY } from '@core/game-client';
+import { usePlayer } from '../../hooks/use-player';
+import { useAuth } from '../../hooks/use-auth';
+import { useParty } from '../../hooks/use-party';
 
 const NoSSRAvatar = dynamic(() => import('react-nice-avatar'), {
   ssr: false,
@@ -24,15 +21,25 @@ export default function Lobby() {
   const { isOpen, onOpen, onClose } = useDisclosure({
     isOpen: true,
   });
-  const username = useAppSelector((state) => state.player.session.username);
-  const avatarConfig = useAppSelector(
-    (state) => state.player.session.vars.avatarConfig
-  );
-  const dispatch = useAppDispatch();
+  const { username, avatarConfig, setUsername } = usePlayer();
+  const { createParty } = useParty();
+  const { isAuth, authenticateDevice } = useAuth();
 
   const parsedAvatarConfig = JSON.parse(avatarConfig);
-  console.log('avatarConfig', parsedAvatarConfig);
-  console.log('avatarConfig', localStorage.getItem(LOCAL_STORAGE_SESSION_KEY));
+
+  React.useEffect(() => {
+    console.log('auth', isAuth, username, parsedAvatarConfig);
+    if (!isAuth) {
+      authenticateDevice({
+        username,
+        vars: {
+          avatarConfig: JSON.stringify(parsedAvatarConfig),
+        },
+      });
+    }
+  }, [isAuth, parsedAvatarConfig, username]);
+  const handleJoinOnline = () => createParty({ open: true, maxPlayers: 4 });
+
   return (
     <>
       <Modal
@@ -50,22 +57,9 @@ export default function Lobby() {
           <Input
             className={'w-full'}
             value={username}
-            onChange={(e) => dispatch(setUsername(e.target.value))}
+            onChange={(e) => setUsername(e.target.value)}
           />
-          <Button
-            onClick={() => {
-              dispatch(
-                authenticateDevice({
-                  username,
-                  vars: {
-                    avatarConfig,
-                  },
-                })
-              );
-            }}
-            size={'lg'}
-            className={'w-full'}
-          >
+          <Button onClick={handleJoinOnline} size={'lg'} className={'w-full'}>
             Join Online
           </Button>
           <div className={'flex flex-row w-full gap-3'}>

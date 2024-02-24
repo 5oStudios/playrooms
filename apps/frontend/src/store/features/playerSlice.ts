@@ -68,7 +68,6 @@ const playerSlice = createSlice({
     },
   },
 });
-
 export default playerSlice.reducer;
 
 export const { setSession, setError, setUsername, setAvatarConfig } =
@@ -93,16 +92,5 @@ export const authenticateDevice =
       dispatch(setSession(session));
     } catch (error) {
       console.error('Failed to authenticate device:', error);
-    }
-  };
-
-export const initializeAuth =
-  (): ThunkAction<void, RootState, any, any> =>
-  async (dispatch, getState, nakamaClient) => {
-    if (!localStorage)
-      throw new Error('Local storage is not available in reducer');
-    const session = gameClient.getSessionFromLocalStorage();
-    if (session) {
-      dispatch(setSession(session));
     }
   };

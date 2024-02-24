@@ -63,6 +63,21 @@ class GameClient {
     return null;
   }
 
+  async createParty(open: boolean, maxPlayers: number) {
+    console.log(this.session);
+    if (!this.session) {
+      throw new Error('No session');
+    }
+    const socket = this.client.createSocket();
+    await socket.connect(this.session, true);
+    return await socket.createParty(open, maxPlayers);
+  }
+
+  updateSession(session: Session) {
+    this.saveSessionInLocalStorage(session);
+    this.session = session;
+  }
+
   private async refreshSession() {
     const session = this.getSessionFromLocalStorage();
     if (session) {
@@ -77,11 +92,6 @@ class GameClient {
 
   private saveSessionInLocalStorage(session: Session) {
     localStorage.setItem(LOCAL_STORAGE_SESSION_KEY, JSON.stringify(session));
-  }
-
-  private updateSession(session: Session) {
-    this.saveSessionInLocalStorage(session);
-    this.session = session;
   }
 }
 
