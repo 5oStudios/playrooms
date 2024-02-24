@@ -1,6 +1,6 @@
-import { createSlice, PayloadAction, ThunkAction } from '@reduxjs/toolkit';
+import { createSlice, ThunkAction } from '@reduxjs/toolkit';
 import { RootState } from '../store';
-import { Party, PartyLeader, Presence } from '@heroiclabs/nakama-js';
+import { Party, Presence } from '@heroiclabs/nakama-js';
 import { gameClient } from '@core/game-client';
 
 const initialState: Party = {
@@ -16,26 +16,13 @@ const partySlice = createSlice({
   name: 'party',
   initialState,
   reducers: {
-    onCreateParty(state, action: PayloadAction<Party>) {
+    setParty(state, action) {
       return action.payload;
-    },
-    onJoinParty(state, action: PayloadAction<string>) {
-      // Add logic to join party
-    },
-    onLeaveParty(state) {
-      return initialState; // Reset party state on leaving
-    },
-    onPromoteMember(state, action: PayloadAction<PartyLeader>) {
-      return {
-        ...state,
-        leader: action.payload.presence,
-      };
     },
   },
 });
 
-export const { onCreateParty, onJoinParty, onLeaveParty, onPromoteMember } =
-  partySlice.actions;
+export const { setParty } = partySlice.actions;
 
 export default partySlice.reducer;
 
@@ -54,7 +41,7 @@ export const createParty =
     }
     try {
       const party = await gameClient.createParty(open, maxPlayers);
-      dispatch(onCreateParty(party));
+      dispatch(setParty(party));
     } catch (error) {
       console.error('Failed to create party:', error);
     }
@@ -85,8 +72,7 @@ export const leaveParty =
       // const socket = nakamaClient.createSocket();
       // await socket.connect(session, true);
       // await socket.leaveParty(getState().party.party_id);
-
-      dispatch(onLeaveParty());
+      // dispatch(onLeaveParty());
     } catch (error) {
       console.error('Failed to leave party:', error);
     }

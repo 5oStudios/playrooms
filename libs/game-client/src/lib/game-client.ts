@@ -1,4 +1,4 @@
-import { Client, Session } from '@heroiclabs/nakama-js';
+import { Client, Session, Socket } from '@heroiclabs/nakama-js';
 import {
   AUTO_REFRESH_SESSION,
   HOST,
@@ -15,6 +15,7 @@ export const LOCAL_STORAGE_SESSION_KEY =
 
 class GameClient {
   private readonly client: Client;
+  private socket: Socket | undefined;
   private session: Session | null = null;
   constructor() {
     this.client = new Client(
@@ -64,18 +65,42 @@ class GameClient {
   }
 
   async createParty(open: boolean, maxPlayers: number) {
-    console.log(this.session);
-    if (!this.session) {
-      throw new Error('No session');
+    const session = this.getSessionFromLocalStorage() ?? this.session;
+    if (!session) {
+      throw new Error('Session not found');
     }
     const socket = this.client.createSocket();
-    await socket.connect(this.session, true);
+    await socket.connect(session, true);
     return await socket.createParty(open, maxPlayers);
   }
 
-  updateSession(session: Session) {
+  async joinParty(partyId: string) {
+    const session = this.getSessionFromLocalStorage() ?? this.session;
+    if (!session) {
+      throw new Error('Session not found');
+    }
+    const socket = this.client.createSocket();
+    await socket.connect(session, true);
+    return await socket.joinParty(partyId);
+  }
+
+  async updateSession(session: Session) {
     this.saveSessionInLocalStorage(session);
     this.session = session;
+    await this.updateSocketConnection();
+  }
+
+  private async updateSocketConnection() {
+    if (this.socket) {
+      this.socket.disconnect(true);
+    }
+    const session = this.getSessionFromLocalStorage() ?? this.session;
+    if (!session) {
+      throw new Error('Session not found');
+    }
+    const socket = this.client.createSocket();
+    await socket.connect(session, true);
+    this.socket = socket;
   }
 
   private async refreshSession() {

@@ -1,5 +1,5 @@
-import { useAppDispatch } from './use-redux-typed';
-import { createParty } from '../store/features/partySlice';
+import { useAppDispatch, useAppSelector } from './use-redux-typed';
+import { createParty, joinParty } from '../store/features/partySlice';
 
 export const useParty = () => {
   const dispatch = useAppDispatch();
@@ -7,5 +7,7 @@ export const useParty = () => {
   return {
     createParty: (party: { open: boolean; maxPlayers: number }) =>
       dispatch(createParty(party)),
+    party: useAppSelector((state) => state.party),
+    joinParty: (partyId: string) => dispatch(joinParty(partyId)),
   };
 };
