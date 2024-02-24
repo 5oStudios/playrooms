@@ -1,4 +1,5 @@
 import { Client, Session, Socket } from '@heroiclabs/nakama-js';
+import { nanoid } from 'nanoid';
 import {
   AUTO_REFRESH_SESSION,
   HOST,
@@ -7,16 +8,23 @@ import {
   TIMEOUT,
   USE_SSL,
 } from './config';
-import { nanoid } from 'nanoid';
 
 export const PLATFORM_NAME = 'platform_name';
 export const LOCAL_STORAGE_SESSION_KEY =
   PLATFORM_NAME + '_LOCAL_STORAGE_SESSION_KEY';
 
+export interface PlayerSession extends Session {
+  vars: {
+    avatarConfig: string;
+    avatarUrl: string;
+  };
+}
+
 class GameClient {
   private readonly client: Client;
   private socket: Socket | undefined;
-  private session: Session | null = null;
+  private session: PlayerSession | null = null;
+
   constructor() {
     this.client = new Client(
       SERVER_KEY,
@@ -28,7 +36,7 @@ class GameClient {
     );
   }
 
-  async authenticateDevice({
+  public async authenticateDevice({
     username,
     avatarUrl = '',
     avatarConfig = '',
@@ -41,30 +49,32 @@ class GameClient {
   }): Promise<PlayerSession> {
     const id = this.generateId();
     const create = true;
-    const session = await this.client.authenticateDevice(id, create, username, {
-      avatarUrl,
-      avatarConfig,
-      ...vars,
-    });
-    this.updateSession(session);
+    const session = (await this.client.authenticateDevice(
+      id,
+      create,
+      username,
+      {
+        avatarUrl,
+        avatarConfig,
+        ...vars,
+      }
+    )) as PlayerSession;
+    await this.updateSession(session);
+    this.initSocket();
 
     return session as PlayerSession;
   }
 
-  getSessionFromLocalStorage(): PlayerSession | null {
+  public getSessionFromLocalStorage(): PlayerSession | null {
     if (!localStorage) {
       console.warn('Local storage is not available');
       return null;
     }
     const session = localStorage.getItem(LOCAL_STORAGE_SESSION_KEY);
-    if (session) {
-      return JSON.parse(session);
-    }
-
-    return null;
+    return session ? JSON.parse(session) : null;
   }
 
-  async createParty(open: boolean, maxPlayers: number) {
+  public async createParty(open: boolean, maxPlayers: number) {
     const session = this.getSessionFromLocalStorage() ?? this.session;
     if (!session) {
       throw new Error('Session not found');
@@ -74,20 +84,29 @@ class GameClient {
     return await socket.createParty(open, maxPlayers);
   }
 
-  async joinParty(partyId: string) {
+  public async joinParty(partyId: string) {
+    if (!this.socket) await this.initSocket();
+    const session = this.getSessionFromLocalStorage() ?? this.session;
+    if (!session) {
+      throw new Error('Session not found');
+    }
+    if (!this.socket) throw new Error('Socket not found');
+    return await this.socket.joinParty(partyId);
+  }
+
+  private async initSocket() {
     const session = this.getSessionFromLocalStorage() ?? this.session;
     if (!session) {
       throw new Error('Session not found');
     }
     const socket = this.client.createSocket();
     await socket.connect(session, true);
-    return await socket.joinParty(partyId);
+    this.socket = socket;
   }
 
-  async updateSession(session: Session) {
+  private async updateSession(session: PlayerSession) {
     this.saveSessionInLocalStorage(session);
     this.session = session;
-    await this.updateSocketConnection();
   }
 
   private async updateSocketConnection() {
@@ -106,8 +125,10 @@ class GameClient {
   private async refreshSession() {
     const session = this.getSessionFromLocalStorage();
     if (session) {
-      const newSession = await this.client.sessionRefresh(session);
-      this.updateSession(newSession);
+      const newSession = (await this.client.sessionRefresh(
+        session
+      )) as PlayerSession;
+      await this.updateSession(newSession);
     }
   }
 
@@ -115,15 +136,9 @@ class GameClient {
     return 'device-' + nanoid(16);
   }
 
-  private saveSessionInLocalStorage(session: Session) {
+  private saveSessionInLocalStorage(session: PlayerSession) {
     localStorage.setItem(LOCAL_STORAGE_SESSION_KEY, JSON.stringify(session));
   }
 }
 
 export const gameClient = new GameClient();
-export type PlayerSession = Session & {
-  vars: {
-    avatarConfig: string;
-    avatarUrl: string;
-  };
-};

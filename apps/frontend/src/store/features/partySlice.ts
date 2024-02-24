@@ -50,16 +50,9 @@ export const createParty =
 export const joinParty =
   (partyId: string): ThunkAction<void, RootState, any, any> =>
   async (dispatch, getState) => {
-    if (getState().party.party_id) {
-      console.error('Already in a party');
-      return;
-    }
     try {
-      // const session = getState().auth.session;
-      // const socket = nakamaClient.createSocket();
-      // await socket.connect(session, true);
-      // await socket.joinParty(partyId);
-      // dispatch(onJoinParty(partyId));
+      const party = await gameClient.joinParty(partyId);
+      dispatch(setParty(party));
     } catch (error) {
       console.error('Failed to join party:', error);
     }

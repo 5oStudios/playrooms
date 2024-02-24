@@ -9,7 +9,6 @@ export const usePlayer = () => {
     avatarConfig: useAppSelector(
       (state) => state.player.session.vars.avatarConfig
     ),
-    isAuth: useAppSelector((state) => !!state.player.session.token),
     setUsername: (username: string) => dispatch(setUsername(username)),
   };
 };

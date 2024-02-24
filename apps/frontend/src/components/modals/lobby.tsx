@@ -13,34 +13,33 @@ import { usePlayer } from '../../hooks/use-player';
 import { useAuth } from '../../hooks/use-auth';
 import { useParty } from '../../hooks/use-party';
 import QRCode from 'react-qr-code';
+import BaseModal from './base.modal';
 
 const NoSSRAvatar = dynamic(() => import('react-nice-avatar'), {
   ssr: false,
 });
+export const PlayerInfo = () => {
+  useAuth();
+  const { username, avatarConfig, setUsername } = usePlayer();
+  const parsedAvatarConfig = JSON.parse(avatarConfig);
+  return (
+    <>
+      <NoSSRAvatar className={'w-44 h-44'} {...genConfig(parsedAvatarConfig)} />
+      <Input
+        className={'w-full'}
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+      />
+    </>
+  );
+};
 
 export default function Lobby() {
   const { isOpen, onOpen, onClose } = useDisclosure({
     isOpen: true,
   });
-
   const [invModal, setInvModal] = React.useState(false);
-  const { username, avatarConfig, setUsername } = usePlayer();
   const { party, createParty } = useParty();
-  const { isAuth, authenticateDevice } = useAuth();
-
-  const parsedAvatarConfig = JSON.parse(avatarConfig);
-
-  React.useEffect(() => {
-    console.log('auth', isAuth, username, parsedAvatarConfig);
-    if (!isAuth) {
-      authenticateDevice({
-        username,
-        vars: {
-          avatarConfig: JSON.stringify(parsedAvatarConfig),
-        },
-      });
-    }
-  }, [isAuth, parsedAvatarConfig, username]);
 
   const handleJoinOnline = () => createParty({ open: true, maxPlayers: 4 });
   const handleInvite = () => {
@@ -48,27 +47,14 @@ export default function Lobby() {
     setInvModal(true);
   };
 
-  const inviteLink = window.location.href + `join/=${party.party_id}`;
+  const inviteLink =
+    new URL(window.location.href).origin + `/join/${party.party_id}`;
 
   return (
     <>
-      <Modal
-        backdrop={'blur'}
-        placement={'center'}
-        isOpen={isOpen}
-        onClose={onClose}
-        className={'flex justify-center items-center p-4 m-4'}
-      >
+      <BaseModal isOpen={isOpen} onClose={onClose}>
         <ModalContent className={'gap-3'}>
-          <NoSSRAvatar
-            className={'w-44 h-44'}
-            {...genConfig(parsedAvatarConfig)}
-          />
-          <Input
-            className={'w-full'}
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
+          <PlayerInfo />
           <Button onClick={handleJoinOnline} size={'lg'} className={'w-full'}>
             Join Online
           </Button>
@@ -79,14 +65,14 @@ export default function Lobby() {
             </Button>
           </div>
         </ModalContent>
-      </Modal>
+      </BaseModal>
 
       {/* inv modal */}
       <Modal
         backdrop={'blur'}
         placement={'center'}
         isOpen={invModal}
-        onClose={onClose}
+        onClose={() => setInvModal(false)}
         size={'xs'}
         className={'flex justify-center items-center p-4 m-4'}
       >
@@ -98,8 +84,8 @@ export default function Lobby() {
             viewBox={`0 0 256 256`}
           />
           <Button
-            onClick={() => {
-              navigator.clipboard.writeText(inviteLink);
+            onClick={async () => {
+              await navigator.clipboard.writeText(inviteLink);
               setInvModal(false);
             }}
             className={'w-full'}
