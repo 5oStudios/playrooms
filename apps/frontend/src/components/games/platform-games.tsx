@@ -1,5 +1,5 @@
 'use client';
-import { useTypedSelector } from '../../hooks/use-redux-typed';
+import { useAppSelector } from '../../hooks/use-redux-typed';
 import { AnimatedGameCard } from './animated-game-card';
 import { nanoid } from 'nanoid';
 import { useRouter } from 'next/navigation';
@@ -7,7 +7,7 @@ import { Chip } from '@nextui-org/react';
 import React from 'react';
 
 export default function PlatformGames() {
-  const games = useTypedSelector((state) => state.platform.games);
+  const games = useAppSelector((state) => state.platform.games);
   const router = useRouter();
   return (
     <div className="flex flex-col gap-12 md:gap-0 md:flex-row items-center justify-center w-full">

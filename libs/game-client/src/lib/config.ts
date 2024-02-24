@@ -1,4 +1,4 @@
-export const SERVER_KEY = 'serverkey',
+export const SERVER_KEY = 'defaultkey',
   HOST = '65.109.11.0',
   PORT = '7350',
   USE_SSL = false,

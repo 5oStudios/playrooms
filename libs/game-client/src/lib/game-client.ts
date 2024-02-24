@@ -29,28 +29,28 @@ class GameClient {
 
   async authenticateDevice({
     username,
+    avatarUrl = '',
+    avatarConfig = '',
     vars,
   }: {
     username: string;
+    avatarUrl?: string;
+    avatarConfig?: string;
     vars?: Record<string, string>;
-  }) {
-    if (!this.session) return this.getSessionFromLocalStorage();
-    else {
-      const id = this.generateId();
-      const create = true;
-      const session = await this.client.authenticateDevice(
-        id,
-        create,
-        username,
-        vars
-      );
-      this.updateSession(session);
+  }): Promise<PlayerSession> {
+    const id = this.generateId();
+    const create = true;
+    const session = await this.client.authenticateDevice(id, create, username, {
+      avatarUrl,
+      avatarConfig,
+      ...vars,
+    });
+    this.updateSession(session);
 
-      return session;
-    }
+    return session as PlayerSession;
   }
 
-  getSessionFromLocalStorage(): Session | null {
+  getSessionFromLocalStorage(): PlayerSession | null {
     if (!localStorage) {
       console.warn('Local storage is not available');
       return null;
@@ -86,3 +86,9 @@ class GameClient {
 }
 
 export const gameClient = new GameClient();
+export type PlayerSession = Session & {
+  vars: {
+    avatarConfig: string;
+    avatarUrl: string;
+  };
+};
