@@ -15,6 +15,5 @@ const nakamaClient = new Client(
   timeout,
   autoRefreshSession
 );
-const nakamaSocket = nakamaClient.createSocket(false);
 
-export { nakamaClient, nakamaSocket };
+export { nakamaClient };

@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction, ThunkAction } from '@reduxjs/toolkit';
 import { RootState } from '../store';
-import { nakamaSocket } from '../../clients/nakama';
-import { Party } from '@heroiclabs/nakama-js';
+import { Party, PartyLeader, Presence } from '@heroiclabs/nakama-js';
+import { nakamaClient } from '../../clients/nakama';
 
 const initialState: Party = {
   party_id: null,
@@ -14,24 +14,27 @@ const initialState: Party = {
 
 const partySlice = createSlice({
   name: 'party',
-  initialState: initialState,
+  initialState,
   reducers: {
-    successCreateParty(state, action: PayloadAction<Party>) {
+    onCreateParty(state, action: PayloadAction<Party>) {
       return action.payload;
     },
-    joinParty(state, action: PayloadAction<string>) {
+    onJoinParty(state, action: PayloadAction<string>) {
       // Add logic to join party
     },
-    leaveParty(state) {
+    onLeaveParty(state) {
       return initialState; // Reset party state on leaving
     },
-    promoteMember(state, action: PayloadAction<string>) {
-      // Add logic to promote member to leader
+    onPromoteMember(state, action: PayloadAction<PartyLeader>) {
+      return {
+        ...state,
+        leader: action.payload.presence,
+      };
     },
   },
 });
 
-export const { successCreateParty, joinParty, leaveParty, promoteMember } =
+export const { onCreateParty, onJoinParty, onLeaveParty, onPromoteMember } =
   partySlice.actions;
 
 export default partySlice.reducer;
@@ -41,7 +44,7 @@ export const initializeSocket = (): ThunkAction<void, RootState, void, any> => {
     const session = getState().auth.session;
     if (session) {
       try {
-        await nakamaSocket.connect(session, true);
+        await nakamaClient.createSocket().connect(session, true);
       } catch (error) {
         console.error('Failed to initialize socket:', error);
       }
@@ -63,9 +66,65 @@ export const createParty =
       return;
     }
     try {
-      const partyData = await nakamaSocket.createParty(open, maxPlayers);
-      dispatch(successCreateParty(partyData));
+      const session = getState().auth.session;
+      console.log('session', session);
+      const socket = nakamaClient.createSocket();
+      await socket.connect(session, true);
+      const partyData = await socket.createParty(open, maxPlayers);
+
+      dispatch(onCreateParty(partyData));
     } catch (error) {
       console.error('Failed to create party:', error);
+    }
+  };
+
+export const joinParty =
+  (partyId: string): ThunkAction<void, RootState, any, any> =>
+  async (dispatch, getState) => {
+    if (getState().party.party_id) {
+      console.error('Already in a party');
+      return;
+    }
+    try {
+      const session = getState().auth.session;
+      const socket = nakamaClient.createSocket();
+      await socket.connect(session, true);
+      await socket.joinParty(partyId);
+
+      dispatch(onJoinParty(partyId));
+    } catch (error) {
+      console.error('Failed to join party:', error);
+    }
+  };
+
+export const leaveParty =
+  (): ThunkAction<void, RootState, any, any> => async (dispatch, getState) => {
+    try {
+      const session = getState().auth.session;
+      const socket = nakamaClient.createSocket();
+      await socket.connect(session, true);
+      await socket.leaveParty(getState().party.party_id);
+
+      dispatch(onLeaveParty());
+    } catch (error) {
+      console.error('Failed to leave party:', error);
+    }
+  };
+
+export const promoteMember =
+  (partyMember: Presence): ThunkAction<void, RootState, any, any> =>
+  async (dispatch, getState) => {
+    try {
+      const session = getState().auth.session;
+      const socket = nakamaClient.createSocket();
+      await socket.connect(session, true);
+      const partyLeader = await socket.promotePartyMember(
+        getState().party.party_id,
+        partyMember
+      );
+
+      dispatch(onPromoteMember(partyLeader));
+    } catch (error) {
+      console.error('Failed to promote member:', error);
     }
   };

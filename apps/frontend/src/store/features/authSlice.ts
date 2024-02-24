@@ -1,8 +1,9 @@
 import { createSlice, PayloadAction, ThunkAction } from '@reduxjs/toolkit';
 import { RootState } from '../store';
 import { Session } from '@heroiclabs/nakama-js';
-import { nakamaClient, NakamaClient } from '../../clients/nakama';
+import { nakamaClient } from '../../clients/nakama';
 
+export const NAKAMA_SESSION_KEY = 'NAKAMA_SESSION_KEY';
 interface AuthState {
   session: Session | null;
   error: string | null;
@@ -46,11 +47,8 @@ export default authSlice.reducer;
 
 // Thunks for async actions
 export const authenticateEmail =
-  (
-    email: string,
-    password: string
-  ): ThunkAction<void, RootState, NakamaClient, any> =>
-  async (dispatch, _, nakamaClient) => {
+  (email: string, password: string): ThunkAction<void, RootState, any, any> =>
+  async (dispatch, getState) => {
     try {
       const session: Session = await nakamaClient.authenticateEmail(
         email,
@@ -73,7 +71,7 @@ export const authenticateDevice =
     create?: boolean;
     username?: string;
     vars?: Record<string, string>;
-  }): ThunkAction<void, RootState, NakamaClient, any> =>
+  }): ThunkAction<void, RootState, any, any> =>
   async (dispatch, action) => {
     try {
       const session: Session = await nakamaClient.authenticateDevice(
@@ -89,7 +87,7 @@ export const authenticateDevice =
   };
 
 export const initializeAuth =
-  (): ThunkAction<void, RootState, NakamaClient, any> =>
+  (): ThunkAction<void, RootState, any, any> =>
   async (dispatch, getState, nakamaClient) => {
     const storedSession = localStorage.getItem('session');
     if (storedSession) {
