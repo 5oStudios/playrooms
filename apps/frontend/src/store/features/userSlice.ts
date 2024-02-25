@@ -4,11 +4,15 @@ import { User } from '@heroiclabs/nakama-js';
 // const refresh = localStorage.getItem(LOCAL_STORAGE_REFRESH_KEY);
 //
 //
-const initialState: User | null = null;
+
+// const initialState: User | null = {
+//   username: generatedUsername,
+//   avatar_url: parsedAvatarConfig,
+// };
 
 const userSlice = createSlice({
   name: 'user',
-  initialState,
+  initialState: null,
   reducers: {
     setUser(state, action: PayloadAction<User>) {
       return action.payload;

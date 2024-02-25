@@ -1,23 +1,24 @@
 'use client';
 import React, { useEffect } from 'react';
 import { useAppSelector } from '../../../hooks/use-redux-typed';
-import { PlayerInfo } from '../../../components/modals/lobby';
+import Lobby from '../../../components/modals/lobby';
 import { gameSocket } from '@core/game-client';
 
 export default function Index() {
   const session = useAppSelector((state) => state.session);
   const account = useAppSelector((state) => state.user);
   useEffect(() => {
+    if (!session) return;
     (async () => {
       await gameSocket.connect(session, true);
       await gameSocket.joinParty('test');
     })();
-  }, []);
+  }, [session]);
 
   return (
     <div className="flex justify-center items-center">
-      {/*<Lobby />*/}
-      <PlayerInfo />
+      <Lobby />
+      {/*<PlayerInfo />*/}
 
       {/*<Nakama />*/}
     </div>

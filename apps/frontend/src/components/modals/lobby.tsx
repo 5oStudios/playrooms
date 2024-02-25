@@ -8,11 +8,14 @@ import {
   useDisclosure,
 } from '@nextui-org/react';
 import dynamic from 'next/dynamic';
-import { genConfig } from 'react-nice-avatar';
-import { useParty } from '../../hooks/use-party';
 import QRCode from 'react-qr-code';
 import BaseModal from './base.modal';
+import { useAppSelector } from '../../hooks/use-redux-typed';
+import { setUsername } from '../../store/features/playerSlice';
+import { genConfig } from 'react-nice-avatar';
 import { generateUsername } from 'unique-username-generator';
+import { gameSocket } from '@core/game-client';
+import { Party } from '@heroiclabs/nakama-js';
 
 const NoSSRAvatar = dynamic(() => import('react-nice-avatar'), {
   ssr: false,
@@ -20,22 +23,25 @@ const NoSSRAvatar = dynamic(() => import('react-nice-avatar'), {
 
 const generatedUsername = generateUsername('', 0, 8, '');
 const generatedAvatarConfig = JSON.stringify(genConfig());
+const parsedAvatarConfig = JSON.parse(generatedAvatarConfig);
 
 export const PlayerInfo = () => {
-  // useAuth();
-  // const { username, avatarConfig, setUsername } = usePlayer();
+  const user = useAppSelector((state) => state.user);
 
-  const username = generatedUsername;
-  const avatarConfig = generatedAvatarConfig;
+  if (!user)
+    return (
+      <div>
+        <p>loading...</p>
+      </div>
+    );
 
-  const parsedAvatarConfig = JSON.parse(avatarConfig);
   return (
     <>
-      <NoSSRAvatar className={'w-44 h-44'} {...genConfig(parsedAvatarConfig)} />
+      <NoSSRAvatar className={'w-44 h-44'} {...genConfig(user.avatar_url)} />
       <Input
         className={'w-full'}
-        value={username}
-        // onChange={(e) => setUsername(e.target.value)}
+        value={user.username}
+        onChange={(e) => setUsername(e.target.value)}
       />
     </>
   );
@@ -46,15 +52,18 @@ export default function Lobby() {
     isOpen: true,
   });
   const [invModal, setInvModal] = React.useState(false);
-  // const { session } = usePlayer();
-  const { party, createParty } = useParty();
-  const handleJoinOnline = () => createParty({ open: true, maxPlayers: 4 });
-  const handleInvite = () => {
-    createParty({ open: true, maxPlayers: 4 });
+  const session = useAppSelector((state) => state.session);
+  const [party, setParty] = React.useState<Party>(null);
+
+  const handleJoinOnline = async () => {
+    await gameSocket.joinParty('test');
+  };
+  const handleInvite = async () => {
+    gameSocket.createParty(true, 4).then(setParty);
     setInvModal(true);
   };
   const inviteLink =
-    new URL(window.location.href).origin + `/join/${party.party_id}`;
+    new URL(window.location.href).origin + `/join/${party?.party_id}`;
   useEffect(() => {
     console.log(party);
   }, [party]);
