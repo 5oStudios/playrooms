@@ -7,6 +7,7 @@ import {
   LOCAL_STORAGE_REFRESH_KEY,
 } from '@core/game-client';
 import platformSlice from './features/platformSlice';
+import socketSlice from './features/socketSlice';
 
 export const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ export const store = configureStore({
 
     session: sessionSlice,
     user: userSlice,
+    socket: socketSlice,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

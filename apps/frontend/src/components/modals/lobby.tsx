@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   Button,
   Input,
@@ -54,9 +54,7 @@ export default function Lobby() {
   };
   const inviteLink =
     new URL(window.location.href).origin + `/join/${party?.party_id}`;
-  useEffect(() => {
-    console.log(party);
-  }, [party]);
+
   gameSocket.onpartypresence = (presence) => {
     console.log('onPartyPresence', presence);
     presence.joins &&

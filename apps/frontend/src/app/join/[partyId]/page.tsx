@@ -5,13 +5,16 @@ import { PlayerInfo } from '../../../components/modals/lobby';
 import { useEffect, useState } from 'react';
 import { gameSocket } from '@core/game-client';
 import { toast } from 'sonner';
+import { useAppSelector } from '../../../hooks/use-redux-typed';
+import { SocketState } from '../../../store/features/socketSlice';
 
 export default function Page({ params }: { params: { partyId: string } }) {
   const [isOpen, setIsOpen] = useState(true);
+  const socketState = useAppSelector((state) => state.socket);
   const partyId = params.partyId;
   useEffect(() => {
     (async () => {
-      if (partyId) {
+      if (partyId && socketState === SocketState.CONNECTED) {
         try {
           await gameSocket.joinParty(partyId);
         } catch (e) {
@@ -20,7 +23,7 @@ export default function Page({ params }: { params: { partyId: string } }) {
         }
       }
     })();
-  }, [partyId]);
+  }, [partyId, socketState]);
 
   return (
     <BaseModal isOpen={isOpen} onClose={() => setIsOpen(false)}>
