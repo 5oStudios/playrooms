@@ -1,16 +1,26 @@
 'use client';
-import { useParty } from '../../../hooks/use-party';
 import BaseModal from '../../../components/modals/base.modal';
 import { ModalContent } from '@nextui-org/react';
 import { PlayerInfo } from '../../../components/modals/lobby';
-import { useState } from 'react';
-import { usePlayer } from '../../../hooks/use-player';
+import { useEffect, useState } from 'react';
+import { gameSocket } from '@core/game-client';
+import { toast } from 'sonner';
 
 export default function Page({ params }: { params: { partyId: string } }) {
   const [isOpen, setIsOpen] = useState(true);
   const partyId = params.partyId;
-  const { joinParty, party } = useParty();
-  const { session } = usePlayer();
+  useEffect(() => {
+    (async () => {
+      if (partyId) {
+        try {
+          await gameSocket.joinParty(partyId);
+        } catch (e) {
+          toast.error('Failed to join party');
+          console.error(e);
+        }
+      }
+    })();
+  }, [partyId]);
 
   return (
     <BaseModal isOpen={isOpen} onClose={() => setIsOpen(false)}>

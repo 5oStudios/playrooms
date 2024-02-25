@@ -6,25 +6,6 @@ export const useParty = () => {
   const { session } = usePlayer();
   const dispatch = useAppDispatch();
   const party = useAppSelector((state) => state.party);
-  // gameClient.socket.onpartypresence = (presence) => {
-  //   presence.joins &&
-  //     presence.joins.forEach((join) => {
-  //       toast.success(`${join.username} joined the party`);
-  //       dispatch(setParty({ ...party, presences: [...party.presences, join] }));
-  //     });
-  //   presence.leaves &&
-  //     presence.leaves.forEach((leave) => {
-  //       toast.error(`${leave.username} left the party`);
-  //       dispatch(
-  //         setParty({
-  //           ...party,
-  //           presences: party.presences.filter(
-  //             (p) => p.session_id !== leave.session_id
-  //           ),
-  //         })
-  //       );
-  //     });
-  // };
 
   // gameClient
   //   .getUsers(

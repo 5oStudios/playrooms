@@ -16,6 +16,7 @@ import { genConfig } from 'react-nice-avatar';
 import { generateUsername } from 'unique-username-generator';
 import { gameSocket } from '@core/game-client';
 import { Party } from '@heroiclabs/nakama-js';
+import { toast } from 'sonner';
 
 const NoSSRAvatar = dynamic(() => import('react-nice-avatar'), {
   ssr: false,
@@ -67,6 +68,17 @@ export default function Lobby() {
   useEffect(() => {
     console.log(party);
   }, [party]);
+  gameSocket.onpartypresence = (presence) => {
+    console.log('onPartyPresence', presence);
+    presence.joins &&
+      presence.joins.forEach((join) => {
+        toast.success(`${join.username} joined the party`);
+      });
+    presence.leaves &&
+      presence.leaves.forEach((leave) => {
+        toast.error(`${leave.username} left the party`);
+      });
+  };
 
   return (
     <>
