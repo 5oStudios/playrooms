@@ -1,116 +1,74 @@
-'use client';
 import React from 'react';
-import {
-  Button,
-  Input,
-  Modal,
-  ModalContent,
-  useDisclosure,
-} from '@nextui-org/react';
-import dynamic from 'next/dynamic';
-import QRCode from 'react-qr-code';
-import BaseModal from './base.modal';
+import { Users } from '@heroiclabs/nakama-js';
 import { useAppSelector } from '../../hooks/use-redux-typed';
-import { setUsername } from '../../store/features/playerSlice';
-import { genConfig } from 'react-nice-avatar';
-import { gameSocket } from '@core/game-client';
-import { Party } from '@heroiclabs/nakama-js';
+import { gameClient, gameSocket } from '@core/game-client';
 import { toast } from 'sonner';
+import BaseModal from './base.modal';
+import { Divider, ModalContent } from '@nextui-org/react';
+import { genConfig } from 'react-nice-avatar';
 
-const NoSSRAvatar = dynamic(() => import('react-nice-avatar'), {
-  ssr: false,
-});
+export default function Lobby({ partyId }: { partyId: string }) {
+  const [partyMembers, setPartyMembers] = React.useState<Users['users']>([]);
+  const session = useAppSelector((state) => state.session);
 
-export const PlayerInfo = () => {
-  const user = useAppSelector((state) => state.user);
-
-  if (user)
-    return (
-      <>
-        <NoSSRAvatar className={'w-44 h-44'} {...genConfig(user.avatar_url)} />
-        <Input
-          className={'w-full'}
-          value={user.username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-      </>
-    );
-  else return <>loading...</>;
-};
-
-export default function Lobby() {
-  const { isOpen, onOpen, onClose } = useDisclosure({
-    isOpen: true,
-  });
-  const [invModal, setInvModal] = React.useState(false);
-  const [party, setParty] = React.useState<Party>(null);
-
-  const handleJoinOnline = async () => {
-    await gameSocket.joinParty('test');
-  };
-  const handleInvite = async () => {
-    gameSocket.createParty(true, 4).then(setParty);
-    setInvModal(true);
-  };
-  const inviteLink =
-    new URL(window.location.href).origin + `/join/${party?.party_id}`;
-
-  gameSocket.onpartypresence = (presence) => {
-    console.log('onPartyPresence', presence);
-    presence.joins &&
-      presence.joins.forEach((join) => {
-        toast.success(`${join.username} joined the party`);
+  gameSocket.onpartypresence = async (presence) => {
+    if (presence.joins) {
+      const { users } = await gameClient.getUsers(
+        session,
+        presence.joins.map((join) => join.user_id)
+      );
+      if (
+        partyMembers.some((member) =>
+          users.some((user) => user.id === member.id)
+        )
+      )
+        return;
+      setPartyMembers((prevState) => [...prevState, ...users]);
+      users.forEach((user) => {
+        toast.success(`${user.username} joined the party`);
       });
-    presence.leaves &&
-      presence.leaves.forEach((leave) => {
-        toast.error(`${leave.username} left the party`);
+    }
+
+    if (presence.leaves) {
+      const leftUsers = await gameClient.getUsers(
+        session,
+        presence.leaves.map((leave) => leave.user_id)
+      );
+      setPartyMembers((prevState) =>
+        prevState.filter(
+          (user) => !leftUsers.users.some((u) => u.id === user.id)
+        )
+      );
+      leftUsers.users.forEach((user) => {
+        toast.error(`${user.username} left the party`);
       });
+    }
   };
 
   return (
     <>
-      <BaseModal isOpen={isOpen} onClose={onClose}>
+      {/* eslint-disable-next-line @typescript-eslint/no-empty-function */}
+      <BaseModal isOpen={true} onClose={() => {}}>
         <ModalContent className={'gap-3'}>
           <PlayerInfo />
-          <Button onClick={handleJoinOnline} size={'lg'} className={'w-full'}>
-            Join Online
-          </Button>
-          <div className={'flex flex-row w-full gap-3'}>
-            <Button className={'w-2/3'}>Private</Button>
-            <Button onClick={handleInvite} className={'flex-1'}>
-              Invite
-            </Button>
-          </div>
+          <GameModeButtons />
+
+          {partyMembers.length > 0 && (
+            <div className={'w-full'}>
+              <Divider className={'my-4'} />
+              <div className={'flex flex-row gap-3 justify-start'}>
+                {partyMembers.map((member) => (
+                  <NoSSRAvatar
+                    key={member.id}
+                    className={'w-12 h-12'}
+                    {...genConfig(member.avatar_url)}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
         </ModalContent>
       </BaseModal>
-
-      {/* inv modal */}
-      <Modal
-        backdrop={'blur'}
-        placement={'center'}
-        isOpen={invModal}
-        onClose={() => setInvModal(false)}
-        size={'xs'}
-        className={'flex justify-center items-center p-4 m-4'}
-      >
-        <ModalContent className={'gap-3'}>
-          <QRCode
-            size={128}
-            style={{ height: 'auto', maxWidth: '100%', width: '100%' }}
-            value={inviteLink}
-            viewBox={`0 0 256 256`}
-          />
-          <Button
-            onClick={async () => {
-              await navigator.clipboard.writeText(inviteLink);
-              setInvModal(false);
-            }}
-            className={'w-full'}
-          >
-            Copy Link
-          </Button>
-        </ModalContent>
-      </Modal>
     </>
   );
 }

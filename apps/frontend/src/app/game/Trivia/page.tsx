@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import { useAppSelector } from '../../../hooks/use-redux-typed';
-import Lobby from '../../../components/modals/lobby';
+import CreateLobby from '../../../components/modals/create-lobby';
 
 export default function Index() {
   const session = useAppSelector((state) => state.session);
@@ -16,7 +16,7 @@ export default function Index() {
 
   return (
     <div className="flex justify-center items-center">
-      <Lobby />
+      <CreateLobby />
       {/*<PlayerInfo />*/}
 
       {/*<Nakama />*/}

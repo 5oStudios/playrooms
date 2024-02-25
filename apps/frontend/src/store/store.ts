@@ -8,12 +8,13 @@ import {
 } from '@core/game-client';
 import platformSlice from './features/platformSlice';
 import socketSlice from './features/socketSlice';
+import partySlice from './features/partySlice';
 
 export const store = configureStore({
   reducer: {
     platform: platformSlice,
     // player: playerSlice,
-    // party: partySlice,
+    party: partySlice,
 
     session: sessionSlice,
     user: userSlice,

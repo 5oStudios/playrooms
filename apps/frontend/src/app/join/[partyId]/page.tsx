@@ -1,7 +1,5 @@
 'use client';
-import BaseModal from '../../../components/modals/base.modal';
-import { ModalContent } from '@nextui-org/react';
-import { PlayerInfo } from '../../../components/modals/lobby';
+import { PlayerInfo } from '../../../components/modals/create-lobby';
 import { useEffect, useState } from 'react';
 import { gameSocket } from '@core/game-client';
 import { toast } from 'sonner';
@@ -25,11 +23,17 @@ export default function Page({ params }: { params: { partyId: string } }) {
     })();
   }, [partyId, socketState]);
 
-  return (
-    <BaseModal isOpen={isOpen} onClose={() => setIsOpen(false)}>
-      <ModalContent className={'gap-3'}>
-        <PlayerInfo />
-      </ModalContent>
-    </BaseModal>
-  );
+  gameSocket.onpartypresence = (presence) => {
+    console.log('onPartyPresence', presence);
+    presence.joins &&
+      presence.joins.forEach((join) => {
+        toast.success(`${join.username} joined the party`);
+      });
+    presence.leaves &&
+      presence.leaves.forEach((leave) => {
+        toast.error(`${leave.username} left the party`);
+      });
+  };
+
+  return <PlayerInfo />;
 }
