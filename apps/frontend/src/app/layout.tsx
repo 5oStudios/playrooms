@@ -19,7 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark bg-primary-900">
       <body className="relative">
-        <Toaster />;
+        <Toaster />
         <Providers>
           <Socket />
           <Navbar />

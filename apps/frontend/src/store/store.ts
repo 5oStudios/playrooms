@@ -6,10 +6,11 @@ import {
   LOCAL_STORAGE_AUTH_KEY,
   LOCAL_STORAGE_REFRESH_KEY,
 } from '@core/game-client';
+import platformSlice from './features/platformSlice';
 
 export const store = configureStore({
   reducer: {
-    // platform: platformSlice,
+    platform: platformSlice,
     // player: playerSlice,
     // party: partySlice,
 

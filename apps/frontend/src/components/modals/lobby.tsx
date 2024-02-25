@@ -13,7 +13,6 @@ import BaseModal from './base.modal';
 import { useAppSelector } from '../../hooks/use-redux-typed';
 import { setUsername } from '../../store/features/playerSlice';
 import { genConfig } from 'react-nice-avatar';
-import { generateUsername } from 'unique-username-generator';
 import { gameSocket } from '@core/game-client';
 import { Party } from '@heroiclabs/nakama-js';
 import { toast } from 'sonner';
@@ -22,30 +21,21 @@ const NoSSRAvatar = dynamic(() => import('react-nice-avatar'), {
   ssr: false,
 });
 
-const generatedUsername = generateUsername('', 0, 8, '');
-const generatedAvatarConfig = JSON.stringify(genConfig());
-const parsedAvatarConfig = JSON.parse(generatedAvatarConfig);
-
 export const PlayerInfo = () => {
   const user = useAppSelector((state) => state.user);
 
-  if (!user)
+  if (user)
     return (
-      <div>
-        <p>loading...</p>
-      </div>
+      <>
+        <NoSSRAvatar className={'w-44 h-44'} {...genConfig(user.avatar_url)} />
+        <Input
+          className={'w-full'}
+          value={user.username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+      </>
     );
-
-  return (
-    <>
-      <NoSSRAvatar className={'w-44 h-44'} {...genConfig(user.avatar_url)} />
-      <Input
-        className={'w-full'}
-        value={user.username}
-        onChange={(e) => setUsername(e.target.value)}
-      />
-    </>
-  );
+  else return <>loading...</>;
 };
 
 export default function Lobby() {
@@ -53,7 +43,6 @@ export default function Lobby() {
     isOpen: true,
   });
   const [invModal, setInvModal] = React.useState(false);
-  const session = useAppSelector((state) => state.session);
   const [party, setParty] = React.useState<Party>(null);
 
   const handleJoinOnline = async () => {
