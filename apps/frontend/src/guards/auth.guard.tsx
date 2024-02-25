@@ -1,18 +1,20 @@
 'use client';
 import { ReactNode } from 'react';
-import { LOCAL_STORAGE_SESSION_KEY } from '@core/game-client';
-import { useAppDispatch, useAppSelector } from '../hooks/use-redux-typed';
-import { setSession } from '../store/features/playerSlice';
+import {
+  LOCAL_STORAGE_AUTH_KEY,
+  LOCAL_STORAGE_REFRESH_KEY,
+} from '@core/game-client';
+import { Session } from '@heroiclabs/nakama-js';
+import { store } from '../store/store';
+import { setSession } from '../store/features/sessionSlice';
+
+const auth = localStorage.getItem(LOCAL_STORAGE_AUTH_KEY);
+const refresh = localStorage.getItem(LOCAL_STORAGE_REFRESH_KEY);
 
 export function AuthGuard({ children }: Readonly<{ children: ReactNode }>) {
-  const auth = useAppSelector((state) => state.auth);
-  const dispatch = useAppDispatch();
+  if (auth && refresh) {
+    store.dispatch(setSession(Session.restore(auth, refresh)));
+  }
 
-  if (auth.session) return <>{children}</>;
-
-  const session = localStorage.getItem(LOCAL_STORAGE_SESSION_KEY);
-  if (session) dispatch(setSession(JSON.parse(session)));
-
-  // TODO: goto login page
   return <>{children}</>;
 }

@@ -1,18 +1,10 @@
 'use client';
-import { createSlice, PayloadAction, ThunkAction } from '@reduxjs/toolkit';
-import { RootState } from '../store';
-import {
-  gameClient,
-  LOCAL_STORAGE_SESSION_KEY,
-  PlayerSession,
-} from '@core/game-client';
-import { generateUsername } from 'unique-username-generator';
-import { genConfig } from 'react-nice-avatar';
-
-interface PlayerState {
-  session: PlayerSession | null;
-  error: string | null;
-}
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { Session } from '@heroiclabs/nakama-js';
+// interface PlayerState {
+//   session: PlayerSession | null;
+//   error: string | null;
+// }
 //
 // const initialState: AuthState = {
 //   session: (async () => {
@@ -33,28 +25,26 @@ interface PlayerState {
 //   })(),
 //   error: null,
 // };
-const generatedUsername = generateUsername('', 0, 8, '');
-const generatedAvatarConfig = JSON.stringify(genConfig());
 
-const initSession: PlayerSession = JSON.parse(
-  localStorage.getItem(LOCAL_STORAGE_SESSION_KEY)
-) || {
-  username: generatedUsername,
-  vars: {
-    avatarConfig: generatedAvatarConfig,
-    avatarUrl: null,
-  },
-};
-const initialState: PlayerState = {
-  session: initSession,
-  error: null,
-};
+// const initSession: PlayerSession = JSON.parse(
+//   localStorage.getItem(LOCAL_STORAGE_SESSION_KEY)
+// ) || {
+//   username: generatedUsername,
+//   vars: {
+//     avatarConfig: generatedAvatarConfig,
+//     avatarUrl: null,
+//   },
+// };
+// const initialState: PlayerState = {
+//   session: initSession,
+//   error: null,
+// };
 
 const playerSlice = createSlice({
   name: 'player',
-  initialState,
+  initialState: null,
   reducers: {
-    setSession(state, action: PayloadAction<PlayerSession>) {
+    setSession(state, action: PayloadAction<Session>) {
       state.session = action.payload;
     },
     setError(state, action: PayloadAction<string>) {
@@ -74,23 +64,23 @@ export const { setSession, setError, setUsername, setAvatarConfig } =
   playerSlice.actions;
 
 // Thunks for async actions
-export const authenticateDevice =
-  ({
-    username,
-    vars,
-  }: {
-    username: string;
-    vars?: Record<string, string>;
-  }): ThunkAction<void, RootState, any, any> =>
-  async (dispatch, action) => {
-    try {
-      const session = await gameClient.authenticateDevice({
-        username,
-        vars,
-      });
-      console.log('Authenticated device:', session);
-      dispatch(setSession(session));
-    } catch (error) {
-      console.error('Failed to authenticate device:', error);
-    }
-  };
+// export const authenticateDevice =
+//   ({
+//     username,
+//     vars,
+//   }: {
+//     username: string;
+//     vars?: Record<string, string>;
+//   }): ThunkAction<void, RootState, any, any> =>
+//   async (dispatch, action) => {
+//     try {
+//       const session = await gameClient.authenticateDevice({
+//         username,
+//         vars,
+//       });
+//       console.log('Authenticated device:', session);
+//       dispatch(setSession(session));
+//     } catch (error) {
+//       console.error('Failed to authenticate device:', error);
+//     }
+//   };

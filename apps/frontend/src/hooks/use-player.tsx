@@ -6,6 +6,7 @@ export const usePlayer = () => {
 
   return {
     username: useAppSelector((state) => state.player.session.username),
+    session: useAppSelector((state) => state.player.session),
     avatarConfig: useAppSelector(
       (state) => state.player.session.vars.avatarConfig
     ),

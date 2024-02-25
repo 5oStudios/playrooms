@@ -40,7 +40,7 @@ export const createParty =
       return;
     }
     try {
-      const party = await gameClient.createParty(open, maxPlayers);
+      const party = await gameClient.socket.createParty(open, maxPlayers);
       dispatch(setParty(party));
     } catch (error) {
       console.error('Failed to create party:', error);
@@ -51,7 +51,7 @@ export const joinParty =
   (partyId: string): ThunkAction<void, RootState, any, any> =>
   async (dispatch, getState) => {
     try {
-      const party = await gameClient.joinParty(partyId);
+      const party = await gameClient.socket.joinParty(partyId);
       dispatch(setParty(party));
     } catch (error) {
       console.error('Failed to join party:', error);

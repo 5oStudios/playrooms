@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Button,
   Input,
@@ -9,18 +9,25 @@ import {
 } from '@nextui-org/react';
 import dynamic from 'next/dynamic';
 import { genConfig } from 'react-nice-avatar';
-import { usePlayer } from '../../hooks/use-player';
-import { useAuth } from '../../hooks/use-auth';
 import { useParty } from '../../hooks/use-party';
 import QRCode from 'react-qr-code';
 import BaseModal from './base.modal';
+import { generateUsername } from 'unique-username-generator';
 
 const NoSSRAvatar = dynamic(() => import('react-nice-avatar'), {
   ssr: false,
 });
+
+const generatedUsername = generateUsername('', 0, 8, '');
+const generatedAvatarConfig = JSON.stringify(genConfig());
+
 export const PlayerInfo = () => {
-  useAuth();
-  const { username, avatarConfig, setUsername } = usePlayer();
+  // useAuth();
+  // const { username, avatarConfig, setUsername } = usePlayer();
+
+  const username = generatedUsername;
+  const avatarConfig = generatedAvatarConfig;
+
   const parsedAvatarConfig = JSON.parse(avatarConfig);
   return (
     <>
@@ -28,7 +35,7 @@ export const PlayerInfo = () => {
       <Input
         className={'w-full'}
         value={username}
-        onChange={(e) => setUsername(e.target.value)}
+        // onChange={(e) => setUsername(e.target.value)}
       />
     </>
   );
@@ -39,16 +46,18 @@ export default function Lobby() {
     isOpen: true,
   });
   const [invModal, setInvModal] = React.useState(false);
+  // const { session } = usePlayer();
   const { party, createParty } = useParty();
-
   const handleJoinOnline = () => createParty({ open: true, maxPlayers: 4 });
   const handleInvite = () => {
     createParty({ open: true, maxPlayers: 4 });
     setInvModal(true);
   };
-
   const inviteLink =
     new URL(window.location.href).origin + `/join/${party.party_id}`;
+  useEffect(() => {
+    console.log(party);
+  }, [party]);
 
   return (
     <>
