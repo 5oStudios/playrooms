@@ -8,6 +8,7 @@ import { setUsername } from '../../store/features/playerSlice';
 import { genConfig } from 'react-nice-avatar';
 import { gameSocket } from '@core/game-client';
 import { setParty } from '../../store/features/partySlice';
+import { useRouter } from 'next/navigation';
 
 export const NoSSRAvatar = dynamic(() => import('react-nice-avatar'), {
   ssr: false,
@@ -36,21 +37,21 @@ export const GameModeButtons = () => {
   const [isInvLoading, setIsInvLoading] = React.useState(false);
 
   const party = useAppSelector((state) => state.party.data);
+  const router = useRouter();
   const handleJoinOnline = async () => {
     await gameSocket.joinParty('test');
   };
   const handleInvite = async () => {
     setIsInvLoading(true);
     const party = await gameSocket.createParty(true, 4);
-
     dispatch(setParty(party));
+    // router.replace(`/join/${party?.party_id}`);
+
     setIsInvLoading(false);
     setInvModal(true);
   };
   const inviteLink =
     new URL(window.location.href).origin + `/join/${party?.party_id ?? ''}`;
-  console.log('inviteLink', inviteLink);
-  console.log('party', party);
 
   return (
     <>

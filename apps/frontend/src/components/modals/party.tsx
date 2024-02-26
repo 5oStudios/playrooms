@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Users } from '@heroiclabs/nakama-js';
 import { useAppDispatch, useAppSelector } from '../../hooks/use-redux-typed';
 import { gameClient, gameSocket } from '@core/game-client';
@@ -50,7 +50,8 @@ export default function Party() {
     }
   };
 
-  const isPartyLeader = partyLeader?.id === session.user_id;
+  console.log('partyLeader', partyLeader);
+  const isPartyLeader = party?.leader.user_id === session.user_id;
 
   return (
     <>
@@ -58,24 +59,33 @@ export default function Party() {
       <BaseModal isOpen={true} onClose={() => {}}>
         <ModalContent className={'gap-3'}>
           <PlayerInfo />
-          {isPartyLeader ? (
+          {isPartyLeader || !party ? (
             <GameModeButtons />
           ) : (
             <Button className={'w-full'}>Leave Party</Button>
           )}
+          <PartyMembers />
         </ModalContent>
       </BaseModal>
     </>
   );
 }
 
-const PartyMembers = async () => {
+const PartyMembers = () => {
   const party = useAppSelector((state) => state.party.data);
   const session = useAppSelector((state) => state.session);
-  const { users: partyMembersAccount } = await gameClient.getUsers(
-    session,
-    party.presences.map((presence) => presence.user_id)
-  );
+  const [partyMembersAccount, setPartyMembersAccount] = useState<
+    Users['users']
+  >([]);
+  if (!session || !party) return null;
+  gameClient
+    .getUsers(
+      session,
+      party.presences.map((presence) => presence.user_id)
+    )
+    .then(({ users }) => {
+      setPartyMembersAccount(users);
+    });
   return (
     party &&
     party.presences.length > 0 && (
