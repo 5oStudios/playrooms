@@ -12,40 +12,58 @@ import { nanoid } from 'nanoid';
 import { generateUsername } from 'unique-username-generator';
 import { genConfig } from 'react-nice-avatar';
 
-const auth = localStorage.getItem(LOCAL_STORAGE_AUTH_KEY);
-const refresh = localStorage.getItem(LOCAL_STORAGE_REFRESH_KEY);
 const generatedUsername = generateUsername('', 0, 8, '');
 const generatedAvatarConfig = JSON.stringify(genConfig());
-const parsedAvatarConfig = JSON.parse(generatedAvatarConfig);
+
+enum SessionState {
+  TOKEN_EXPIRED,
+  REFRESH_EXPIRED,
+  VALID,
+  UNAVAILABLE,
+}
+
+const auth = localStorage.getItem(LOCAL_STORAGE_AUTH_KEY);
+const refresh = localStorage.getItem(LOCAL_STORAGE_REFRESH_KEY);
+const session = (auth && refresh && Session.restore(auth, refresh)) || null;
+
+const sessionState = ((session: Session) => {
+  if (!session) return SessionState.UNAVAILABLE;
+  if (session.isrefreshexpired(Date.now() / 1000))
+    return SessionState.REFRESH_EXPIRED;
+  if (session.isexpired(Date.now() / 1000)) return SessionState.TOKEN_EXPIRED;
+
+  return SessionState.VALID;
+})(session);
 
 export function AuthGuard({ children }: Readonly<{ children: ReactNode }>) {
-  // const user = useAppSelector((state) => state.user);
-  // if (auth && refresh) {
-  //   store.dispatch(setSession(Session.restore(auth, refresh)));
-  // }
-  // else {
-  //   const session = await gameClient.authenticateDevice(nanoid(16), true, user.username);
-  //   store.dispatch(setSession(session));
-  // }
-  // useEffect(() => {
-  if (!auth || !refresh) {
-    console.log('Authenticating device...');
-    (async () => {
-      const session = await gameClient.authenticateDevice(
-        nanoid(16),
-        true,
-        generatedUsername
-      );
-      await gameClient.updateAccount(session, {
-        avatar_url: generatedAvatarConfig,
+  switch (sessionState) {
+    case SessionState.TOKEN_EXPIRED:
+      console.log('Auth Token expired');
+      gameClient.sessionRefresh(session).then((session) => {
+        store.dispatch(setSession(session));
       });
+      break;
+    case SessionState.VALID:
+      console.log('Session is valid');
       store.dispatch(setSession(session));
-    })();
-  } else {
-    console.log('Restoring session...');
-    store.dispatch(setSession(Session.restore(auth, refresh)));
+      break;
+    case SessionState.REFRESH_EXPIRED:
+    case SessionState.UNAVAILABLE:
+      console.log('Session unavailable or refresh expired');
+      console.log('Authenticating device...');
+      (async () => {
+        const session = await gameClient.authenticateDevice(
+          nanoid(16),
+          true,
+          generatedUsername
+        );
+        await gameClient.updateAccount(session, {
+          avatar_url: generatedAvatarConfig,
+        });
+        store.dispatch(setSession(session));
+      })();
+      break;
   }
-  // }, [user]);
 
   return <>{children}</>;
 }

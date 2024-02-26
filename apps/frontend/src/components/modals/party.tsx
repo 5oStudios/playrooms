@@ -16,6 +16,7 @@ export default function Party() {
   const [partyLeader, setPartyLeader] = React.useState<Users['users'][0]>();
   const session = useAppSelector((state) => state.session);
   const dispatch = useAppDispatch();
+  if (!session) return null;
 
   gameSocket.onparty = async (party) => {
     dispatch(setParty(party));
@@ -49,7 +50,7 @@ export default function Party() {
     }
   };
 
-  const isPartyLeader = partyLeader?.id === session.userId;
+  const isPartyLeader = partyLeader?.id === session.user_id;
 
   return (
     <>
@@ -62,23 +63,34 @@ export default function Party() {
           ) : (
             <Button className={'w-full'}>Leave Party</Button>
           )}
-
-          {party && party.presences.length > 0 && (
-            <div className={'w-full'}>
-              <Divider className={'my-4'} />
-              <div className={'flex flex-row gap-3 justify-start'}>
-                {party.presences.map((member) => (
-                  <NoSSRAvatar
-                    key={member.user_id}
-                    className={'w-12 h-12'}
-                    {...genConfig({})}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
         </ModalContent>
       </BaseModal>
     </>
   );
 }
+
+const PartyMembers = async () => {
+  const party = useAppSelector((state) => state.party.data);
+  const session = useAppSelector((state) => state.session);
+  const { users: partyMembersAccount } = await gameClient.getUsers(
+    session,
+    party.presences.map((presence) => presence.user_id)
+  );
+  return (
+    party &&
+    party.presences.length > 0 && (
+      <div className={'w-full'}>
+        <Divider className={'my-4'} />
+        <div className={'flex flex-row gap-3 justify-start'}>
+          {partyMembersAccount.map((member) => (
+            <NoSSRAvatar
+              key={member.id}
+              className={'w-12 h-12'}
+              {...genConfig(member.avatar_url)}
+            />
+          ))}
+        </div>
+      </div>
+    )
+  );
+};

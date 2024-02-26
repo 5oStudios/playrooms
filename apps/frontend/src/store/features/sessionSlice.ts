@@ -16,9 +16,11 @@ import { Session } from '@heroiclabs/nakama-js';
 // const initialState: Session | null =
 //   auth && refresh ? Session.restore(auth, refresh) : null;
 
+const initialState: Session | null = null;
+
 const sessionSlice = createSlice({
   name: 'session',
-  initialState: null,
+  initialState,
   reducers: {
     setSession(state, action: PayloadAction<Session>) {
       return action.payload;
