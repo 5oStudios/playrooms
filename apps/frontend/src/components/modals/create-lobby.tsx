@@ -12,7 +12,7 @@ import { Users } from '@heroiclabs/nakama-js';
 import { toast } from 'sonner';
 import { setParty } from '../../store/features/partySlice';
 
-const NoSSRAvatar = dynamic(() => import('react-nice-avatar'), {
+export const NoSSRAvatar = dynamic(() => import('react-nice-avatar'), {
   ssr: false,
 });
 

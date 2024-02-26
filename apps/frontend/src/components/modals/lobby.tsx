@@ -6,10 +6,21 @@ import { toast } from 'sonner';
 import BaseModal from './base.modal';
 import { Divider, ModalContent } from '@nextui-org/react';
 import { genConfig } from 'react-nice-avatar';
+import { GameModeButtons, NoSSRAvatar, PlayerInfo } from './create-lobby';
 
 export default function Lobby({ partyId }: { partyId: string }) {
   const [partyMembers, setPartyMembers] = React.useState<Users['users']>([]);
   const session = useAppSelector((state) => state.session);
+
+  gameSocket.onparty = async (party) => {
+    if (party.party_id === partyId) {
+      const { users } = await gameClient.getUsers(
+        session,
+        party.presences.map((presence) => presence.user_id)
+      );
+      setPartyMembers(users);
+    }
+  };
 
   gameSocket.onpartypresence = async (presence) => {
     if (presence.joins) {

@@ -1,10 +1,10 @@
 'use client';
-import { PlayerInfo } from '../../../components/modals/create-lobby';
 import { useEffect, useState } from 'react';
 import { gameSocket } from '@core/game-client';
 import { toast } from 'sonner';
 import { useAppSelector } from '../../../hooks/use-redux-typed';
 import { SocketState } from '../../../store/features/socketSlice';
+import Lobby from '../../../components/modals/lobby';
 
 export default function Page({ params }: { params: { partyId: string } }) {
   const [isOpen, setIsOpen] = useState(true);
@@ -35,5 +35,6 @@ export default function Page({ params }: { params: { partyId: string } }) {
       });
   };
 
-  return <PlayerInfo />;
+  // return <PlayerInfo />;
+  return <Lobby partyId={partyId} />;
 }
