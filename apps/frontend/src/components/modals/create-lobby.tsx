@@ -1,15 +1,12 @@
 'use client';
 import React from 'react';
-import { Button, Divider, Input, Modal, ModalContent } from '@nextui-org/react';
+import { Button, Input, Modal, ModalContent } from '@nextui-org/react';
 import dynamic from 'next/dynamic';
 import QRCode from 'react-qr-code';
-import BaseModal from './base.modal';
 import { useAppDispatch, useAppSelector } from '../../hooks/use-redux-typed';
 import { setUsername } from '../../store/features/playerSlice';
 import { genConfig } from 'react-nice-avatar';
-import { gameClient, gameSocket } from '@core/game-client';
-import { Users } from '@heroiclabs/nakama-js';
-import { toast } from 'sonner';
+import { gameSocket } from '@core/game-client';
 import { setParty } from '../../store/features/partySlice';
 
 export const NoSSRAvatar = dynamic(() => import('react-nice-avatar'), {
@@ -38,7 +35,7 @@ export const GameModeButtons = () => {
   const dispatch = useAppDispatch();
   const [isInvLoading, setIsInvLoading] = React.useState(false);
 
-  const party = useAppSelector((state) => state.party);
+  const party = useAppSelector((state) => state.party.data);
   const handleJoinOnline = async () => {
     await gameSocket.joinParty('test');
   };
@@ -51,7 +48,9 @@ export const GameModeButtons = () => {
     setInvModal(true);
   };
   const inviteLink =
-    new URL(window.location.href).origin + `/join/${party?.party_id}`;
+    new URL(window.location.href).origin + `/join/${party?.party_id ?? ''}`;
+  console.log('inviteLink', inviteLink);
+  console.log('party', party);
 
   return (
     <>
@@ -98,72 +97,3 @@ export const GameModeButtons = () => {
     </>
   );
 };
-
-export default function CreateLobby() {
-  const [partyMembers, setPartyMembers] = React.useState<Users['users']>([]);
-  const session = useAppSelector((state) => state.session);
-
-  gameSocket.onpartypresence = async (presence) => {
-    if (presence.joins) {
-      const { users } = await gameClient.getUsers(
-        session,
-        presence.joins.map((join) => join.user_id)
-      );
-      if (
-        partyMembers.some((member) =>
-          users.some((user) => user.id === member.id)
-        )
-      )
-        return;
-      setPartyMembers((prevState) => [...prevState, ...users]);
-      users.forEach((user) => {
-        toast.success(`${user.username} joined the party`);
-      });
-    }
-    gameSocket.onparty = async (party) => {
-      console.log('onParty', party);
-    };
-
-    if (presence.leaves) {
-      const leftUsers = await gameClient.getUsers(
-        session,
-        presence.leaves.map((leave) => leave.user_id)
-      );
-      setPartyMembers((prevState) =>
-        prevState.filter(
-          (user) => !leftUsers.users.some((u) => u.id === user.id)
-        )
-      );
-      leftUsers.users.forEach((user) => {
-        toast.error(`${user.username} left the party`);
-      });
-    }
-  };
-
-  return (
-    <>
-      {/* eslint-disable-next-line @typescript-eslint/no-empty-function */}
-      <BaseModal isOpen={true} onClose={() => {}}>
-        <ModalContent className={'gap-3'}>
-          <PlayerInfo />
-          <GameModeButtons />
-
-          {partyMembers.length > 0 && (
-            <div className={'w-full'}>
-              <Divider className={'my-4'} />
-              <div className={'flex flex-row gap-3 justify-start'}>
-                {partyMembers.map((member) => (
-                  <NoSSRAvatar
-                    key={member.id}
-                    className={'w-12 h-12'}
-                    {...genConfig(member.avatar_url)}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-        </ModalContent>
-      </BaseModal>
-    </>
-  );
-}

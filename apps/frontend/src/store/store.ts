@@ -39,6 +39,32 @@ store.subscribe(() => {
   }
 });
 
+// store.subscribe(() => {
+//   if (!store.getState().party.data) return;
+//
+//   const partyMembers = store.getState().party.data.presences;
+//   const partyMembersAccount = store.getState().party.membersAccount;
+//
+//   if (partyMembers.length === 0) return;
+//   if (partyMembersAccount.users.length === partyMembers.length) return;
+//
+//   gameClient
+//     .getUsers(
+//       store.getState().session,
+//       partyMembers.map((presence) => presence.user_id)
+//     )
+//     .then((res) => {
+//       if (res.users.length === partyMembers.length) {
+//         store.dispatch(setMembersAccount(res));
+//       }
+//     })
+//
+//     .catch((err) => {
+//       console.error(err);
+//       return [];
+//     });
+// });
+
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 export type AppStore = typeof store;

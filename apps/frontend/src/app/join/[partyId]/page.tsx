@@ -4,7 +4,7 @@ import { gameSocket } from '@core/game-client';
 import { toast } from 'sonner';
 import { useAppSelector } from '../../../hooks/use-redux-typed';
 import { SocketState } from '../../../store/features/socketSlice';
-import Lobby from '../../../components/modals/lobby';
+import Party from '../../../components/modals/party';
 
 export default function Page({ params }: { params: { partyId: string } }) {
   const [isOpen, setIsOpen] = useState(true);
@@ -36,5 +36,5 @@ export default function Page({ params }: { params: { partyId: string } }) {
   };
 
   // return <PlayerInfo />;
-  return <Lobby partyId={partyId} />;
+  return <Party />;
 }
