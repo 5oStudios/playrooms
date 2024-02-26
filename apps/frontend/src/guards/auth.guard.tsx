@@ -1,5 +1,5 @@
 'use client';
-import { ReactNode, useEffect } from 'react';
+import { ReactNode } from 'react';
 import {
   gameClient,
   LOCAL_STORAGE_AUTH_KEY,
@@ -8,7 +8,6 @@ import {
 import { Session } from '@heroiclabs/nakama-js';
 import { store } from '../store/store';
 import { setSession } from '../store/features/sessionSlice';
-import { useAppSelector } from '../hooks/use-redux-typed';
 import { nanoid } from 'nanoid';
 import { generateUsername } from 'unique-username-generator';
 import { genConfig } from 'react-nice-avatar';
@@ -20,7 +19,7 @@ const generatedAvatarConfig = JSON.stringify(genConfig());
 const parsedAvatarConfig = JSON.parse(generatedAvatarConfig);
 
 export function AuthGuard({ children }: Readonly<{ children: ReactNode }>) {
-  const user = useAppSelector((state) => state.user);
+  // const user = useAppSelector((state) => state.user);
   // if (auth && refresh) {
   //   store.dispatch(setSession(Session.restore(auth, refresh)));
   // }
@@ -28,25 +27,25 @@ export function AuthGuard({ children }: Readonly<{ children: ReactNode }>) {
   //   const session = await gameClient.authenticateDevice(nanoid(16), true, user.username);
   //   store.dispatch(setSession(session));
   // }
-  useEffect(() => {
-    if (!auth || !refresh) {
-      console.log('Authenticating device...');
-      (async () => {
-        const session = await gameClient.authenticateDevice(
-          nanoid(16),
-          true,
-          generatedUsername
-        );
-        await gameClient.updateAccount(session, {
-          avatar_url: generatedAvatarConfig,
-        });
-        store.dispatch(setSession(session));
-      })();
-    } else {
-      console.log('Restoring session...');
-      store.dispatch(setSession(Session.restore(auth, refresh)));
-    }
-  }, [user]);
+  // useEffect(() => {
+  if (!auth || !refresh) {
+    console.log('Authenticating device...');
+    (async () => {
+      const session = await gameClient.authenticateDevice(
+        nanoid(16),
+        true,
+        generatedUsername
+      );
+      await gameClient.updateAccount(session, {
+        avatar_url: generatedAvatarConfig,
+      });
+      store.dispatch(setSession(session));
+    })();
+  } else {
+    console.log('Restoring session...');
+    store.dispatch(setSession(Session.restore(auth, refresh)));
+  }
+  // }, [user]);
 
   return <>{children}</>;
 }
