@@ -10,13 +10,11 @@ import { gameClient, gameSocket } from '@core/game-client';
 import { toast } from 'sonner';
 
 export default function Party() {
-  const party = useAppSelector((state) => state.party.data);
-  const [partyLeader, setPartyLeader] = React.useState<Users['users'][0]>();
+  const party = useAppSelector((state) => state.party);
   const session = useAppSelector((state) => state.session);
   const [inviteModalOpen, setInviteModalOpen] = useState(false);
   if (!session) return null;
 
-  console.log('partyLeader', partyLeader);
   const isPartyLeader = party?.leader?.user_id === session.user_id;
 
   return (
@@ -139,7 +137,7 @@ const InviteToParty = ({
   isOpen: boolean;
   onClose: () => void;
 }) => {
-  const party = useAppSelector((state) => state.party.data);
+  const party = useAppSelector((state) => state.party);
   const inviteLink =
     new URL(window.location.href).origin + `/join/${party?.party_id ?? ''}`;
   return (

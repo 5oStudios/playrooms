@@ -2,7 +2,7 @@
 import React from 'react';
 import { gameSocket } from '@core/game-client';
 import { toast } from 'sonner';
-import { useAppDispatch, useAppSelector } from '../../../hooks/use-redux-typed';
+import { useAppSelector } from '../../../hooks/use-redux-typed';
 import { SocketState } from '../../../store/features/socketSlice';
 import Party from '../../../components/modals/party';
 import { useRouter } from 'next/navigation';
@@ -10,11 +10,6 @@ import PartyPresencesToast from '../../../components/party/party-presences-toast
 
 export default function Page({ params }: { params: { partyId: string } }) {
   const socketState = useAppSelector((state) => state.socket);
-  const session = useAppSelector((state) => state.session);
-  const dispatch = useAppDispatch();
-  const partyMembersAccount = useAppSelector(
-    (state) => state.party.membersAccount
-  );
 
   const partyId = params.partyId;
   const router = useRouter();
