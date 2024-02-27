@@ -1,0 +1,19 @@
+{
+  "name": "game-client",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/game-client/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/game-client",
+        "main": "libs/game-client/src/index.ts",
+        "tsConfig": "libs/game-client/tsconfig.lib.json",
+        "assets": ["libs/game-client/*.md"]
+      }
+    }
+  },
+  "tags": []
+}

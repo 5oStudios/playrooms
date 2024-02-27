@@ -1,9 +1,10 @@
 import './global.css';
-import { Toaster } from 'sonner';
 import { BackgroundBeams } from '../components/ui/background-beams';
 import Navbar from '../components/ui/navbar';
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import { Providers } from './providers';
+import { Toaster } from 'sonner';
+import { Socket } from '../utils/socket';
 
 export const metadata = {
   title: 'Welcome to my game',
@@ -18,8 +19,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark bg-primary-900">
       <body className="relative">
+        <Toaster />
         <Providers>
-          <Toaster />
+          <Socket />
           <Navbar />
           <div
             className="p-4 flex justify-center items-center h-[calc(100vh-64px)]"
