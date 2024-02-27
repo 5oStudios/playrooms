@@ -1,40 +1,41 @@
 'use client';
-import { useEffect, useState } from 'react';
+import React from 'react';
 import { gameSocket } from '@core/game-client';
 import { toast } from 'sonner';
-import { useAppSelector } from '../../../hooks/use-redux-typed';
+import { useAppDispatch, useAppSelector } from '../../../hooks/use-redux-typed';
 import { SocketState } from '../../../store/features/socketSlice';
 import Party from '../../../components/modals/party';
+import { useRouter } from 'next/navigation';
+import PartyPresencesToast from '../../../components/party/party-presences-toast';
 
 export default function Page({ params }: { params: { partyId: string } }) {
-  const [isOpen, setIsOpen] = useState(true);
   const socketState = useAppSelector((state) => state.socket);
-  const partyId = params.partyId;
-  useEffect(() => {
-    (async () => {
-      if (partyId && socketState === SocketState.CONNECTED) {
-        try {
-          await gameSocket.joinParty(partyId);
-        } catch (e) {
-          toast.error('Failed to join party');
-          console.error(e);
-        }
-      }
-    })();
-  }, [partyId, socketState]);
+  const session = useAppSelector((state) => state.session);
+  const dispatch = useAppDispatch();
+  const partyMembersAccount = useAppSelector(
+    (state) => state.party.membersAccount
+  );
 
-  gameSocket.onpartypresence = (presence) => {
-    console.log('onPartyPresence', presence);
-    presence.joins &&
-      presence.joins.forEach((join) => {
-        toast.success(`${join.username} joined the party`);
-      });
-    presence.leaves &&
-      presence.leaves.forEach((leave) => {
-        toast.error(`${leave.username} left the party`);
-      });
-  };
+  const partyId = params.partyId;
+  const router = useRouter();
+
+  (async () => {
+    if (partyId && socketState === SocketState.CONNECTED) {
+      try {
+        await gameSocket.joinParty(partyId);
+      } catch (e) {
+        toast.error('Failed to join party');
+        router.push('/');
+        console.error(e);
+      }
+    }
+  })();
 
   // return <PlayerInfo />;
-  return <Party />;
+  return (
+    <>
+      <Party />
+      <PartyPresencesToast />
+    </>
+  );
 }

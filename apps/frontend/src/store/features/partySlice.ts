@@ -3,10 +3,10 @@ import { Party, Users } from '@heroiclabs/nakama-js';
 
 const initialState: {
   data: Party | null;
-  membersAccount: Users | null;
+  membersAccount: Users['users'] | [];
 } = {
   data: null,
-  membersAccount: null,
+  membersAccount: [],
 };
 
 const partySlice = createSlice({
@@ -16,12 +16,12 @@ const partySlice = createSlice({
     setParty(state, action) {
       state.data = action.payload;
     },
-    setMembersAccount(state, action) {
+    setPartyMembersAccount(state, action) {
       state.membersAccount = action.payload;
     },
   },
 });
 
-export const { setParty, setMembersAccount } = partySlice.actions;
+export const { setParty, setPartyMembersAccount } = partySlice.actions;
 
 export default partySlice.reducer;
