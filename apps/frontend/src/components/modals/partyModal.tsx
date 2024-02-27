@@ -9,7 +9,13 @@ import { NoSSRAvatar, PlayerInfo } from '../players/player-info';
 import { gameClient, gameSocket } from '@core/game-client';
 import { toast } from 'sonner';
 
-export default function Party() {
+export default function PartyModal({
+  isOpen,
+  onClose,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+}) {
   const party = useAppSelector((state) => state.party);
   const session = useAppSelector((state) => state.session);
   const [inviteModalOpen, setInviteModalOpen] = useState(false);
@@ -19,8 +25,7 @@ export default function Party() {
 
   return (
     <>
-      {/* eslint-disable-next-line @typescript-eslint/no-empty-function */}
-      <BaseModal isOpen={true} onClose={() => {}}>
+      <BaseModal isOpen={isOpen} onClose={onClose}>
         <ModalContent className={'gap-3'}>
           <PlayerInfo />
           {isPartyLeader || !party ? (
