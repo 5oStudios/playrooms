@@ -22,8 +22,14 @@ enum SessionState {
   UNAVAILABLE,
 }
 
-const auth = localStorage.getItem(LOCAL_STORAGE_AUTH_KEY);
-const refresh = localStorage.getItem(LOCAL_STORAGE_REFRESH_KEY);
+const auth =
+  typeof window !== 'undefined'
+    ? window.localStorage.getItem(LOCAL_STORAGE_AUTH_KEY)
+    : null;
+const refresh =
+  typeof window !== 'undefined'
+    ? window.localStorage.getItem(LOCAL_STORAGE_REFRESH_KEY)
+    : null;
 const session = (auth && refresh && Session.restore(auth, refresh)) || null;
 
 const sessionState = ((session: Session) => {

@@ -17,6 +17,7 @@ export default function Index() {
   // // }, [session]);
 
   return (
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     <BaseModal isOpen={true} onClose={() => {}}>
       <ModalContent className={'gap-3'}>
         <PlayerInfo />

@@ -4,11 +4,12 @@ import { gameSocket } from '@core/game-client';
 import { toast } from 'sonner';
 import { useAppSelector } from '../../../hooks/use-redux-typed';
 import { SocketState } from '../../../store/features/socketSlice';
-import Party from '../../../components/modals/party';
+import PartyModal from '../../../components/modals/partyModal';
 import { useRouter } from 'next/navigation';
 import PartyPresencesToast from '../../../components/party/party-presences-toast';
 
 export default function Page({ params }: { params: { partyId: string } }) {
+  const [isPartyModalOpen, setIsPartyModalOpen] = React.useState(true);
   const socketState = useAppSelector((state) => state.socket);
 
   const partyId = params.partyId;
@@ -29,7 +30,10 @@ export default function Page({ params }: { params: { partyId: string } }) {
   // return <PlayerInfo />;
   return (
     <>
-      <Party />
+      <PartyModal
+        isOpen={isPartyModalOpen}
+        onClose={() => setIsPartyModalOpen(false)}
+      />
       <PartyPresencesToast />
     </>
   );
