@@ -1,4 +1,3 @@
-'use client';
 import React from 'react';
 import {
   Button,
@@ -13,20 +12,21 @@ import { Controller, useForm } from 'react-hook-form';
 import BaseModal from '../../modals/base.modal';
 import { useAppDispatch } from '../../../hooks/use-redux-typed';
 import { setParty } from '../../../store/features/partySlice';
+import { LobbyState } from './lobby-actions';
 
-export const SoloMode = ({ isParty = false }) => {
+enum PartyType {
+  Public = 'public',
+  Private = 'private',
+}
+
+export const SoloMode = ({
+  setLobbyState,
+}: {
+  setLobbyState: (lobbyState: LobbyState) => void;
+}) => {
   const [createPartyModal, setCreatePartyModal] = React.useState(false);
   const router = useRouter();
-  const handleJoinOnline = () => {
-    gameSocket.addMatchmaker('*', 2, 2).then((ticket) => {
-      console.log('solo online ticket', ticket);
-    });
-  };
-
-  enum PartyType {
-    Public = 'public',
-    Private = 'private',
-  }
+  const dispatch = useAppDispatch();
 
   const createPartyData = useForm({
     defaultValues: {
@@ -35,8 +35,12 @@ export const SoloMode = ({ isParty = false }) => {
     },
   });
 
-  const dispatch = useAppDispatch();
-
+  const handleJoinOnline = () => {
+    setLobbyState(LobbyState.IN_QUEUE);
+    gameSocket.addMatchmaker('*', 2, 16).then((ticket) => {
+      console.log('solo online ticket', ticket);
+    });
+  };
   const handleCreateParty = async () => {
     const { maxPlayers, partyType } = createPartyData.getValues();
     gameSocket

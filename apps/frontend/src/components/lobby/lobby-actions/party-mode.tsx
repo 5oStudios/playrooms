@@ -4,11 +4,15 @@ import { Button } from '@nextui-org/react';
 import { gameSocket } from '@core/game-client';
 import { useRouter } from 'next/navigation';
 import { setParty } from '../../../store/features/partySlice';
-import { setMatchFoundData } from '../../../store/features/matchSlice';
 import { PartyMembersTracker } from '../../party/party-members-tracker';
 import { InviteToParty } from '../../party/invite-to-party.modal';
+import { LobbyState } from './lobby-actions';
 
-export default function PartyMode() {
+export default function PartyMode({
+  setLobbyState,
+}: {
+  setLobbyState: (lobbyState: LobbyState) => void;
+}) {
   const party = useAppSelector((state) => state.party);
   const session = useAppSelector((state) => state.session);
   const [inviteModalOpen, setInviteModalOpen] = useState(false);
@@ -18,12 +22,11 @@ export default function PartyMode() {
   if (!session) return null;
 
   const isPartyLeader = party?.leader?.user_id === session.user_id;
-
-  gameSocket.onmatchmakermatched = (matched) => {
-    console.info('Received MatchmakerMatched message: ', matched);
-    console.info('Matched opponents: ', matched.users);
-
-    dispatch(setMatchFoundData(matched));
+  const handleJoinOnline = () => {
+    setLobbyState(LobbyState.IN_QUEUE);
+    gameSocket.addMatchmakerParty(party.party_id, '*', 2, 4).then((ticket) => {
+      console.log('party online ticket', ticket);
+    });
   };
 
   const handleLeaveParty = () => {
@@ -38,21 +41,7 @@ export default function PartyMode() {
     <>
       <div className={'flex flex-col w-full gap-3'}>
         {isPartyLeader || !party ? (
-          <Button
-            onClick={() => {
-              if (!party)
-                gameSocket.addMatchmaker('*', 2, 2).then((ticket) => {
-                  console.log('solo online ticket', ticket);
-                });
-              else
-                gameSocket
-                  .addMatchmakerParty(party.party_id, '*', 2, 4)
-                  .then((ticket) => {
-                    console.log('party online ticket', ticket);
-                  });
-            }}
-            className={'w-full'}
-          >
+          <Button onClick={handleJoinOnline} className={'w-full'}>
             Start Game
           </Button>
         ) : (
