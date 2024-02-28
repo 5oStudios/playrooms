@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 import {
   Navbar as NextUINavbar,
@@ -5,11 +6,16 @@ import {
   NavbarContent,
 } from '@nextui-org/react';
 import { SiMonogame } from 'react-icons/si';
+import { useRouter } from 'next/navigation';
 
 export default function Navbar() {
+  const router = useRouter();
   return (
     <NextUINavbar className="bg-background/30">
-      <NavbarBrand className="space-x-2">
+      <NavbarBrand
+        onClick={() => router.push('/')}
+        className="space-x-2 cursor-pointer"
+      >
         <SiMonogame />
         <p className="font-bold text-inherit">Game</p>
       </NavbarBrand>

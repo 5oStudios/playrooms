@@ -9,6 +9,7 @@ import {
 import platformSlice from './features/platformSlice';
 import socketSlice from './features/socketSlice';
 import partySlice from './features/partySlice';
+import matchSlice from './features/matchSlice';
 
 export const store = configureStore({
   reducer: {
@@ -19,6 +20,7 @@ export const store = configureStore({
     session: sessionSlice,
     user: userSlice,
     socket: socketSlice,
+    match: matchSlice,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -43,6 +45,19 @@ store.subscribe(() => {
     });
   }
 });
+
+// auto set match host
+// store.subscribe(() => {
+//   if (!store.getState().match.currentMatch) store.dispatch(setMatchHost(null));
+//
+//   if (!store.getState().match.matchFoundData) return;
+//   if (store.getState().match.isHostForCurrentMatch !== null) return;
+//
+//   const hostId =
+//     store.getState().match.matchFoundData.users[0].presence.user_id;
+//   const selfId = store.getState().match.matchFoundData.self.presence.user_id;
+//   store.dispatch(setMatchHost(hostId === selfId));
+// });
 
 // store.subscribe(() => {
 //   if (!store.getState().party.data) return;

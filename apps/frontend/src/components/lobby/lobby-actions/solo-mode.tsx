@@ -10,15 +10,17 @@ import {
 import { gameSocket } from '@core/game-client';
 import { useRouter } from 'next/navigation';
 import { Controller, useForm } from 'react-hook-form';
-import BaseModal from './base.modal';
-import { useAppDispatch } from '../../hooks/use-redux-typed';
-import { setParty } from '../../store/features/partySlice';
+import BaseModal from '../../modals/base.modal';
+import { useAppDispatch } from '../../../hooks/use-redux-typed';
+import { setParty } from '../../../store/features/partySlice';
 
-export const GameModeButtons = () => {
+export const SoloMode = ({ isParty = false }) => {
   const [createPartyModal, setCreatePartyModal] = React.useState(false);
   const router = useRouter();
-  const handleJoinOnline = async () => {
-    await gameSocket.joinParty('test');
+  const handleJoinOnline = () => {
+    gameSocket.addMatchmaker('*', 2, 2).then((ticket) => {
+      console.log('solo online ticket', ticket);
+    });
   };
 
   enum PartyType {
@@ -42,7 +44,8 @@ export const GameModeButtons = () => {
       .then((party) => {
         dispatch(setParty(party));
         setCreatePartyModal(false);
-        router.replace(`/join/${party.party_id}`);
+
+        router.push(window.location.pathname + '/lobby/' + party.party_id);
       });
   };
 
@@ -52,7 +55,9 @@ export const GameModeButtons = () => {
         Join Online
       </Button>
       <div className={'flex flex-row w-full gap-3'}>
-        <Button className={'flex-1'}>Offline</Button>
+        <Button disabled className={'flex-1 disabled:opacity-50'}>
+          Offline
+        </Button>
         <Button onClick={() => setCreatePartyModal(true)} className={'w-2/3'}>
           Create Party
         </Button>

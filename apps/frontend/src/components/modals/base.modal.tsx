@@ -8,8 +8,10 @@ export default function BaseModal(props: ModalProps) {
       <Modal
         backdrop={'blur'}
         placement={'center'}
-        className={'flex justify-center items-center p-4 m-4'}
         {...props}
+        className={
+          'flex justify-center items-center p-4 m-4 ' + props.className
+        }
       >
         {props.children}
       </Modal>

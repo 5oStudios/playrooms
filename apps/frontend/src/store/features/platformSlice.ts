@@ -7,7 +7,7 @@ enum GameState {
 
 const mockedGames = [
   {
-    title: 'Trivia',
+    title: 'trivia',
     description: 'Test your knowledge',
     image: 'https://via.placeholder.com/150',
     state: GameState.active,
