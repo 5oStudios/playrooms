@@ -63,7 +63,7 @@ export const SoloMode = ({
       </Button>
       <div className={'flex flex-row w-full gap-3'}>
         <Button disabled className={'flex-1 disabled:opacity-50'}>
-          Offline
+          Tournament
         </Button>
         <Button onClick={() => setCreatePartyModal(true)} className={'w-2/3'}>
           Create Party
