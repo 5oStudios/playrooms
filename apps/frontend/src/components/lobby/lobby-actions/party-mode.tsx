@@ -6,12 +6,15 @@ import { useRouter } from 'next/navigation';
 import { setParty } from '../../../store/features/partySlice';
 import { PartyMembersTracker } from '../../party/party-members-tracker';
 import { InviteToParty } from '../../party/invite-to-party.modal';
-import { LobbyState } from './lobby-actions';
+import { LobbyState, PartyOpCodes } from './lobby-actions';
+import { MatchmakerTicket, PartyMatchmakerTicket } from '@heroiclabs/nakama-js';
 
 export default function PartyMode({
   setLobbyState,
+  setQueueTicket,
 }: {
   setLobbyState: (lobbyState: LobbyState) => void;
+  setQueueTicket: (ticket: MatchmakerTicket | PartyMatchmakerTicket) => void;
 }) {
   const party = useAppSelector((state) => state.party);
   const session = useAppSelector((state) => state.session);
@@ -25,7 +28,13 @@ export default function PartyMode({
   const handleJoinOnline = () => {
     setLobbyState(LobbyState.IN_QUEUE);
     gameSocket.addMatchmakerParty(party.party_id, '*', 2, 4).then((ticket) => {
-      console.log('party online ticket', ticket);
+      console.log('PartyOpCodes.QUEUE_STATE', PartyOpCodes.QUEUE_STATE);
+      gameSocket.sendPartyData(
+        party.party_id,
+        PartyOpCodes.QUEUE_STATE,
+        LobbyState.IN_QUEUE
+      );
+      setQueueTicket(ticket);
     });
   };
 

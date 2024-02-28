@@ -13,6 +13,7 @@ import BaseModal from '../../modals/base.modal';
 import { useAppDispatch } from '../../../hooks/use-redux-typed';
 import { setParty } from '../../../store/features/partySlice';
 import { LobbyState } from './lobby-actions';
+import { MatchmakerTicket, PartyMatchmakerTicket } from '@heroiclabs/nakama-js';
 
 enum PartyType {
   Public = 'public',
@@ -21,8 +22,10 @@ enum PartyType {
 
 export const SoloMode = ({
   setLobbyState,
+  setQueueTicket,
 }: {
   setLobbyState: (lobbyState: LobbyState) => void;
+  setQueueTicket: (ticket: MatchmakerTicket | PartyMatchmakerTicket) => void;
 }) => {
   const [createPartyModal, setCreatePartyModal] = React.useState(false);
   const router = useRouter();
@@ -38,7 +41,7 @@ export const SoloMode = ({
   const handleJoinOnline = () => {
     setLobbyState(LobbyState.IN_QUEUE);
     gameSocket.addMatchmaker('*', 2, 16).then((ticket) => {
-      console.log('solo online ticket', ticket);
+      setQueueTicket(ticket);
     });
   };
   const handleCreateParty = async () => {
