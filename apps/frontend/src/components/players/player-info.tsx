@@ -15,6 +15,7 @@ export const PlayerInfo = () => {
       <>
         <NoSSRAvatar className={'w-44 h-44'} {...genConfig(user.avatar_url)} />
         <Input
+          disabled
           className={'w-full'}
           value={user.username}
           onChange={(e) => setUsername(e.target.value)}
