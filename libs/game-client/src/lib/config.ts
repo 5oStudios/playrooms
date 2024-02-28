@@ -5,8 +5,8 @@ enum NODE_ENV_STATE {
   TEST = 'test',
 }
 export const SERVER_KEY = 'defaultkey',
-  HOST = '172.19.0.4',
-  PORT = '443',
-  USE_SSL = true,
+  HOST = NODE_ENV === NODE_ENV_STATE.PRODUCTION ? '172.19.0.4' : '65.109.11.0',
+  PORT = '7350',
+  USE_SSL = NODE_ENV === NODE_ENV_STATE.PRODUCTION,
   TIMEOUT = 7500,
   AUTO_REFRESH_SESSION = true;
