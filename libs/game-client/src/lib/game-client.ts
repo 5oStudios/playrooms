@@ -124,4 +124,4 @@ class GameClient extends Client implements Client {
 }
 
 export const gameClient = new GameClient();
-export const gameSocket = gameClient.createSocket();
+export const gameSocket = gameClient.createSocket(true);
