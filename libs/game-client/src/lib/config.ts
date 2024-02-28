@@ -1,5 +1,5 @@
 export const SERVER_KEY = 'defaultkey',
-  HOST = '65.109.11.0',
+  HOST = 'nakama.5ostudios.com',
   PORT = '7350',
   USE_SSL = false,
   TIMEOUT = 7500,
