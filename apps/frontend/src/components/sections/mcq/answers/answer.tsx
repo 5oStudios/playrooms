@@ -1,9 +1,8 @@
-import React, { useEffect } from 'react';
-import { myPlayer, useMultiplayerState, usePlayersList } from 'playroomkit';
+import React from 'react';
+import { usePlayersList } from 'playroomkit';
 import { Button } from '@nextui-org/react';
 import { cn } from '../../../../utils/cn';
 import Image from 'next/image';
-import { QuestionState } from '../../../game';
 
 export interface Answer {
   option: string;
@@ -14,12 +13,7 @@ export const Answer: React.FC<{
   index: number;
   answer: Answer;
   onClick: (answer: Answer) => void;
-  currentQuestionState?: QuestionState;
-}> = ({ answer, onClick, index, currentQuestionState }) => {
-  const [playersChooseThis, setPlayersChooseThis] = useMultiplayerState(
-    `playersChooseThis`,
-    []
-  );
+}> = ({ answer, onClick, index }) => {
   let abbreviation = '';
   switch (index) {
     case 0:
@@ -36,26 +30,16 @@ export const Answer: React.FC<{
       break;
   }
   const handleAnswer = (answer: Answer) => {
-    setPlayersChooseThis([
-      ...playersChooseThis,
-      {
-        id: myPlayer().id,
-        chosenAnswer: answer,
-      },
-    ]);
     onClick(answer);
   };
-  useEffect(() => {
-    setPlayersChooseThis([]);
-  }, [currentQuestionState]);
   return (
     <div>
       <Button
         size="lg"
         disableRipple={true}
-        disabled={playersChooseThis.some(
-          (player) => player.id === myPlayer().id
-        )}
+        // disabled={playersChooseThis.some(
+        //   (player) => player.id === myPlayer().id
+        // )}
         className={cn(
           `w-full relative rounded-lg dark:bg-neutral-950/40 text-lg font-bold flex text-center items-center justify-center overflow-hidden shadow-md transition duration-300 ease-in-out transform hover:scale-[102%] hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 focus:ring-offset-neutral-950/90 dark:focus:ring-offset-default-100/20`
           // answer.isCorrect
@@ -72,10 +56,10 @@ export const Answer: React.FC<{
 
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-sky-500 to-transparent w-px" />
       </Button>
-      <PlayersChooseThis
-        playersChooseThis={playersChooseThis}
-        answer={answer}
-      />
+      {/*<PlayersChooseThis*/}
+      {/*  playersChooseThis={playersChooseThis}*/}
+      {/*  answer={answer}*/}
+      {/*/>*/}
     </div>
   );
 };

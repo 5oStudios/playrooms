@@ -28,7 +28,6 @@ export function InitRoom() {
 
   useEffect(() => {
     const handlePlayerJoin = (player: PlayerState) => {
-      console.log(player);
       const isOtherPlayer = player.id !== myPlayer()?.id;
       if (isOtherPlayer) {
         toast(`${player.getProfile()?.name} joined the room`);

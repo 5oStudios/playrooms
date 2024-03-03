@@ -1,8 +1,6 @@
 import { Card, CardBody } from '@nextui-org/react';
 import { Answer } from './answer';
 import React from 'react';
-import { getState } from 'playroomkit';
-import { CURRENT_QUESTION_STATE_KEY } from '../../../game';
 
 export function Answers({
   answers,
@@ -11,8 +9,6 @@ export function Answers({
   answers: Answer[];
   onClick: (answer: Answer) => void;
 }>) {
-  const currentQuestionState = getState(CURRENT_QUESTION_STATE_KEY);
-
   return (
     <Card
       isBlurred
@@ -27,7 +23,6 @@ export function Answers({
               answer={answer}
               onClick={onClick}
               index={index}
-              currentQuestionState={currentQuestionState}
             />
           ))}
         </div>

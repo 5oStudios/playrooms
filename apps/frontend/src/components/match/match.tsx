@@ -5,8 +5,11 @@ import { Match } from '@heroiclabs/nakama-js';
 import React, { useEffect, useState } from 'react';
 import { MockedMCQQuestions } from '../../../mocks';
 import { Question } from '../sections/mcq/questions/question';
-import { numToUint8Array, uint8ArrayToNum } from '../../utils/convert';
+import { uint8ArrayToNum } from '../../utils/convert';
 import { Leaderboard } from './leaderboard';
+import { Answers } from '../sections/mcq/answers/answers';
+import { useQuestions } from '../../hooks/use-questions';
+import { useLeaderboard } from '../../hooks/use-leaderboard';
 
 export enum MatchOpCodes {
   MATCH_STATE = 100,
@@ -22,7 +25,7 @@ export enum LeaderboardState {
   HIDE = 'HIDE',
 }
 
-enum MatchState {
+export enum MatchState {
   LOADING = 'LOADING',
   READY = 'READY',
   STARTED = 'STARTED',
@@ -30,12 +33,12 @@ enum MatchState {
   NOT_FOUND = 'NOT_FOUND',
 }
 
-enum HostState {
+export enum HostState {
   ELECTED = 'ELECTED',
   NOT_ELECTED = 'NOT_ELECTED',
 }
 
-enum PlayerState {
+export enum PlayerState {
   READY = 'READY',
   NOT_READY = 'NOT_READY',
 }
@@ -52,15 +55,30 @@ export default function Match() {
 
   const [match, setMatch] = useState<null | Match>(null);
   const [amIHost, setAmIHost] = useState(false);
-  const [isLeaderboardVisible, setIsLeaderboardVisible] = useState(false);
-  const [questionRemainingTime, setQuestionRemainingTime] = useState(0);
+  const [myScore, setMyScore] = useState(0);
 
   const [matchState, setMatchState] = useState(MatchState.READY);
   const [hostState, setHostState] = useState(HostState.NOT_ELECTED);
   const [playerState, setPlayerState] = useState(PlayerState.NOT_READY);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(
-    STARTING_QUESTION_INDEX
-  );
+
+  const {
+    currentQuestion,
+    nextQuestion,
+    isQuestionsFinished,
+    handleAnswer,
+    questionStateHandler,
+    onTimeTick,
+  } = useQuestions({
+    match,
+    questions: MockedMCQQuestions,
+    startingQuestionIndex: STARTING_QUESTION_INDEX,
+    isHost: amIHost,
+  });
+  const { isLeaderboardVisible, previewLeaderboard } = useLeaderboard({
+    match,
+    amIHost,
+    showLeaderboardForTimeInMs: SHOW_LEADERBOARD_FOR_TIME_IN_MS,
+  });
 
   const questions = MockedMCQQuestions;
 
@@ -118,27 +136,17 @@ export default function Match() {
         }
         break;
 
-      case MatchOpCodes.QUESTION_INDEX:
-        setCurrentQuestionIndex(uint8ArrayToNum(matchData.data));
+      case MatchOpCodes.TIME_LEFT:
+        onTimeTick(uint8ArrayToNum(matchData.data));
         break;
 
-      case MatchOpCodes.TIME_LEFT:
-        setQuestionRemainingTime(uint8ArrayToNum(matchData.data));
+      case MatchOpCodes.QUESTION_INDEX:
+        questionStateHandler(matchData);
         break;
 
       case MatchOpCodes.PLAYER_SCORE:
         // const deservedPoints = uint8ArrayToNum(matchData.data);
         break;
-
-      case MatchOpCodes.LEADERBOARD:
-        switch (decodedData) {
-          case LeaderboardState.SHOW:
-            setIsLeaderboardVisible(true);
-            break;
-          case LeaderboardState.HIDE:
-            setIsLeaderboardVisible(false);
-            break;
-        }
     }
   };
 
@@ -154,50 +162,11 @@ export default function Match() {
       );
   };
 
-  // const handleAnswer = (isCorrect: boolean) => {
-  //   if (isCorrect) {
-  //     // const deservedPoints = QUESTIONS_ALLOWED_TIME_IN_MS - timeLeft;
-  //     const deservedPoints = 100;
-  //     gameSocket.sendMatchState(
-  //       match.match_id,
-  //       MatchOpCodes.PLAYER_SCORE,
-  //       numToUint8Array(deservedPoints)
-  //     );
-  //   }
-  // };
-
   useEffect(() => {
-    if (currentQuestionIndex === questions.length - 1) {
+    if (isQuestionsFinished) {
       setMatchState(MatchState.ENDED);
     }
-  }, [currentQuestionIndex, questions.length]);
-
-  useEffect(() => {
-    if (questionRemainingTime === 0) {
-      if (amIHost) {
-        setIsLeaderboardVisible(true);
-        gameSocket.sendMatchState(
-          match.match_id,
-          MatchOpCodes.LEADERBOARD,
-          LeaderboardState.SHOW
-        );
-        setTimeout(() => {
-          setIsLeaderboardVisible(false);
-          gameSocket.sendMatchState(
-            match.match_id,
-            MatchOpCodes.LEADERBOARD,
-            LeaderboardState.HIDE
-          );
-          setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
-          gameSocket.sendMatchState(
-            match.match_id,
-            MatchOpCodes.QUESTION_INDEX,
-            numToUint8Array(currentQuestionIndex + 1)
-          );
-        }, SHOW_LEADERBOARD_FOR_TIME_IN_MS);
-      }
-    }
-  }, [questionRemainingTime, matchState]);
+  }, [isQuestionsFinished, questions.length]);
 
   useEffect(() => {
     if (
@@ -218,12 +187,14 @@ export default function Match() {
           ) : (
             <div className="flex flex-col gap-2">
               <Question
-                questionText={questions[currentQuestionIndex].question}
-                allowedTimeInMS={
-                  questions[currentQuestionIndex].allowedTimeInMS
-                }
-                handleQuestionRemainingTime={setQuestionRemainingTime}
+                questionText={currentQuestion.question}
+                allowedTimeInMS={currentQuestion.allowedTimeInMS}
+                handleQuestionRemainingTime={onTimeTick}
                 isMatchStarted={true}
+              />
+              <Answers
+                answers={currentQuestion.answers}
+                onClick={handleAnswer}
               />
             </div>
           )}
