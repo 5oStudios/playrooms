@@ -1,7 +1,5 @@
 import React from 'react';
 import { CountdownCircleTimer } from 'react-countdown-circle-timer';
-import { getState } from 'playroomkit';
-import { CURRENT_GAME_STATE_KEY, GAME_STATE } from '../../../game';
 
 const renderTime = (dimension, time) => {
   return <span className={'text-white text-center'}>{time}</span>;
@@ -10,10 +8,15 @@ const renderTime = (dimension, time) => {
 export function CountDown({
   milSecond,
   onUpdate,
-}: Readonly<{ milSecond: number; onUpdate: (remainingTime: number) => void }>) {
+  isMatchStarted,
+}: Readonly<{
+  milSecond: number;
+  onUpdate: (remainingTime: number) => void;
+  isMatchStarted: boolean;
+}>) {
   return (
     <CountdownCircleTimer
-      isPlaying={getState(CURRENT_GAME_STATE_KEY) === GAME_STATE.STARTED}
+      isPlaying={isMatchStarted}
       colors={`#0ea5e9`}
       isSmoothColorTransition={true}
       strokeWidth={4}

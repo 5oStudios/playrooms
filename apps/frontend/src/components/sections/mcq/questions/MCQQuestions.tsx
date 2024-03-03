@@ -74,6 +74,12 @@ export function MCQQuestions({
       <Question
         questionText={questions[currentQuestionIndex].question}
         allowedTimeInMS={allowedTimeInMS}
+        handleQuestionRemainingTime={(remainingTime) => {
+          if (remainingTime === 0) {
+            setState(CURRENT_QUESTION_STATE_KEY, QuestionState.MISSED);
+          }
+        }}
+        isMatchStarted={true}
       />
       <Answers
         answers={questions[currentQuestionIndex].answers}
