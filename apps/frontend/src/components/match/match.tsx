@@ -5,14 +5,21 @@ import { Match } from '@heroiclabs/nakama-js';
 import React, { useEffect, useState } from 'react';
 import { MockedMCQQuestions } from '../../../mocks';
 import { Question } from '../sections/mcq/questions/question';
-import { uint8ArrayToNum } from '../../utils/convert';
+import { numToUint8Array, uint8ArrayToNum } from '../../utils/convert';
+import { Leaderboard } from './leaderboard';
 
-enum MatchOpCodes {
+export enum MatchOpCodes {
   MATCH_STATE = 100,
   HOST_STATE = 101,
   PLAYER_SCORE = 102,
   QUESTION_INDEX = 103,
   TIME_LEFT = 104,
+  LEADERBOARD = 105,
+}
+
+export enum LeaderboardState {
+  SHOW = 'SHOW',
+  HIDE = 'HIDE',
 }
 
 enum MatchState {
@@ -34,6 +41,7 @@ enum PlayerState {
 }
 
 const STARTING_QUESTION_INDEX = 0;
+const SHOW_LEADERBOARD_FOR_TIME_IN_MS = 5000;
 
 export default function Match() {
   const searchParams = useSearchParams();
@@ -44,6 +52,7 @@ export default function Match() {
 
   const [match, setMatch] = useState<null | Match>(null);
   const [amIHost, setAmIHost] = useState(false);
+  const [isLeaderboardVisible, setIsLeaderboardVisible] = useState(false);
   const [questionRemainingTime, setQuestionRemainingTime] = useState(0);
 
   const [matchState, setMatchState] = useState(MatchState.READY);
@@ -120,6 +129,16 @@ export default function Match() {
       case MatchOpCodes.PLAYER_SCORE:
         // const deservedPoints = uint8ArrayToNum(matchData.data);
         break;
+
+      case MatchOpCodes.LEADERBOARD:
+        switch (decodedData) {
+          case LeaderboardState.SHOW:
+            setIsLeaderboardVisible(true);
+            break;
+          case LeaderboardState.HIDE:
+            setIsLeaderboardVisible(false);
+            break;
+        }
     }
   };
 
@@ -146,6 +165,7 @@ export default function Match() {
   //     );
   //   }
   // };
+
   useEffect(() => {
     if (currentQuestionIndex === questions.length - 1) {
       setMatchState(MatchState.ENDED);
@@ -153,10 +173,30 @@ export default function Match() {
   }, [currentQuestionIndex, questions.length]);
 
   useEffect(() => {
-    if (matchState === MatchState.STARTED)
-      if (questionRemainingTime === 0) {
-        setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
+    if (questionRemainingTime === 0) {
+      if (amIHost) {
+        setIsLeaderboardVisible(true);
+        gameSocket.sendMatchState(
+          match.match_id,
+          MatchOpCodes.LEADERBOARD,
+          LeaderboardState.SHOW
+        );
+        setTimeout(() => {
+          setIsLeaderboardVisible(false);
+          gameSocket.sendMatchState(
+            match.match_id,
+            MatchOpCodes.LEADERBOARD,
+            LeaderboardState.HIDE
+          );
+          setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
+          gameSocket.sendMatchState(
+            match.match_id,
+            MatchOpCodes.QUESTION_INDEX,
+            numToUint8Array(currentQuestionIndex + 1)
+          );
+        }, SHOW_LEADERBOARD_FOR_TIME_IN_MS);
       }
+    }
   }, [questionRemainingTime, matchState]);
 
   useEffect(() => {
@@ -167,33 +207,35 @@ export default function Match() {
     ) {
       setMatchState(MatchState.STARTED);
     }
-  }, [matchState, playerState, hostState]);
+  }, [matchState, playerState, hostState, match?.match_id, amIHost]);
 
   switch (matchState) {
-    case MatchState.LOADING:
-      return <>Loading...</>;
-    case MatchState.READY:
-      return (
-        <div className="flex justify-center items-center">
-          <h1>Ready</h1>
-        </div>
-      );
     case MatchState.STARTED:
       return (
         <div className="flex justify-center items-center">
-          <div className="flex flex-col gap-2">
-            <Question
-              questionText={questions[currentQuestionIndex].question}
-              allowedTimeInMS={questions[currentQuestionIndex].allowedTimeInMS}
-              handleQuestionRemainingTime={setQuestionRemainingTime}
-              isMatchStarted={true}
-            />
-          </div>
-          <h1>Player</h1>
+          {isLeaderboardVisible ? (
+            <Leaderboard />
+          ) : (
+            <div className="flex flex-col gap-2">
+              <Question
+                questionText={questions[currentQuestionIndex].question}
+                allowedTimeInMS={
+                  questions[currentQuestionIndex].allowedTimeInMS
+                }
+                handleQuestionRemainingTime={setQuestionRemainingTime}
+                isMatchStarted={true}
+              />
+            </div>
+          )}
         </div>
       );
     case MatchState.ENDED:
-      return <>Match ended</>;
+      console.log('amIHost', amIHost);
+      return (
+        <>
+          <div>Game Over</div>
+        </>
+      );
     case MatchState.NOT_FOUND:
       return <>Match not found</>;
   }

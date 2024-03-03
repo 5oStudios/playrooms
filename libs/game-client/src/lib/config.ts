@@ -1,5 +1,5 @@
-const NODE_ENV = process.env['NODE_ENV'];
-enum NODE_ENV_STATE {
+export const NODE_ENV = process.env['NODE_ENV'];
+export enum NODE_ENV_STATE {
   PRODUCTION = 'production',
   DEVELOPMENT = 'development',
   TEST = 'test',

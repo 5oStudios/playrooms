@@ -8,6 +8,10 @@ import { Button } from '@nextui-org/react';
 import { MatchmakerTicket, PartyMatchmakerTicket } from '@heroiclabs/nakama-js';
 import { MatchmakerMatched } from '@heroiclabs/nakama-js/socket';
 import { useRouter } from 'next/navigation';
+import {
+  NODE_ENV,
+  NODE_ENV_STATE,
+} from '../../../../../../libs/game-client/src/lib/config';
 
 export enum LobbyMode {
   SOLO,
@@ -31,7 +35,9 @@ export default function LobbyActions({ mode: lobbyMode = LobbyMode.SOLO }) {
   >(null);
   const dispatch = useAppDispatch();
   const party = useAppSelector((state) => state.party);
-  const [countdown, setCountdown] = React.useState<number | null>(3);
+  const [countdown, setCountdown] = React.useState<number | null>(() =>
+    NODE_ENV === NODE_ENV_STATE.DEVELOPMENT ? 0 : 3
+  );
   const [matched, setMatched] = React.useState<MatchmakerMatched | null>(null);
   const router = useRouter();
 
