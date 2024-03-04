@@ -9,6 +9,8 @@ export function Answers({
   answers: Answer[];
   onClick: (answer: Answer) => void;
 }>) {
+  const [isOneAnswerSelected, setIsOneAnswerSelected] = React.useState(false);
+
   return (
     <Card
       isBlurred
@@ -21,8 +23,12 @@ export function Answers({
             <Answer
               key={index}
               answer={answer}
-              onClick={onClick}
+              onClick={(answer) => {
+                onClick(answer);
+                setIsOneAnswerSelected(true);
+              }}
               index={index}
+              disabled={isOneAnswerSelected}
             />
           ))}
         </div>

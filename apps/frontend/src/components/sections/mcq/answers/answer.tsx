@@ -13,7 +13,9 @@ export const Answer: React.FC<{
   index: number;
   answer: Answer;
   onClick: (answer: Answer) => void;
-}> = ({ answer, onClick, index }) => {
+  disabled?: boolean;
+}> = ({ answer, onClick, index, disabled }) => {
+  const [isSelected, setIsSelected] = React.useState(false);
   let abbreviation = '';
   switch (index) {
     case 0:
@@ -30,6 +32,7 @@ export const Answer: React.FC<{
       break;
   }
   const handleAnswer = (answer: Answer) => {
+    setIsSelected(true);
     onClick(answer);
   };
   return (
@@ -37,14 +40,17 @@ export const Answer: React.FC<{
       <Button
         size="lg"
         disableRipple={true}
-        // disabled={playersChooseThis.some(
-        //   (player) => player.id === myPlayer().id
-        // )}
+        disabled={disabled}
         className={cn(
-          `w-full relative rounded-lg dark:bg-neutral-950/40 text-lg font-bold flex text-center items-center justify-center overflow-hidden shadow-md transition duration-300 ease-in-out transform hover:scale-[102%] hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 focus:ring-offset-neutral-950/90 dark:focus:ring-offset-default-100/20`
-          // answer.isCorrect
-          // ? 'focus:ring-emerald-500 focus:ring-offset-emerald-500/90 dark:focus:ring-offset-emerald-500/20'
-          // : 'focus:ring-rose-500 focus:ring-offset-rose-500/90 dark:focus:ring-offset-rose-500/20'
+          `w-full relative rounded-lg text-lg font-bold flex text-center items-center justify-center overflow-hidden shadow-md`,
+          `dark:bg-neutral-950/40 dark:focus:ring-offset-default-100/20`,
+          `transition duration-300 ease-in-out transform`,
+          `hover:scale-[101%] hover:dark:bg-neutral-800 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 focus:ring-offset-neutral-950/90`,
+          answer.isCorrect && isSelected
+            ? 'bg-green-500'
+            : !answer.isCorrect && isSelected && 'bg-rose-500',
+          disabled && 'opacity-50 cursor-not-allowed',
+          isSelected && 'text-white opacity-100'
         )}
         style={{ backdropFilter: 'blur(4px)' }}
         onClick={() => handleAnswer(answer)}

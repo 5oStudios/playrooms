@@ -4,7 +4,6 @@ import { gameSocket } from '@core/game-client';
 import { numToUint8Array, uint8ArrayToNum } from '../utils/convert';
 import { MatchOpCodes } from '../components/match/match';
 import { Match, MatchData } from '@heroiclabs/nakama-js';
-import { Answer } from '../components/sections/mcq/answers/answer';
 
 export function useQuestions({
   questions,
@@ -20,9 +19,6 @@ export function useQuestions({
   const [currentQuestion, setCurrentQuestion] = useState(questions[0]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(
     startingQuestionIndex
-  );
-  const [questionRemainingTime, setQuestionRemainingTime] = useState(
-    currentQuestion.allowedTimeInMS
   );
 
   const questionsEventsReceiver = (matchData: MatchData) => {
@@ -42,23 +38,11 @@ export function useQuestions({
     );
   };
 
-  const handleAnswer = (answer: Answer) => {
-    const deservedPoints =
-      currentQuestion.allowedTimeInMS - questionRemainingTime;
-
-    gameSocket.sendMatchState(
-      match.match_id,
-      MatchOpCodes.PLAYER_STATE,
-      numToUint8Array(deservedPoints)
-    );
-  };
-
   return {
     currentQuestion,
     nextQuestion,
     isQuestionsFinished: currentQuestionIndex === questions.length - 1,
     // currentQuestionDeservedPoints: 1,
-    handleAnswer,
     questionsEventsReceiver,
   };
 }
