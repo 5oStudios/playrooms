@@ -25,8 +25,7 @@ export function useQuestions({
     currentQuestion.allowedTimeInMS
   );
 
-  const questionStateHandler = (matchData: MatchData) => {
-    console.log('next question');
+  const questionsEventsReceiver = (matchData: MatchData) => {
     setCurrentQuestion(questions[uint8ArrayToNum(matchData.data)]);
     setCurrentQuestionIndex(uint8ArrayToNum(matchData.data));
   };
@@ -43,11 +42,6 @@ export function useQuestions({
     );
   };
 
-  const previousQuestion = () => {
-    setCurrentQuestion(questions[currentQuestionIndex - 1]);
-    setCurrentQuestionIndex(currentQuestionIndex - 1);
-  };
-
   const handleAnswer = (answer: Answer) => {
     const deservedPoints =
       currentQuestion.allowedTimeInMS - questionRemainingTime;
@@ -59,21 +53,12 @@ export function useQuestions({
     );
   };
 
-  const onTimeTick = (remainingTime: number) => {
-    setQuestionRemainingTime(remainingTime);
-    if (remainingTime === 0) {
-      nextQuestion();
-    }
-  };
-
   return {
     currentQuestion,
     nextQuestion,
-    previousQuestion,
     isQuestionsFinished: currentQuestionIndex === questions.length - 1,
-    currentQuestionDeservedPoints: 1,
-    onTimeTick,
+    // currentQuestionDeservedPoints: 1,
     handleAnswer,
-    questionStateHandler,
+    questionsEventsReceiver,
   };
 }

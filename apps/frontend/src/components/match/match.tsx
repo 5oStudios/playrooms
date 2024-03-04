@@ -9,6 +9,7 @@ import { Leaderboard } from './leaderboard';
 import { Answers } from '../sections/mcq/answers/answers';
 import { useQuestions } from '../../hooks/use-questions';
 import { useLeaderboard } from '../../hooks/use-leaderboard';
+import { HostState, useHost } from '../../hooks/use-host';
 
 export enum MatchOpCodes {
   MATCH_STATE = 100,
@@ -32,11 +33,6 @@ export enum MatchState {
   NOT_FOUND = 'NOT_FOUND',
 }
 
-export enum HostState {
-  ELECTED = 'ELECTED',
-  NOT_ELECTED = 'NOT_ELECTED',
-}
-
 export enum PlayerState {
   READY = 'READY',
   NOT_READY = 'NOT_READY',
@@ -49,35 +45,42 @@ export default function Match() {
   const searchParams = useSearchParams();
   const ticket = searchParams.get('ticket');
   const token = searchParams.get('token');
+  const questions = MockedMCQQuestions;
 
   const [currentPlayers, setCurrentPlayers] = useState([]);
 
   const [match, setMatch] = useState<null | Match>(null);
-  const [amIHost, setAmIHost] = useState(false);
   const [myScore, setMyScore] = useState(0);
 
   const [matchState, setMatchState] = useState(MatchState.READY);
-  const [hostState, setHostState] = useState(HostState.NOT_ELECTED);
   const [playerState, setPlayerState] = useState(PlayerState.NOT_READY);
+
+  const { amIHost, hostState, hostEventsReceiver } = useHost({
+    match,
+  });
 
   const {
     currentQuestion,
     nextQuestion,
     isQuestionsFinished,
     handleAnswer,
-    questionStateHandler,
+    questionsEventsReceiver,
   } = useQuestions({
     match,
     questions: MockedMCQQuestions,
     startingQuestionIndex: STARTING_QUESTION_INDEX,
     isHost: amIHost,
   });
-  const { isLeaderboardVisible, leaderboardStateHandler, previewLeaderboard } =
-    useLeaderboard({
-      match,
-      amIHost,
-      showLeaderboardForTimeInMs: SHOW_LEADERBOARD_FOR_TIME_IN_MS,
-    });
+
+  const {
+    isLeaderboardVisible,
+    leaderboardEventsReceiver,
+    previewLeaderboard,
+  } = useLeaderboard({
+    match,
+    amIHost,
+    showLeaderboardForTimeInMs: SHOW_LEADERBOARD_FOR_TIME_IN_MS,
+  });
 
   const onTimeTick = (remainingTime: number) => {
     if (remainingTime === 0) {
@@ -87,26 +90,12 @@ export default function Match() {
     }
   };
 
-  const questions = MockedMCQQuestions;
-
   useEffect(() => {
     switch (playerState) {
       case PlayerState.NOT_READY:
         gameSocket
           .joinMatch(ticket, token)
-          .then((match) => {
-            setMatch(match);
-            const isFirstPlayer = !match.presences;
-            if (isFirstPlayer) {
-              setAmIHost(true);
-              setHostState(HostState.ELECTED);
-              gameSocket.sendMatchState(
-                match.match_id,
-                MatchOpCodes.HOST_STATE,
-                HostState.ELECTED
-              );
-            }
-          })
+          .then(setMatch)
           .catch((error) => {
             console.error('Error joining match', error);
             setMatchState(MatchState.NOT_FOUND);
@@ -133,25 +122,15 @@ export default function Match() {
         }
         break;
       case MatchOpCodes.HOST_STATE:
-        switch (decodedData) {
-          case HostState.ELECTED:
-            setHostState(HostState.ELECTED);
-            break;
-          case HostState.NOT_ELECTED:
-            setHostState(HostState.NOT_ELECTED);
-            break;
-        }
-        break;
-
-      case MatchOpCodes.TIME_LEFT:
+        hostEventsReceiver(matchData);
         break;
 
       case MatchOpCodes.QUESTION_INDEX:
-        questionStateHandler(matchData);
+        questionsEventsReceiver(matchData);
         break;
 
       case MatchOpCodes.LEADERBOARD:
-        leaderboardStateHandler(matchData);
+        leaderboardEventsReceiver(matchData);
         break;
 
       case MatchOpCodes.PLAYER_SCORE:

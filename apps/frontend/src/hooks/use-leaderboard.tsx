@@ -15,17 +15,12 @@ export function useLeaderboard({
   const [isLeaderboardVisible, setIsLeaderboardVisible] = useState(false);
   const [showLeaderboardForTime] = useState(showLeaderboardForTimeInMs);
 
-  const leaderboardStateHandler = (matchData: MatchData) => {
-    console.log('leaderboard state handler', matchData.op_code, matchData.data);
+  const leaderboardEventsReceiver = (matchData: MatchData) => {
     const decodedData = new TextDecoder().decode(matchData.data);
-    switch (matchData.op_code) {
-      case MatchOpCodes.LEADERBOARD:
-        if (decodedData === LeaderboardState.SHOW) {
-          setIsLeaderboardVisible(true);
-        } else if (decodedData === LeaderboardState.HIDE) {
-          setIsLeaderboardVisible(false);
-        }
-        break;
+    if (decodedData === LeaderboardState.SHOW) {
+      setIsLeaderboardVisible(true);
+    } else if (decodedData === LeaderboardState.HIDE) {
+      setIsLeaderboardVisible(false);
     }
   };
 
@@ -53,6 +48,6 @@ export function useLeaderboard({
     previewLeaderboard: async () => {
       previewLeaderboard();
     },
-    leaderboardStateHandler,
+    leaderboardEventsReceiver,
   };
 }
