@@ -1,6 +1,6 @@
 'use client';
 import { gameSocket } from '@core/game-client';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { MockedMCQQuestions } from '../../../mocks';
 import { Question } from '../sections/mcq/questions/question';
 import { Leaderboard } from './leaderboard';
@@ -24,9 +24,8 @@ const STARTING_QUESTION_INDEX = 0;
 const SHOW_LEADERBOARD_FOR_TIME_IN_MS = 5000;
 
 export default function Match() {
-  const questions = MockedMCQQuestions;
-
   const { match, matchState, matchEventsReceiver, setMatchState } = useMatch();
+  const [remainingTime, setRemainingTime] = useState(0);
 
   const { playerState, playersEventsReceiver } = usePlayer({
     match,
@@ -59,14 +58,6 @@ export default function Match() {
     showLeaderboardForTimeInMs: SHOW_LEADERBOARD_FOR_TIME_IN_MS,
   });
 
-  const onTimeTick = (remainingTime: number) => {
-    if (remainingTime === 0) {
-      previewLeaderboard()
-        .then(() => nextQuestion())
-        .catch((error) => console.error('Error previewing leaderboard', error));
-    }
-  };
-
   gameSocket.onmatchdata = (matchData) => {
     switch (matchData.op_code) {
       case MatchOpCodes.MATCH_STATE:
@@ -91,7 +82,7 @@ export default function Match() {
     if (isQuestionsFinished) {
       setMatchState(MatchState.ENDED);
     }
-  }, [isQuestionsFinished, questions.length, setMatchState]);
+  }, [isQuestionsFinished, setMatchState]);
 
   useEffect(() => {
     if (
@@ -110,6 +101,12 @@ export default function Match() {
     setMatchState,
   ]);
 
+  const onTimeUp = () => {
+    previewLeaderboard()
+      .then(() => nextQuestion())
+      .catch((error) => console.error('Error previewing leaderboard', error));
+  };
+
   switch (matchState) {
     case MatchState.LOADING:
     case MatchState.READY:
@@ -124,8 +121,8 @@ export default function Match() {
               <Question
                 questionText={currentQuestion.question}
                 allowedTimeInMS={currentQuestion.allowedTimeInMS}
-                handleQuestionRemainingTime={onTimeTick}
-                isMatchStarted={true}
+                onTimeTick={setRemainingTime}
+                onTimeUp={onTimeUp}
               />
               <Answers
                 answers={currentQuestion.answers}

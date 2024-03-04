@@ -8,11 +8,13 @@ const renderTime = (dimension, time) => {
 export function CountDown({
   milSecond,
   onUpdate,
+  onComplete,
   isMatchStarted,
 }: Readonly<{
   milSecond: number;
   onUpdate: (remainingTime: number) => void;
   isMatchStarted: boolean;
+  onComplete?: () => void;
 }>) {
   return (
     <CountdownCircleTimer
@@ -24,6 +26,7 @@ export function CountDown({
       duration={milSecond / 1000}
       initialRemainingTime={milSecond / 1000}
       onComplete={() => {
+        onComplete && onComplete();
         return {
           shouldRepeat: true,
         };
