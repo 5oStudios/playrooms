@@ -48,7 +48,7 @@ export function useQuestions({
 
     gameSocket.sendMatchState(
       match.match_id,
-      MatchOpCodes.PLAYER_SCORE,
+      MatchOpCodes.PLAYER_STATE,
       numToUint8Array(deservedPoints)
     );
   };

@@ -1,6 +1,6 @@
 'use client';
 import { gameSocket } from '@core/game-client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { MockedMCQQuestions } from '../../../mocks';
 import { Question } from '../sections/mcq/questions/question';
 import { Leaderboard } from './leaderboard';
@@ -9,19 +9,15 @@ import { useQuestions } from '../../hooks/use-questions';
 import { useLeaderboard } from '../../hooks/use-leaderboard';
 import { HostState, useHost } from '../../hooks/use-host';
 import { MatchState, useMatch } from '../../hooks/use-match';
+import { PlayerState, usePlayer } from '../../hooks/use-player';
 
 export enum MatchOpCodes {
   MATCH_STATE = 100,
   HOST_STATE = 101,
-  PLAYER_SCORE = 102,
+  PLAYER_STATE = 102,
   QUESTION_INDEX = 103,
   TIME_LEFT = 104,
   LEADERBOARD = 105,
-}
-
-export enum PlayerState {
-  READY = 'READY',
-  NOT_READY = 'NOT_READY',
 }
 
 const STARTING_QUESTION_INDEX = 0;
@@ -29,11 +25,12 @@ const SHOW_LEADERBOARD_FOR_TIME_IN_MS = 5000;
 
 export default function Match() {
   const questions = MockedMCQQuestions;
-  const [currentPlayers, setCurrentPlayers] = useState([]);
-  const [myScore, setMyScore] = useState(0);
-  const [playerState, setPlayerState] = useState(PlayerState.NOT_READY);
 
   const { match, matchState, matchEventsReceiver, setMatchState } = useMatch();
+
+  const { playerState, playersEventsReceiver } = usePlayer({
+    match,
+  });
 
   const { amIHost, hostState, hostEventsReceiver } = useHost({
     match,
@@ -84,22 +81,10 @@ export default function Match() {
       case MatchOpCodes.LEADERBOARD:
         leaderboardEventsReceiver(matchData);
         break;
-      case MatchOpCodes.PLAYER_SCORE:
-        // const deservedPoints = uint8ArrayToNum(matchData.data);
+      case MatchOpCodes.PLAYER_STATE:
+        playersEventsReceiver(matchData);
         break;
     }
-  };
-
-  gameSocket.onmatchpresence = (matchPresence) => {
-    matchPresence.joins &&
-      setCurrentPlayers((prevPlayers) => [
-        ...prevPlayers,
-        ...matchPresence.joins,
-      ]);
-    matchPresence.leaves &&
-      setCurrentPlayers((prevPlayers) =>
-        prevPlayers.filter((player) => !matchPresence.leaves.includes(player))
-      );
   };
 
   useEffect(() => {
@@ -109,9 +94,6 @@ export default function Match() {
   }, [isQuestionsFinished, questions.length, setMatchState]);
 
   useEffect(() => {
-    console.log('matchState', matchState);
-    console.log('playerState', playerState);
-    console.log('hostState', hostState);
     if (
       matchState === MatchState.READY &&
       playerState === PlayerState.READY &&
@@ -129,6 +111,9 @@ export default function Match() {
   ]);
 
   switch (matchState) {
+    case MatchState.LOADING:
+    case MatchState.READY:
+      return <>Loading...</>;
     case MatchState.STARTED:
       return (
         <div className="flex justify-center items-center">
@@ -151,14 +136,8 @@ export default function Match() {
         </div>
       );
     case MatchState.ENDED:
-      console.log('amIHost', amIHost);
-      return (
-        <>
-          <div>Game Over</div>
-        </>
-      );
+      return <>Game Over</>;
     case MatchState.NOT_FOUND:
       return <>Match not found</>;
   }
-  // if (hostState === HostState.NOT_ELECTED) return <>Looking for host...</>;
 }
