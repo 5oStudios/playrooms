@@ -1,7 +1,5 @@
 'use client';
-import { useSearchParams } from 'next/navigation';
 import { gameSocket } from '@core/game-client';
-import { Match } from '@heroiclabs/nakama-js';
 import React, { useEffect, useState } from 'react';
 import { MockedMCQQuestions } from '../../../mocks';
 import { Question } from '../sections/mcq/questions/question';
@@ -10,6 +8,7 @@ import { Answers } from '../sections/mcq/answers/answers';
 import { useQuestions } from '../../hooks/use-questions';
 import { useLeaderboard } from '../../hooks/use-leaderboard';
 import { HostState, useHost } from '../../hooks/use-host';
+import { MatchState, useMatch } from '../../hooks/use-match';
 
 export enum MatchOpCodes {
   MATCH_STATE = 100,
@@ -18,19 +17,6 @@ export enum MatchOpCodes {
   QUESTION_INDEX = 103,
   TIME_LEFT = 104,
   LEADERBOARD = 105,
-}
-
-export enum LeaderboardState {
-  SHOW = 'SHOW',
-  HIDE = 'HIDE',
-}
-
-export enum MatchState {
-  LOADING = 'LOADING',
-  READY = 'READY',
-  STARTED = 'STARTED',
-  ENDED = 'ENDED',
-  NOT_FOUND = 'NOT_FOUND',
 }
 
 export enum PlayerState {
@@ -42,18 +28,12 @@ const STARTING_QUESTION_INDEX = 0;
 const SHOW_LEADERBOARD_FOR_TIME_IN_MS = 5000;
 
 export default function Match() {
-  const searchParams = useSearchParams();
-  const ticket = searchParams.get('ticket');
-  const token = searchParams.get('token');
   const questions = MockedMCQQuestions;
-
   const [currentPlayers, setCurrentPlayers] = useState([]);
-
-  const [match, setMatch] = useState<null | Match>(null);
   const [myScore, setMyScore] = useState(0);
-
-  const [matchState, setMatchState] = useState(MatchState.READY);
   const [playerState, setPlayerState] = useState(PlayerState.NOT_READY);
+
+  const { match, matchState, matchEventsReceiver, setMatchState } = useMatch();
 
   const { amIHost, hostState, hostEventsReceiver } = useHost({
     match,
@@ -90,49 +70,20 @@ export default function Match() {
     }
   };
 
-  useEffect(() => {
-    switch (playerState) {
-      case PlayerState.NOT_READY:
-        gameSocket
-          .joinMatch(ticket, token)
-          .then(setMatch)
-          .catch((error) => {
-            console.error('Error joining match', error);
-            setMatchState(MatchState.NOT_FOUND);
-          });
-        setPlayerState(PlayerState.READY);
-        break;
-    }
-  }, [ticket, token, playerState]);
-
   gameSocket.onmatchdata = (matchData) => {
-    const decodedData = new TextDecoder().decode(matchData.data);
     switch (matchData.op_code) {
       case MatchOpCodes.MATCH_STATE:
-        switch (decodedData) {
-          case MatchState.READY:
-            setMatchState(MatchState.READY);
-            break;
-          // case MatchState.STARTED:
-          //   setMatchState(MatchState.STARTED);
-          //   break;
-          // case MatchState.ENDED:
-          //   setMatchState(MatchState.ENDED);
-          //   break;
-        }
+        matchEventsReceiver(matchData);
         break;
       case MatchOpCodes.HOST_STATE:
         hostEventsReceiver(matchData);
         break;
-
       case MatchOpCodes.QUESTION_INDEX:
         questionsEventsReceiver(matchData);
         break;
-
       case MatchOpCodes.LEADERBOARD:
         leaderboardEventsReceiver(matchData);
         break;
-
       case MatchOpCodes.PLAYER_SCORE:
         // const deservedPoints = uint8ArrayToNum(matchData.data);
         break;
@@ -155,9 +106,12 @@ export default function Match() {
     if (isQuestionsFinished) {
       setMatchState(MatchState.ENDED);
     }
-  }, [isQuestionsFinished, questions.length]);
+  }, [isQuestionsFinished, questions.length, setMatchState]);
 
   useEffect(() => {
+    console.log('matchState', matchState);
+    console.log('playerState', playerState);
+    console.log('hostState', hostState);
     if (
       matchState === MatchState.READY &&
       playerState === PlayerState.READY &&
@@ -165,7 +119,14 @@ export default function Match() {
     ) {
       setMatchState(MatchState.STARTED);
     }
-  }, [matchState, playerState, hostState, match?.match_id, amIHost]);
+  }, [
+    matchState,
+    playerState,
+    hostState,
+    match?.match_id,
+    amIHost,
+    setMatchState,
+  ]);
 
   switch (matchState) {
     case MatchState.STARTED:

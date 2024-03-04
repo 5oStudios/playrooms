@@ -1,8 +1,12 @@
 import { useState } from 'react';
 import { gameSocket } from '@core/game-client';
-import { LeaderboardState, MatchOpCodes } from '../components/match/match';
+import { MatchOpCodes } from '../components/match/match';
 import { Match, MatchData } from '@heroiclabs/nakama-js';
 
+export enum LeaderboardState {
+  SHOW = 'SHOW',
+  HIDE = 'HIDE',
+}
 export function useLeaderboard({
   match,
   amIHost,
