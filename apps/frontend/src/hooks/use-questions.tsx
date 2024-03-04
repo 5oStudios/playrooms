@@ -3,7 +3,7 @@ import { IQuestion } from '../components/sections/mcq/questions/MCQQuestions';
 import { gameSocket } from '@core/game-client';
 import { numToUint8Array, uint8ArrayToNum } from '../utils/convert';
 import { MatchOpCodes } from '../components/match/match';
-import { Match } from '@heroiclabs/nakama-js';
+import { Match, MatchData } from '@heroiclabs/nakama-js';
 import { Answer } from '../components/sections/mcq/answers/answer';
 
 export function useQuestions({
@@ -25,7 +25,7 @@ export function useQuestions({
     currentQuestion.allowedTimeInMS
   );
 
-  const questionStateHandler = (matchData: any) => {
+  const questionStateHandler = (matchData: MatchData) => {
     console.log('next question');
     setCurrentQuestion(questions[uint8ArrayToNum(matchData.data)]);
     setCurrentQuestionIndex(uint8ArrayToNum(matchData.data));

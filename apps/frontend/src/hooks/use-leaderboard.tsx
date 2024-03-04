@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { gameSocket } from '@core/game-client';
 import { LeaderboardState, MatchOpCodes } from '../components/match/match';
-import { Match } from '@heroiclabs/nakama-js';
+import { Match, MatchData } from '@heroiclabs/nakama-js';
 
 export function useLeaderboard({
   match,
@@ -15,7 +15,8 @@ export function useLeaderboard({
   const [isLeaderboardVisible, setIsLeaderboardVisible] = useState(false);
   const [showLeaderboardForTime] = useState(showLeaderboardForTimeInMs);
 
-  const leaderboardStateHandler = (matchData: any) => {
+  const leaderboardStateHandler = (matchData: MatchData) => {
+    console.log('leaderboard state handler', matchData.op_code, matchData.data);
     const decodedData = new TextDecoder().decode(matchData.data);
     switch (matchData.op_code) {
       case MatchOpCodes.LEADERBOARD:
@@ -52,5 +53,6 @@ export function useLeaderboard({
     previewLeaderboard: async () => {
       previewLeaderboard();
     },
+    leaderboardStateHandler,
   };
 }

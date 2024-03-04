@@ -5,7 +5,6 @@ import { Match } from '@heroiclabs/nakama-js';
 import React, { useEffect, useState } from 'react';
 import { MockedMCQQuestions } from '../../../mocks';
 import { Question } from '../sections/mcq/questions/question';
-import { uint8ArrayToNum } from '../../utils/convert';
 import { Leaderboard } from './leaderboard';
 import { Answers } from '../sections/mcq/answers/answers';
 import { useQuestions } from '../../hooks/use-questions';
@@ -67,18 +66,26 @@ export default function Match() {
     isQuestionsFinished,
     handleAnswer,
     questionStateHandler,
-    onTimeTick,
   } = useQuestions({
     match,
     questions: MockedMCQQuestions,
     startingQuestionIndex: STARTING_QUESTION_INDEX,
     isHost: amIHost,
   });
-  const { isLeaderboardVisible, previewLeaderboard } = useLeaderboard({
-    match,
-    amIHost,
-    showLeaderboardForTimeInMs: SHOW_LEADERBOARD_FOR_TIME_IN_MS,
-  });
+  const { isLeaderboardVisible, leaderboardStateHandler, previewLeaderboard } =
+    useLeaderboard({
+      match,
+      amIHost,
+      showLeaderboardForTimeInMs: SHOW_LEADERBOARD_FOR_TIME_IN_MS,
+    });
+
+  const onTimeTick = (remainingTime: number) => {
+    if (remainingTime === 0) {
+      previewLeaderboard()
+        .then(() => nextQuestion())
+        .catch((error) => console.error('Error previewing leaderboard', error));
+    }
+  };
 
   const questions = MockedMCQQuestions;
 
@@ -137,11 +144,14 @@ export default function Match() {
         break;
 
       case MatchOpCodes.TIME_LEFT:
-        onTimeTick(uint8ArrayToNum(matchData.data));
         break;
 
       case MatchOpCodes.QUESTION_INDEX:
         questionStateHandler(matchData);
+        break;
+
+      case MatchOpCodes.LEADERBOARD:
+        leaderboardStateHandler(matchData);
         break;
 
       case MatchOpCodes.PLAYER_SCORE:
