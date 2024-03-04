@@ -10,12 +10,12 @@ export function useQuestions({
   questions,
   startingQuestionIndex = 0,
   match,
-  isHost,
+  amIHost,
 }: Readonly<{
   match: Match | null;
   questions: IQuestion[];
   startingQuestionIndex: number;
-  isHost: boolean;
+  amIHost: boolean;
 }>) {
   const [currentQuestion, setCurrentQuestion] = useState(questions[0]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(
@@ -31,7 +31,7 @@ export function useQuestions({
   };
 
   const nextQuestion = () => {
-    if (!isHost) return;
+    if (!amIHost) return;
     setCurrentQuestion(questions[currentQuestionIndex + 1]);
     setCurrentQuestionIndex(currentQuestionIndex + 1);
 

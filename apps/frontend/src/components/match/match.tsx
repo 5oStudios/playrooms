@@ -44,9 +44,9 @@ export default function Match() {
     questionsEventsReceiver,
   } = useQuestions({
     match,
+    amIHost,
     questions: MockedMCQQuestions,
     startingQuestionIndex: STARTING_QUESTION_INDEX,
-    isHost: amIHost,
   });
 
   const {
