@@ -1,15 +1,17 @@
 import { useEffect, useState } from 'react';
-import { Match, MatchData } from '@heroiclabs/nakama-js';
+import { MatchData } from '@heroiclabs/nakama-js';
 import { gameSocket } from '@core/game-client';
 import { MatchOpCodes } from '../components/match/match';
 import { usePubSub } from './use-pub-sub';
+import { useAppSelector } from './use-redux-typed';
 
 export enum HostState {
   ELECTED = 'ELECTED',
   NOT_ELECTED = 'NOT_ELECTED',
 }
 export const HostEventsKey = 'host_events';
-export function useHost({ match }: { match: Match | null }) {
+export function useHost() {
+  const match = useAppSelector((state) => state.match.currentMatch);
   const [amIHost, setAmIHost] = useState<boolean>(false);
   const [hostState, setHostState] = useState<HostState>(HostState.NOT_ELECTED);
   const { publish, subscribe } = usePubSub();
@@ -27,7 +29,7 @@ export function useHost({ match }: { match: Match | null }) {
       );
     }
   }, [match]);
-  const hostEventsReceiver = (matchData: MatchData) => {
+  const hostSocketEventsReceiver = (matchData: MatchData) => {
     const decodedData = new TextDecoder().decode(matchData.data);
     switch (decodedData) {
       case HostState.ELECTED:
@@ -44,6 +46,6 @@ export function useHost({ match }: { match: Match | null }) {
 
   return {
     amIHost,
-    hostEventsReceiver,
+    hostSocketEventsReceiver,
   };
 }

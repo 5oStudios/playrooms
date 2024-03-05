@@ -100,9 +100,8 @@ export function useMatch({ ticket, token }: { ticket: string; token: string }) {
   }, [matchState, publish]);
 
   return {
-    match,
     matchState,
-    matchEventsReceiver: matchSocketEventsReceiver,
+    matchSocketEventsReceiver,
     setMatchState,
   };
 }

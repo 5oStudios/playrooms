@@ -1,25 +1,26 @@
 import { useState } from 'react';
 import { gameSocket } from '@core/game-client';
 import { MatchOpCodes } from '../components/match/match';
-import { Match, MatchData } from '@heroiclabs/nakama-js';
+import { MatchData } from '@heroiclabs/nakama-js';
+import { useAppSelector } from './use-redux-typed';
 
 export enum LeaderboardState {
   SHOW = 'SHOW',
   HIDE = 'HIDE',
 }
 export function useLeaderboard({
-  match,
   amIHost,
   showLeaderboardForTimeInMs = 5000,
 }: {
-  match: Match | null;
   amIHost: boolean;
   showLeaderboardForTimeInMs?: number;
 }) {
+  const match = useAppSelector((state) => state.match.currentMatch);
+
   const [isLeaderboardVisible, setIsLeaderboardVisible] = useState(false);
   const [showLeaderboardForTime] = useState(showLeaderboardForTimeInMs);
 
-  const leaderboardEventsReceiver = (matchData: MatchData) => {
+  const leaderboardSocketEventsReceiver = (matchData: MatchData) => {
     const decodedData = new TextDecoder().decode(matchData.data);
     if (decodedData === LeaderboardState.SHOW) {
       setIsLeaderboardVisible(true);
@@ -52,6 +53,6 @@ export function useLeaderboard({
     previewLeaderboard: async () => {
       previewLeaderboard();
     },
-    leaderboardEventsReceiver,
+    leaderboardSocketEventsReceiver,
   };
 }

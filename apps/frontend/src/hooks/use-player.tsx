@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Match, MatchData, Presence } from '@heroiclabs/nakama-js';
+import { MatchData, Presence } from '@heroiclabs/nakama-js';
 import { gameSocket } from '@core/game-client';
 import { MatchOpCodes } from '../components/match/match';
 import { usePubSub } from './use-pub-sub';
+import { useAppSelector } from './use-redux-typed';
 
 export enum PlayerState {
   READY = 'READY',
@@ -15,7 +16,9 @@ export enum PlayerScoreAction {
   ADD = 'add',
   SUBTRACT = 'subtract',
 }
-export function usePlayer({ match }: { match: Match | null }) {
+export function usePlayer() {
+  const match = useAppSelector((state) => state.match.currentMatch);
+
   const [players, setPlayers] = useState<Presence[]>([]);
   const [myPlayerState, setMyPlayerState] = useState(PlayerState.NOT_READY);
   const [playersScore, setPlayersScore] = useState<
@@ -35,18 +38,6 @@ export function usePlayer({ match }: { match: Match | null }) {
     });
     setMyPlayerState(PlayerState.READY);
   }, [match]);
-
-  const playerStateEventsReceiver = (matchData: MatchData) => {
-    const decodedData = new TextDecoder().decode(matchData.data);
-    switch (decodedData) {
-      case PlayerState.READY:
-        setMyPlayerState(PlayerState.READY);
-        break;
-      case PlayerState.NOT_READY:
-        setMyPlayerState(PlayerState.NOT_READY);
-        break;
-    }
-  };
 
   const changePlayerScore = ({
     id,
@@ -71,7 +62,7 @@ export function usePlayer({ match }: { match: Match | null }) {
     });
   };
 
-  const playerScoreEventsReceiver = (matchData: MatchData) => {
+  const playerScoreSocketEventsReceiver = (matchData: MatchData) => {
     const decodedData = new TextDecoder().decode(matchData.data);
     const newplayerScore = new PlayerScoreMessageDTO(JSON.parse(decodedData));
 
@@ -135,8 +126,7 @@ export function usePlayer({ match }: { match: Match | null }) {
         playerScoreMessage.toUint8Array()
       );
     },
-    playerStateEventsReceiver,
-    playerScoreEventsReceiver,
+    playerScoreSocketEventsReceiver,
   };
 }
 export function objectToUint8Array(obj: Record<string, unknown>): Uint8Array {

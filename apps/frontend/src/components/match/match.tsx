@@ -16,7 +16,6 @@ import { useSearchParams } from 'next/navigation';
 export enum MatchOpCodes {
   MATCH_STATE = 100,
   HOST_STATE = 101,
-  PLAYER_STATE = 102,
   PLAYER_SCORE = 103,
   QUESTION_INDEX = 104,
   TIME_LEFT = 105,
@@ -32,27 +31,18 @@ export default function Match() {
   const token = searchParams.get('token');
   const [remainingTime, setRemainingTime] = useState(0);
 
-  const { match, matchState, matchEventsReceiver } = useMatch({
+  const { matchState, matchSocketEventsReceiver } = useMatch({
     ticket,
     token,
   });
 
-  const {
-    playerScoreEventsReceiver,
-    playerStateEventsReceiver,
-    playersScore,
-    changeScore,
-  } = usePlayer({
-    match,
-  });
+  const { amIHost, hostSocketEventsReceiver } = useHost();
 
-  const { amIHost, hostEventsReceiver } = useHost({
-    match,
-  });
+  const { playerScoreSocketEventsReceiver, playersScore, changeScore } =
+    usePlayer();
 
-  const { currentQuestion, nextQuestion, questionsEventsReceiver } =
+  const { currentQuestion, nextQuestion, questionsSocketEventsReceiver } =
     useQuestions({
-      match,
       amIHost,
       questions: MockedMCQQuestions,
       startingQuestionIndex: STARTING_QUESTION_INDEX,
@@ -60,10 +50,9 @@ export default function Match() {
 
   const {
     isLeaderboardVisible,
-    leaderboardEventsReceiver,
+    leaderboardSocketEventsReceiver,
     previewLeaderboard,
   } = useLeaderboard({
-    match,
     amIHost,
     showLeaderboardForTimeInMs: SHOW_LEADERBOARD_FOR_TIME_IN_MS,
   });
@@ -71,22 +60,19 @@ export default function Match() {
   gameSocket.onmatchdata = (matchData) => {
     switch (matchData.op_code) {
       case MatchOpCodes.MATCH_STATE:
-        matchEventsReceiver(matchData);
+        matchSocketEventsReceiver(matchData);
         break;
       case MatchOpCodes.HOST_STATE:
-        hostEventsReceiver(matchData);
+        hostSocketEventsReceiver(matchData);
         break;
       case MatchOpCodes.QUESTION_INDEX:
-        questionsEventsReceiver(matchData);
+        questionsSocketEventsReceiver(matchData);
         break;
       case MatchOpCodes.LEADERBOARD:
-        leaderboardEventsReceiver(matchData);
-        break;
-      case MatchOpCodes.PLAYER_STATE:
-        playerStateEventsReceiver(matchData);
+        leaderboardSocketEventsReceiver(matchData);
         break;
       case MatchOpCodes.PLAYER_SCORE:
-        playerScoreEventsReceiver(matchData);
+        playerScoreSocketEventsReceiver(matchData);
         break;
     }
   };
