@@ -2,11 +2,14 @@ import { useEffect, useState } from 'react';
 import { Match, MatchData, Presence } from '@heroiclabs/nakama-js';
 import { gameSocket } from '@core/game-client';
 import { MatchOpCodes } from '../components/match/match';
+import { usePubSub } from './use-pub-sub';
 
 export enum PlayerState {
   READY = 'READY',
   NOT_READY = 'NOT_READY',
 }
+
+export const PlayerStateEventsKey = 'player_events';
 
 export enum PlayerScoreAction {
   ADD = 'add',
@@ -19,21 +22,17 @@ export function usePlayer({ match }: { match: Match | null }) {
     Array<{ id: string; username: string; score: number }>
   >([]);
 
+  const { publish } = usePubSub();
+
   useEffect(() => {
     if (!match) return;
-    const initScore = {
+
+    changePlayerScore({
       id: match.self.user_id,
       username: match.self.username,
       score: 0,
       action: PlayerScoreAction.ADD,
-    };
-    setPlayersScore([initScore]);
-    gameSocket.sendMatchState(
-      match.match_id,
-      MatchOpCodes.PLAYER_STATE,
-      new PlayerScoreMessageDTO(initScore).toUint8Array()
-    );
-
+    });
     setMyPlayerState(PlayerState.READY);
   }, [match]);
 
@@ -86,17 +85,31 @@ export function usePlayer({ match }: { match: Match | null }) {
 
   gameSocket.onmatchpresence = (matchPresence) => {
     matchPresence.joins &&
-      setPlayers((prevPlayers) => [...prevPlayers, ...matchPresence.joins]);
+      (() => {
+        matchPresence.joins.forEach((player) => {
+          if (!players.find((p) => p.user_id === player.user_id)) {
+            setPlayers((prevPlayers) => [...prevPlayers, player]);
+          }
+          changePlayerScore({
+            id: player.user_id,
+            username: player.username,
+            score: 0,
+            action: PlayerScoreAction.ADD,
+          });
+        });
+      })();
     matchPresence.leaves &&
       setPlayers((prevPlayers) =>
         prevPlayers.filter((player) => !matchPresence.leaves.includes(player))
       );
   };
+  useEffect(() => {
+    publish(PlayerStateEventsKey, myPlayerState);
+  }, [myPlayerState, publish]);
 
   return {
     players,
     playersScore,
-    myPlayerState,
     changeScore: ({
       score,
       action,
