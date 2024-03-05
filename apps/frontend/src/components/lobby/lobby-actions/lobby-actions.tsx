@@ -17,6 +17,7 @@ export enum LobbyMode {
   SOLO,
   PARTY,
   TOURNAMENT,
+  TIKTOK,
 }
 
 export enum PartyOpCodes {

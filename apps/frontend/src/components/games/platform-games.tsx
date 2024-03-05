@@ -10,14 +10,16 @@ export default function PlatformGames() {
   const games = useAppSelector((state) => state.platform.games);
   const router = useRouter();
   return (
-    <div className="flex flex-col gap-12 md:gap-0 md:flex-row items-center justify-center w-full">
+    <div className="flex flex-col gap-12 md:gap-0 md:flex-row items-center justify-center max-w-lg">
       {games.map((game) => (
         <AnimatedGameCard
           key={nanoid()}
-          title={game.title}
+          title={game.title.charAt(0).toUpperCase() + game.title.slice(1)}
           description={game.description}
-          href={'/game/' + game.title}
-          onClick={() => router.push('/game/' + game.title)}
+          href={'/games/' + encodeURIComponent(game.title)}
+          onClick={() =>
+            router.push('/games/' + encodeURIComponent(game.title))
+          }
           chip={
             <Chip
               variant="shadow"
