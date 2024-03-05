@@ -45,7 +45,7 @@ export function useQuestions({
     if (currentQuestionIndex === questions.length - 1) {
       publish(QuestionsFinishedEventKey, true);
     }
-  }, [currentQuestionIndex, publish, questions.length]);
+  }, [currentQuestionIndex, publish, questions, questions.length]);
 
   return {
     currentQuestion,

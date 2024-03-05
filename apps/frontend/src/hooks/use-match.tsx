@@ -24,10 +24,13 @@ export function useMatch({ ticket, token }: { ticket: string; token: string }) {
   const { publish, subscribe } = usePubSub();
 
   const [hostState, setHostState] = useState<HostState>(HostState.NOT_ELECTED);
-  const [matchState, setMatchState] = useState<MatchState>(MatchState.LOADING);
   const [myPlayerState, setMyPlayerState] = useState<PlayerState>(
     PlayerState.NOT_READY
   );
+  const [matchState, setMatchState] = useState<MatchState>(MatchState.LOADING);
+  useEffect(() => {
+    publish(MatchEventsKey, matchState);
+  }, [matchState, publish]);
 
   useEffect(() => {
     if (match) return;
@@ -50,6 +53,16 @@ export function useMatch({ ticket, token }: { ticket: string; token: string }) {
       });
   }, [dispatch, match, publish, ticket, token]);
 
+  // Cleanup
+  useEffect(() => {
+    return () => {
+      match &&
+        gameSocket
+          .leaveMatch(match.match_id)
+          .then(() => dispatch(setCurrentMatch(null)));
+    };
+  }, [dispatch, match]);
+
   subscribe({
     event: HostEventsKey,
     callback: setHostState,
@@ -66,9 +79,6 @@ export function useMatch({ ticket, token }: { ticket: string; token: string }) {
   });
 
   useEffect(() => {
-    console.log('matchState', matchState);
-    console.log('myPlayerState', myPlayerState);
-    console.log('hostState', hostState);
     if (
       matchState === MatchState.READY &&
       myPlayerState === PlayerState.READY &&
@@ -76,7 +86,7 @@ export function useMatch({ ticket, token }: { ticket: string; token: string }) {
     ) {
       setMatchState(MatchState.STARTED);
     }
-  }, [matchState, myPlayerState, hostState, setMatchState]);
+  }, [matchState, myPlayerState, hostState]);
 
   const matchSocketEventsReceiver = (matchData: MatchData) => {
     const decodedData = new TextDecoder().decode(matchData.data);
@@ -95,9 +105,6 @@ export function useMatch({ ticket, token }: { ticket: string; token: string }) {
         break;
     }
   };
-  useEffect(() => {
-    publish(MatchEventsKey, matchState);
-  }, [matchState, publish]);
 
   return {
     matchState,

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { gameSocket } from '@core/game-client';
 import { MatchOpCodes } from '../components/match/match';
 import { MatchData } from '@heroiclabs/nakama-js';
@@ -19,6 +19,13 @@ export function useLeaderboard({
 
   const [isLeaderboardVisible, setIsLeaderboardVisible] = useState(false);
   const [showLeaderboardForTime] = useState(showLeaderboardForTimeInMs);
+
+  // Cleanup
+  useEffect(() => {
+    return () => {
+      setIsLeaderboardVisible(false);
+    };
+  }, []);
 
   const leaderboardSocketEventsReceiver = (matchData: MatchData) => {
     const decodedData = new TextDecoder().decode(matchData.data);

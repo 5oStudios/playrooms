@@ -39,6 +39,15 @@ export function usePlayer() {
     setMyPlayerState(PlayerState.READY);
   }, [match]);
 
+  // Cleanup
+  useEffect(() => {
+    return () => {
+      setMyPlayerState(PlayerState.NOT_READY);
+      setPlayers([]);
+      setPlayersScore([]);
+    };
+  }, []);
+
   const changePlayerScore = ({
     id,
     username,

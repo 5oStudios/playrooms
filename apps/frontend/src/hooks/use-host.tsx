@@ -29,6 +29,15 @@ export function useHost() {
       );
     }
   }, [match]);
+
+  // Cleanup
+  useEffect(() => {
+    return () => {
+      setAmIHost(false);
+      setHostState(HostState.NOT_ELECTED);
+    };
+  }, []);
+
   const hostSocketEventsReceiver = (matchData: MatchData) => {
     const decodedData = new TextDecoder().decode(matchData.data);
     switch (decodedData) {
