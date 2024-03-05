@@ -12,7 +12,10 @@ import {
   RadioGroup,
 } from '@nextui-org/react';
 import React from 'react';
-import { LobbyMode, lobbyModeSearchParamKey } from '../../lobby-actions/lobby';
+import {
+  LobbyMode,
+  lobbyModeSearchParamKey,
+} from '../../lobby-actions/joinLobby';
 
 enum PartyType {
   Public = 'public',

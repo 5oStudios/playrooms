@@ -13,7 +13,7 @@ import {
   LobbyMode,
   LobbyState,
   PartyOpCodes,
-} from '../components/lobby/lobby-actions/lobby';
+} from '../components/lobby/lobby-actions/joinLobby';
 
 export default function useLobby({ lobbyMode }: { lobbyMode: LobbyMode }) {
   const [lobbyState, setLobbyState] = React.useState(LobbyState.NOT_IN_QUEUE);

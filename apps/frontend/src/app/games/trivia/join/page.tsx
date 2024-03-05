@@ -3,17 +3,12 @@ import BaseModal from '../../../../components/modals/base.modal';
 import { BreadcrumbItem, Breadcrumbs, ModalContent } from '@nextui-org/react';
 import { PlayerInfo } from '../../../../components/players/player-info';
 import React, { useState } from 'react';
-import Lobby, {
-  LobbyAction,
+import JoinLobby, {
   LobbyMode,
-} from '../../../../components/lobby/lobby-actions/lobby';
-import useLobby from '../../../../hooks/use-lobby';
+} from '../../../../components/lobby/lobby-actions/joinLobby';
 
 export default function Page() {
   const [isOpen, setIsOpen] = useState(true);
-  const { setLobbyState, setQueueTicket } = useLobby({
-    lobbyMode: LobbyMode.SOLO,
-  });
 
   return (
     <BaseModal
@@ -33,9 +28,7 @@ export default function Page() {
     >
       <ModalContent className={'gap-3'}>
         <PlayerInfo />
-        <>
-          <Lobby action={LobbyAction.JOIN} />
-        </>
+        <JoinLobby mode={LobbyMode.SOLO} />
       </ModalContent>
     </BaseModal>
   );

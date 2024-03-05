@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Divider } from '@nextui-org/react';
 import { useRouter } from 'next/navigation';
-import { LobbyMode, lobbyModeSearchParamKey } from '../lobby-actions/lobby';
+import { LobbyMode, lobbyModeSearchParamKey } from '../lobby-actions/joinLobby';
 import CreatePartyModal from './modes/create-party';
 
 export const CreateLobby = () => {
