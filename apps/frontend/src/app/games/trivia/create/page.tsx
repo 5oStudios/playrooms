@@ -2,13 +2,41 @@
 import BaseModal from '../../../../components/modals/base.modal';
 import { BreadcrumbItem, Breadcrumbs, ModalContent } from '@nextui-org/react';
 import { PlayerInfo } from '../../../../components/players/player-info';
-import LobbyActions, {
+import Lobby, {
+  LobbyAction,
   LobbyMode,
-} from '../../../../components/lobby/lobby-actions/lobby-actions';
+  lobbyModeSearchParamKey,
+} from '../../../../components/lobby/lobby-actions/lobby';
 import React, { useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { CreateLobby } from '../../../../components/lobby/create/create-lobby';
 
 export default function Page() {
   const [isOpen, setIsOpen] = useState(true);
+
+  const searchParams = useSearchParams();
+  const lobbyMode = searchParams.get(
+    lobbyModeSearchParamKey
+  ) as unknown as LobbyMode;
+
+  console.log('lobbyMode', lobbyMode);
+  switch (lobbyMode) {
+    case LobbyMode.PARTY:
+      return (
+        <BaseModal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+          <ModalContent className={'gap-3'}>asdas</ModalContent>
+        </BaseModal>
+      );
+    case LobbyMode.SOLO:
+      return (
+        <BaseModal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+          <ModalContent className={'gap-3'}>
+            <PlayerInfo />
+            <Lobby action={LobbyAction.JOIN} mode={LobbyMode.SOLO} />
+          </ModalContent>
+        </BaseModal>
+      );
+  }
 
   return (
     <BaseModal
@@ -30,7 +58,7 @@ export default function Page() {
     >
       <ModalContent className={'gap-3'}>
         <PlayerInfo />
-        <LobbyActions mode={LobbyMode.SOLO} />
+        <CreateLobby />
       </ModalContent>
     </BaseModal>
   );

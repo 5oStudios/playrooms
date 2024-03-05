@@ -1,35 +1,21 @@
-import { SoloMode } from './solo-mode';
-import PartyMode from './party-mode';
 import React, { useEffect } from 'react';
-import { gameSocket } from '@core/game-client';
-import { setMatchFoundData } from '../../../store/features/matchSlice';
-import { useAppDispatch, useAppSelector } from '../../../hooks/use-redux-typed';
-import { Button } from '@nextui-org/react';
 import { MatchmakerTicket, PartyMatchmakerTicket } from '@heroiclabs/nakama-js';
-import { MatchmakerMatched } from '@heroiclabs/nakama-js/socket';
-import { useRouter } from 'next/navigation';
+import { useAppDispatch, useAppSelector } from './use-redux-typed';
 import {
   NODE_ENV,
   NODE_ENV_STATE,
-} from '../../../../../../libs/game-client/src/lib/config';
+} from '../../../../libs/game-client/src/lib/config';
+import { MatchmakerMatched } from '@heroiclabs/nakama-js/socket';
+import { useRouter } from 'next/navigation';
+import { gameSocket } from '@core/game-client';
+import { setMatchFoundData } from '../store/features/matchSlice';
+import {
+  LobbyMode,
+  LobbyState,
+  PartyOpCodes,
+} from '../components/lobby/lobby-actions/lobby';
 
-export enum LobbyMode {
-  SOLO,
-  PARTY,
-  TOURNAMENT,
-  TIKTOK,
-}
-
-export enum PartyOpCodes {
-  QUEUE_STATE = 100,
-}
-
-export enum LobbyState {
-  IN_QUEUE = 'IN_QUEUE',
-  NOT_IN_QUEUE = 'NOT_IN_QUEUE',
-  MATCH_FOUND = 'MATCH_FOUND',
-}
-export default function LobbyActions({ mode: lobbyMode = LobbyMode.SOLO }) {
+export default function useLobby({ lobbyMode }: { lobbyMode: LobbyMode }) {
   const [lobbyState, setLobbyState] = React.useState(LobbyState.NOT_IN_QUEUE);
   const [queueTicket, setQueueTicket] = React.useState<
     MatchmakerTicket | PartyMatchmakerTicket | null
@@ -57,7 +43,7 @@ export default function LobbyActions({ mode: lobbyMode = LobbyMode.SOLO }) {
         if (countdown === 0) {
           clearInterval(interval);
           router.push(
-            `/game/trivia/match?ticket=${matched.ticket}&token=${matched.token}`
+            `/games/trivia/match?ticket=${matched.ticket}&token=${matched.token}`
           );
         }
         setCountdown((prev) => (prev !== 0 ? prev - 1 : 0));
@@ -112,41 +98,13 @@ export default function LobbyActions({ mode: lobbyMode = LobbyMode.SOLO }) {
         throw new Error('Tournament mode not implemented');
     }
   };
-  switch (lobbyState) {
-    case LobbyState.IN_QUEUE:
-      return (
-        <>
-          <h1>Waiting for match</h1>
-          <Button className={'w-1/2'} onClick={handleCancelQueue}>
-            Cancel
-          </Button>
-        </>
-      );
-    case LobbyState.MATCH_FOUND:
-      return (
-        <div className={'flex flex-col items-center text-center'}>
-          <h1>Match found</h1>
-          <h2>Match starts in {countdown} seconds</h2>
-        </div>
-      );
-  }
 
-  switch (lobbyMode) {
-    case LobbyMode.SOLO:
-      return (
-        <SoloMode
-          setLobbyState={setLobbyState}
-          setQueueTicket={setQueueTicket}
-        />
-      );
-    case LobbyMode.PARTY:
-      return (
-        <PartyMode
-          setLobbyState={setLobbyState}
-          setQueueTicket={setQueueTicket}
-        />
-      );
-    case LobbyMode.TOURNAMENT:
-      throw new Error('Tournament mode not implemented');
-  }
+  return {
+    lobbyState,
+    setLobbyState,
+    queueTicket,
+    setQueueTicket,
+    handleCancelQueue,
+    countdown,
+  };
 }

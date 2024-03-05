@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { setParty } from '../../../store/features/partySlice';
 import { PartyMembersTracker } from '../../party/party-members-tracker';
 import { InviteToParty } from '../../party/invite-to-party.modal';
-import { LobbyState, PartyOpCodes } from './lobby-actions';
+import { LobbyState, PartyOpCodes } from './lobby';
 import { MatchmakerTicket, PartyMatchmakerTicket } from '@heroiclabs/nakama-js';
 
 export default function PartyMode({

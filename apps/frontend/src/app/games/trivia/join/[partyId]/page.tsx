@@ -11,9 +11,10 @@ import { useRouter } from 'next/navigation';
 import { PlayerInfo } from '../../../../../components/players/player-info';
 import BaseModal from '../../../../../components/modals/base.modal';
 import { ModalContent } from '@nextui-org/react';
-import LobbyActions, {
+import Lobby, {
+  LobbyAction,
   LobbyMode,
-} from '../../../../../components/lobby/lobby-actions/lobby-actions';
+} from '../../../../../components/lobby/lobby-actions/lobby';
 
 export default function Page({ params }: { params: { partyId: string } }) {
   const [isPartyModalOpen, setIsPartyModalOpen] = React.useState(true);
@@ -34,7 +35,7 @@ export default function Page({ params }: { params: { partyId: string } }) {
     gameSocket.joinParty(partyId).catch((party) => {
       toast.error('Failed to join party');
       console.error(party);
-      router.push('/game/trivia');
+      router.push('/games/trivia');
     });
   }
 
@@ -43,7 +44,7 @@ export default function Page({ params }: { params: { partyId: string } }) {
       <BaseModal isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <ModalContent className={'gap-3'}>
           <PlayerInfo />
-          <LobbyActions mode={LobbyMode.PARTY} />
+          <Lobby action={LobbyAction.JOIN} mode={LobbyMode.PARTY} />
         </ModalContent>
       </BaseModal>
     </>
