@@ -40,6 +40,7 @@ export function useQuestions({
       numToUint8Array(currentQuestionIndex + 1)
     );
   };
+
   useEffect(() => {
     if (currentQuestionIndex === questions.length - 1) {
       publish(QuestionsFinishedEventKey, true);
