@@ -1,0 +1,24 @@
+{
+  "name": "tiktok-live-connector",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/backend/tiktok-live-connector/src",
+  "projectType": "application",
+  "targets": {
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "tiktok-live-connector:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "tiktok-live-connector:build:development"
+        },
+        "production": {
+          "buildTarget": "tiktok-live-connector:build:production"
+        }
+      }
+    }
+  },
+  "tags": []
+}
