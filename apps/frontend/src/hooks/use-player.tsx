@@ -1,9 +1,11 @@
-import { useEffect, useState } from 'react';
+'use client';
+import { useCallback, useEffect, useState } from 'react';
 import { MatchData, Presence } from '@heroiclabs/nakama-js';
 import { gameSocket } from '@core/game-client';
-import { MatchOpCodes } from '../components/match/match';
+import { AnswerEvent, MatchOpCodes } from '../components/match/match';
 import { usePubSub } from './use-pub-sub';
 import { useAppSelector } from './use-redux-typed';
+import { QuestionAnswerEventKey } from './use-questions';
 
 export enum PlayerState {
   READY = 'READY',
@@ -24,20 +26,65 @@ export function usePlayer() {
   const [playersScore, setPlayersScore] = useState<
     Array<{ id: string; username: string; score: number }>
   >([]);
+  const { publish, subscribe } = usePubSub();
 
-  const { publish } = usePubSub();
+  const changeLocalPlayerScore = useCallback(
+    ({ id, username, score, action }: IPlayerScoreMessageDTO) => {
+      setPlayersScore((prevPlayersScore) => {
+        const playerIndex = prevPlayersScore.findIndex(
+          (player) => player.id === id
+        );
+        const newPlayer = playerIndex === -1;
+        if (newPlayer) {
+          return [...prevPlayersScore, { id, username, score }];
+        }
+        prevPlayersScore[playerIndex].score =
+          action === PlayerScoreAction.ADD
+            ? prevPlayersScore[playerIndex].score + score
+            : prevPlayersScore[playerIndex].score - score;
+
+        return prevPlayersScore;
+      });
+    },
+    []
+  );
+
+  const changeScore = useCallback(
+    ({ score, action }: { score: number; action: PlayerScoreAction }) => {
+      const playerScoreMessage = new PlayerScoreMessageDTO({
+        id: match?.self.user_id,
+        username: match?.self.username,
+        score,
+        action,
+      });
+      changeLocalPlayerScore(playerScoreMessage);
+      gameSocket.sendMatchState(
+        match?.match_id,
+        MatchOpCodes.PLAYER_SCORE,
+        playerScoreMessage.toUint8Array()
+      );
+    },
+    [
+      changeLocalPlayerScore,
+      match?.match_id,
+      match?.self.user_id,
+      match?.self.username,
+    ]
+  );
 
   useEffect(() => {
     if (!match) return;
 
-    changePlayerScore({
-      id: match.self.user_id,
-      username: match.self.username,
+    changeScore({
       score: 0,
       action: PlayerScoreAction.ADD,
     });
     setMyPlayerState(PlayerState.READY);
-  }, [match]);
+  }, [changeScore, match]);
+
+  useEffect(() => {
+    publish(PlayerStateEventsKey, myPlayerState);
+  }, [myPlayerState, publish]);
 
   // Cleanup
   useEffect(() => {
@@ -48,41 +95,6 @@ export function usePlayer() {
     };
   }, []);
 
-  const changePlayerScore = ({
-    id,
-    username,
-    score,
-    action,
-  }: IPlayerScoreMessageDTO) => {
-    setPlayersScore((prevPlayersScore) => {
-      const playerIndex = prevPlayersScore.findIndex(
-        (player) => player.id === id
-      );
-      const newPlayer = playerIndex === -1;
-      if (newPlayer) {
-        return [...prevPlayersScore, { id, username, score }];
-      }
-      prevPlayersScore[playerIndex].score =
-        action === PlayerScoreAction.ADD
-          ? prevPlayersScore[playerIndex].score + score
-          : prevPlayersScore[playerIndex].score - score;
-
-      return prevPlayersScore;
-    });
-  };
-
-  const playerScoreSocketEventsReceiver = (matchData: MatchData) => {
-    const decodedData = new TextDecoder().decode(matchData.data);
-    const newplayerScore = new PlayerScoreMessageDTO(JSON.parse(decodedData));
-
-    changePlayerScore({
-      id: newplayerScore.id,
-      username: newplayerScore.username,
-      score: newplayerScore.score,
-      action: newplayerScore.action,
-    });
-  };
-
   gameSocket.onmatchpresence = (matchPresence) => {
     matchPresence.joins &&
       (() => {
@@ -90,7 +102,7 @@ export function usePlayer() {
           if (!players.find((p) => p.user_id === player.user_id)) {
             setPlayers((prevPlayers) => [...prevPlayers, player]);
           }
-          changePlayerScore({
+          changeLocalPlayerScore({
             id: player.user_id,
             username: player.username,
             score: 0,
@@ -103,38 +115,32 @@ export function usePlayer() {
         prevPlayers.filter((player) => !matchPresence.leaves.includes(player))
       );
   };
-  useEffect(() => {
-    publish(PlayerStateEventsKey, myPlayerState);
-  }, [myPlayerState, publish]);
+
+  subscribe({
+    event: QuestionAnswerEventKey,
+    callback: (answerEvent: AnswerEvent) => {
+      changeScore({
+        score: answerEvent.deservedScore,
+        action: answerEvent.scoreAction,
+      });
+    },
+  });
+
+  const playerScoreSocketEventsReceiver = (matchData: MatchData) => {
+    const decodedData = new TextDecoder().decode(matchData.data);
+    const newPlayerScore = new PlayerScoreMessageDTO(JSON.parse(decodedData));
+
+    changeLocalPlayerScore({
+      id: newPlayerScore.id,
+      username: newPlayerScore.username,
+      score: newPlayerScore.score,
+      action: newPlayerScore.action,
+    });
+  };
 
   return {
     players,
     playersScore,
-    changeScore: ({
-      score,
-      action,
-    }: {
-      score: number;
-      action: PlayerScoreAction;
-    }) => {
-      const playerScoreMessage = new PlayerScoreMessageDTO({
-        id: match?.self.user_id,
-        username: match?.self.username,
-        score,
-        action,
-      });
-      changePlayerScore({
-        id: match.self.user_id,
-        username: match.self.username,
-        score,
-        action,
-      });
-      gameSocket.sendMatchState(
-        match?.match_id,
-        MatchOpCodes.PLAYER_SCORE,
-        playerScoreMessage.toUint8Array()
-      );
-    },
     playerScoreSocketEventsReceiver,
   };
 }

@@ -1,8 +1,6 @@
 import React from 'react';
-import { usePlayersList } from 'playroomkit';
 import { Button } from '@nextui-org/react';
 import { cn } from '../../../../utils/cn';
-import Image from 'next/image';
 
 export interface Answer {
   option: string;
@@ -69,27 +67,27 @@ export const Answer: React.FC<{
     </div>
   );
 };
-function PlayersChooseThis({ playersChooseThis, answer }) {
-  const players = usePlayersList();
-  return (
-    <div className={cn('flex gap-2 mt-2')}>
-      {playersChooseThis.map((player, index) => {
-        if (player.chosenAnswer.option !== answer.option) return null;
-        const playerData = players.find(
-          (currentPlayer) => currentPlayer.id === player.id
-        );
-        if (!playerData) return null;
-        return (
-          <Image
-            key={player.id}
-            width={32}
-            height={32}
-            src={playerData.getProfile().photo}
-            alt="playerAvatar"
-            className="h-8 w-8 rounded-full"
-          />
-        );
-      })}
-    </div>
-  );
-}
+// function PlayersChooseThis({ playersChooseThis, answer }) {
+//   const players = usePlayersList();
+//   return (
+//     <div className={cn('flex gap-2 mt-2')}>
+//       {playersChooseThis.map((player, index) => {
+//         if (player.chosenAnswer.option !== answer.option) return null;
+//         const playerData = players.find(
+//           (currentPlayer) => currentPlayer.id === player.id
+//         );
+//         if (!playerData) return null;
+//         return (
+//           <Image
+//             key={player.id}
+//             width={32}
+//             height={32}
+//             src={playerData.getProfile().photo}
+//             alt="playerAvatar"
+//             className="h-8 w-8 rounded-full"
+//           />
+//         );
+//       })}
+//     </div>
+//   );
+// }

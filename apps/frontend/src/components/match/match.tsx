@@ -1,17 +1,19 @@
 'use client';
-import { gameSocket } from '@core/game-client';
-import React, { useState } from 'react';
-import { MockedMCQQuestions } from '../../../mocks';
-import { Question } from '../sections/mcq/questions/question';
-import { Leaderboard } from './leaderboard';
-import { Answers } from '../sections/mcq/answers/answers';
-import { useQuestions } from '../../hooks/use-questions';
-import { useLeaderboard } from '../../hooks/use-leaderboard';
 import { useHost } from '../../hooks/use-host';
 import { MatchState, useMatch } from '../../hooks/use-match';
 import { PlayerScoreAction, usePlayer } from '../../hooks/use-player';
-import { Answer } from '../sections/mcq/answers/answer';
-import { useSearchParams } from 'next/navigation';
+import {
+  QuestionAnswerEventKey,
+  useQuestions,
+} from '../../hooks/use-questions';
+import { MockedMCQQuestions } from '../../../mocks';
+import { useLeaderboard } from '../../hooks/use-leaderboard';
+import { gameSocket } from '@core/game-client';
+import { Leaderboard } from './leaderboard';
+import { Question } from '../sections/mcq/questions/question';
+import { Answers } from '../sections/mcq/answers/answers';
+import { usePubSub } from '../../hooks/use-pub-sub';
+import { useState } from 'react';
 
 export enum MatchOpCodes {
   MATCH_STATE = 100,
@@ -25,11 +27,17 @@ export enum MatchOpCodes {
 const STARTING_QUESTION_INDEX = 0;
 const SHOW_LEADERBOARD_FOR_TIME_IN_MS = 5000;
 
-export default function Match() {
-  const searchParams = useSearchParams();
-  const ticket = searchParams.get('ticket');
-  const token = searchParams.get('token');
-  const [remainingTime, setRemainingTime] = useState(0);
+export default function Match({
+  ticket,
+  token,
+}: {
+  ticket: string;
+  token: string;
+}) {
+  const { publish } = usePubSub();
+
+  // TODO: refactor this to pub/sub pattern
+  const [remainingTime, setRemainingTime] = useState<number>(0);
 
   const { matchState, matchSocketEventsReceiver } = useMatch({
     ticket,
@@ -38,8 +46,7 @@ export default function Match() {
 
   const { amIHost, hostSocketEventsReceiver } = useHost();
 
-  const { playerScoreSocketEventsReceiver, playersScore, changeScore } =
-    usePlayer();
+  const { playerScoreSocketEventsReceiver, playersScore } = usePlayer();
 
   const { currentQuestion, nextQuestion, questionsSocketEventsReceiver } =
     useQuestions({
@@ -83,19 +90,6 @@ export default function Match() {
       .catch((error) => console.error('Error previewing leaderboard', error));
   };
 
-  const handleAnswer = (answer: Answer, remainingTime: number) => {
-    const deservedScore = Math.floor(
-      currentQuestion.allowedTimeInMS / 1000 - remainingTime
-    );
-    const score = answer.isCorrect ? deservedScore : 0;
-    changeScore({
-      score,
-      action: answer.isCorrect
-        ? PlayerScoreAction.ADD
-        : PlayerScoreAction.SUBTRACT,
-    });
-  };
-
   switch (matchState) {
     case MatchState.LOADING:
     case MatchState.READY:
@@ -115,7 +109,14 @@ export default function Match() {
               />
               <Answers
                 answers={currentQuestion.answers}
-                onClick={(answer) => handleAnswer(answer, remainingTime)}
+                onClick={(answer) =>
+                  publish(QuestionAnswerEventKey, {
+                    deservedScore: answer.isCorrect ? remainingTime : 0,
+                    scoreAction: answer.isCorrect
+                      ? PlayerScoreAction.ADD
+                      : PlayerScoreAction.SUBTRACT,
+                  })
+                }
               />
               {playersScore.map((playerScore) => (
                 <div key={playerScore.id}>
@@ -132,4 +133,9 @@ export default function Match() {
     case MatchState.NOT_FOUND:
       return <>Match not found</>;
   }
+}
+
+export interface AnswerEvent {
+  deservedScore: number;
+  scoreAction: PlayerScoreAction;
 }

@@ -1,3 +1,4 @@
+'use client';
 import { useEffect, useState } from 'react';
 import { gameSocket } from '@core/game-client';
 import { MatchOpCodes } from '../components/match/match';

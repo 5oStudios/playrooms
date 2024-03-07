@@ -1,3 +1,4 @@
+'use client';
 import React, { useEffect } from 'react';
 import { MatchmakerTicket, PartyMatchmakerTicket } from '@heroiclabs/nakama-js';
 import { useAppDispatch, useAppSelector } from './use-redux-typed';

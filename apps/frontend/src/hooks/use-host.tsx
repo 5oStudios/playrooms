@@ -1,3 +1,4 @@
+'use client';
 import { useEffect, useState } from 'react';
 import { MatchData } from '@heroiclabs/nakama-js';
 import { gameSocket } from '@core/game-client';

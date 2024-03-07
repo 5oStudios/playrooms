@@ -1,3 +1,4 @@
+'use client';
 import { useEffect, useState } from 'react';
 import { IQuestion } from '../components/sections/mcq/questions/MCQQuestions';
 import { gameSocket } from '@core/game-client';
@@ -8,6 +9,10 @@ import { usePubSub } from './use-pub-sub';
 import { useAppSelector } from './use-redux-typed';
 
 export const QuestionsFinishedEventKey = 'questions_finished';
+export const RemainingTimeForQuestionEventKey = (questionIndex: string) =>
+  `remaining_time_for_question_${questionIndex}`;
+export const QuestionAnswerEventKey = 'question_answer';
+
 export function useQuestions({
   questions,
   startingQuestionIndex = 0,
