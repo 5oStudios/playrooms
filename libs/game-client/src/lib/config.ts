@@ -6,10 +6,10 @@ export enum NODE_ENV_STATE {
 }
 export const SERVER_KEY = 'defaultkey',
   HOST =
-    NODE_ENV !== NODE_ENV_STATE.PRODUCTION
+    NODE_ENV === NODE_ENV_STATE.PRODUCTION
       ? 'nakama.5ostudios.com'
       : '65.109.11.0',
-  PORT = '443',
+  PORT = '',
   USE_SSL = NODE_ENV === NODE_ENV_STATE.PRODUCTION,
   TIMEOUT = 7500,
   AUTO_REFRESH_SESSION = true;
