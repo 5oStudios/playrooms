@@ -12,7 +12,8 @@
       },
       "configurations": {
         "development": {
-          "buildTarget": "tiktok-live-connector:build:development"
+          "buildTarget": "tiktok-live-connector:build:development",
+          "port": 4000
         },
         "production": {
           "buildTarget": "tiktok-live-connector:build:production"

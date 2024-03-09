@@ -25,6 +25,9 @@ export const CreateLobby = () => {
       </Button>
       <Divider />
       <div className={'flex flex-row-reverse w-full gap-3'}>
+        <Button disabled className={'disabled:opacity-50 w-full'}>
+          Create Match
+        </Button>
         <Button
           onClick={() => {
             router.push(
@@ -34,9 +37,6 @@ export const CreateLobby = () => {
           }}
           className={'w-full'}
         >
-          TikTok Mode
-        </Button>
-        <Button disabled className={'disabled:opacity-50 w-full'}>
           Tournament
         </Button>
       </div>
