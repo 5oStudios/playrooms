@@ -14,10 +14,10 @@ RUN npm install -g nx
 
 COPY . .
 
-RUN nx run frontend:build:production
+RUN #nx run frontend:build:production
 
-EXPOSE 3010
+EXPOSE 3035
 
-ENV NODE_ENV production
+#ENV NODE_ENV production
 
-CMD ["nx", "run", "frontend:serve:production"]
+CMD ["nx", "run", "frontend:serve-static"]
