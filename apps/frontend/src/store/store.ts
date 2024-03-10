@@ -10,6 +10,7 @@ import platformSlice from './features/platformSlice';
 import socketSlice from './features/socketSlice';
 import partySlice from './features/partySlice';
 import matchSlice from './features/matchSlice';
+import { localStorage } from '../utils/local-storage';
 
 export const store = configureStore({
   reducer: {
@@ -33,13 +34,14 @@ store.subscribe(() => {
   const session = store.getState().session;
   const user = store.getState().user;
   if ((!user && session) || (user && user.id !== session.user_id)) {
-    typeof window !== 'undefined' &&
-      window.localStorage.setItem(LOCAL_STORAGE_AUTH_KEY, session.token);
-    typeof window !== 'undefined' &&
-      window.localStorage.setItem(
-        LOCAL_STORAGE_REFRESH_KEY,
-        session.refresh_token
-      );
+    localStorage.setItem({
+      key: LOCAL_STORAGE_AUTH_KEY,
+      value: session.token,
+    });
+    localStorage.setItem({
+      key: LOCAL_STORAGE_REFRESH_KEY,
+      value: session.refresh_token,
+    });
     gameClient.getAccount(session).then((user) => {
       store.dispatch(setUser(user.user));
     });
