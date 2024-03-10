@@ -2,10 +2,13 @@
 import BaseModal from '../../../../components/modals/base.modal';
 import { BreadcrumbItem, Breadcrumbs, ModalContent } from '@nextui-org/react';
 import { PlayerInfo } from '../../../../components/players/player-info';
-import React, { useState } from 'react';
+import React, { Suspense, useState } from 'react';
 import JoinLobby, {
   LobbyMode,
+  lobbyModeSearchParamKey,
+  partyIdSearchParamKey,
 } from '../../../../components/lobby/lobby-actions/joinLobby';
+import { useSearchParams } from 'next/navigation';
 
 export default function Page() {
   const [isOpen, setIsOpen] = useState(true);
@@ -28,8 +31,18 @@ export default function Page() {
     >
       <ModalContent className={'gap-3'}>
         <PlayerInfo />
-        <JoinLobby mode={LobbyMode.SOLO} />
+        <Suspense fallback={<div>Loading...</div>}>
+          <SuspendedJoinLobby />
+        </Suspense>
       </ModalContent>
     </BaseModal>
   );
 }
+
+const SuspendedJoinLobby = () => {
+  const searchParams = useSearchParams();
+  const lobbyMode = searchParams.get(lobbyModeSearchParamKey) || LobbyMode.SOLO;
+  const partyId = searchParams.get(partyIdSearchParamKey);
+
+  return <JoinLobby partyId={partyId} mode={+lobbyMode} />;
+};

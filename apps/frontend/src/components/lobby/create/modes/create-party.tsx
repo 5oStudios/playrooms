@@ -15,6 +15,7 @@ import React from 'react';
 import {
   LobbyMode,
   lobbyModeSearchParamKey,
+  partyIdSearchParamKey,
 } from '../../lobby-actions/joinLobby';
 
 enum PartyType {
@@ -49,15 +50,12 @@ export default function CreatePartyModal({
         setCreatePartyModal(false);
 
         const newPath = path.replace('create', 'join');
-        router.push(
-          newPath +
-            '/' +
-            party.party_id +
-            '?' +
-            lobbyModeSearchParamKey +
-            '=' +
-            LobbyMode.PARTY
-        );
+
+        const params = new URLSearchParams(window.location.search);
+        params.append(partyIdSearchParamKey, party.party_id);
+        params.append(lobbyModeSearchParamKey, LobbyMode.PARTY.toString());
+
+        router.push(newPath + '?' + params.toString());
       });
   };
   return (

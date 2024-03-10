@@ -12,12 +12,20 @@ import { gameSocket } from '@core/game-client';
 import { setMatchFoundData } from '../store/features/matchSlice';
 import {
   LobbyMode,
-  LobbyState,
   PartyOpCodes,
+  PartyState,
 } from '../components/lobby/lobby-actions/joinLobby';
+import { SocketState } from '../store/features/socketSlice';
 
-export default function useLobby({ lobbyMode }: { lobbyMode: LobbyMode }) {
-  const [lobbyState, setLobbyState] = React.useState(LobbyState.NOT_IN_QUEUE);
+export default function useParty({
+  partyId,
+  partyMode,
+}: {
+  partyId?: string;
+  partyMode: LobbyMode;
+}) {
+  const [partyState, setPartyState] = React.useState(PartyState.NOT_IN_QUEUE);
+  const socketState = useAppSelector((state) => state.socket);
   const [queueTicket, setQueueTicket] = React.useState<
     MatchmakerTicket | PartyMatchmakerTicket | null
   >(null);
@@ -29,14 +37,13 @@ export default function useLobby({ lobbyMode }: { lobbyMode: LobbyMode }) {
   const [matched, setMatched] = React.useState<MatchmakerMatched | null>(null);
   const router = useRouter();
 
-  gameSocket.onmatchmakermatched = (matched) => {
-    console.info('Received MatchmakerMatched message: ', matched);
-    console.info('Matched opponents: ', matched.users);
-    setLobbyState(LobbyState.MATCH_FOUND);
-    setMatched(matched);
-
-    dispatch(setMatchFoundData(matched));
-  };
+  useEffect(() => {
+    if (partyId && socketState === SocketState.CONNECTED) {
+      gameSocket.joinParty(partyId).catch((party) => {
+        console.error(party);
+      });
+    }
+  }, [partyId, socketState]);
 
   useEffect(() => {
     if (matched) {
@@ -53,16 +60,25 @@ export default function useLobby({ lobbyMode }: { lobbyMode: LobbyMode }) {
     }
   }, [matched, countdown, router]);
 
+  gameSocket.onmatchmakermatched = (matched) => {
+    console.info('Received MatchmakerMatched message: ', matched);
+    console.info('Matched opponents: ', matched.users);
+    setPartyState(PartyState.MATCH_FOUND);
+    setMatched(matched);
+
+    dispatch(setMatchFoundData(matched));
+  };
+
   gameSocket.onpartydata = (partyData) => {
     const decodedData = new TextDecoder().decode(partyData.data);
     switch (partyData.op_code) {
       case PartyOpCodes.QUEUE_STATE:
         switch (decodedData) {
-          case LobbyState.IN_QUEUE:
-            setLobbyState(LobbyState.IN_QUEUE);
+          case PartyState.IN_QUEUE:
+            setPartyState(PartyState.IN_QUEUE);
             break;
-          case LobbyState.NOT_IN_QUEUE:
-            setLobbyState(LobbyState.NOT_IN_QUEUE);
+          case PartyState.NOT_IN_QUEUE:
+            setPartyState(PartyState.NOT_IN_QUEUE);
             break;
         }
         break;
@@ -72,10 +88,10 @@ export default function useLobby({ lobbyMode }: { lobbyMode: LobbyMode }) {
   };
 
   const handleCancelQueue = () => {
-    switch (lobbyMode) {
+    switch (partyMode) {
       case LobbyMode.SOLO:
         gameSocket.removeMatchmaker(queueTicket.ticket).then(() => {
-          setLobbyState(LobbyState.NOT_IN_QUEUE);
+          setPartyState(PartyState.NOT_IN_QUEUE);
         });
         break;
       case LobbyMode.PARTY:
@@ -90,9 +106,9 @@ export default function useLobby({ lobbyMode }: { lobbyMode: LobbyMode }) {
             gameSocket.sendPartyData(
               party.party_id,
               PartyOpCodes.QUEUE_STATE,
-              LobbyState.NOT_IN_QUEUE
+              PartyState.NOT_IN_QUEUE
             );
-            setLobbyState(LobbyState.NOT_IN_QUEUE);
+            setPartyState(PartyState.NOT_IN_QUEUE);
           });
         break;
       case LobbyMode.TOURNAMENT:
@@ -101,8 +117,8 @@ export default function useLobby({ lobbyMode }: { lobbyMode: LobbyMode }) {
   };
 
   return {
-    lobbyState,
-    setLobbyState,
+    partyState,
+    setPartyState,
     queueTicket,
     setQueueTicket,
     handleCancelQueue,

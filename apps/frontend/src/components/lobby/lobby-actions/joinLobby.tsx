@@ -1,8 +1,8 @@
-import PartyMode from './party-mode';
 import React from 'react';
 import { Button, Divider } from '@nextui-org/react';
-import useLobby from '../../../hooks/use-lobby';
+import useParty from '../../../hooks/use-party';
 import { gameSocket } from '@core/game-client';
+import LobbyPartyMode from './lobby-party-mode';
 
 export enum LobbyMode {
   SOLO,
@@ -15,32 +15,39 @@ export enum PartyOpCodes {
   QUEUE_STATE = 100,
 }
 
-export enum LobbyState {
+export enum PartyState {
   IN_QUEUE = 'IN_QUEUE',
   NOT_IN_QUEUE = 'NOT_IN_QUEUE',
   MATCH_FOUND = 'MATCH_FOUND',
 }
 
 export const lobbyModeSearchParamKey = 'lobbyMode';
+export const partyIdSearchParamKey = 'partyId';
 
-export default function JoinLobby({ mode }: { mode: LobbyMode }) {
+export default function JoinLobby({
+  partyId,
+  mode,
+}: {
+  partyId?: string;
+  mode: LobbyMode;
+}) {
   const {
-    lobbyState,
-    setLobbyState,
+    partyState,
+    setPartyState,
     setQueueTicket,
     countdown,
     handleCancelQueue,
-  } = useLobby({ lobbyMode: mode });
+  } = useParty({ partyId, partyMode: mode });
 
   const handleJoinOnline = () => {
-    setLobbyState(LobbyState.IN_QUEUE);
+    setPartyState(PartyState.IN_QUEUE);
     gameSocket.addMatchmaker('*', 2, 16).then((ticket) => {
       setQueueTicket(ticket);
     });
   };
 
-  switch (lobbyState) {
-    case LobbyState.IN_QUEUE:
+  switch (partyState) {
+    case PartyState.IN_QUEUE:
       return (
         <>
           <h1>Waiting for match</h1>
@@ -49,7 +56,7 @@ export default function JoinLobby({ mode }: { mode: LobbyMode }) {
           </Button>
         </>
       );
-    case LobbyState.MATCH_FOUND:
+    case PartyState.MATCH_FOUND:
       return (
         <div className={'flex flex-col items-center text-center'}>
           <h1>Match found</h1>
@@ -61,8 +68,8 @@ export default function JoinLobby({ mode }: { mode: LobbyMode }) {
   switch (mode) {
     case LobbyMode.PARTY:
       return (
-        <PartyMode
-          setLobbyState={setLobbyState}
+        <LobbyPartyMode
+          setPartyState={setPartyState}
           setQueueTicket={setQueueTicket}
         />
       );
