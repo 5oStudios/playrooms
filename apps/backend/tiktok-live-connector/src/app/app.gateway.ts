@@ -9,23 +9,7 @@ import { AppService } from './app.service';
 import { Logger } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { tiktokEvents } from './events-handlers';
-
-export enum TikTokLiveEvents {
-  ROOM_USER = 'roomUser',
-  MEMBER = 'member',
-  CHAT = 'chat',
-  GIFT = 'gift',
-  SOCIAL = 'social',
-  LIKE = 'like',
-  QUESTION_NEW = 'questionNew',
-  LINK_MIC_BATTLE = 'linkMicBattle',
-  LINK_MIC_ARMIES = 'linkMicArmies',
-  LIVE_INTRO = 'liveIntro',
-  EMOTE = 'emote',
-  ENVELOPE = 'envelope',
-  SUBSCRIBE = 'subscribe',
-}
-export const listenToStreamEventKey = 'listenToStream';
+import { listenToStreamEventKey } from '@core/tiktok-client';
 
 @WebSocketGateway({ cors: true })
 export class AppGateway {

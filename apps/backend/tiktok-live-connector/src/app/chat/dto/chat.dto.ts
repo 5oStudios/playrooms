@@ -1,5 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ChatMessage, FollowInfo, UserDetails } from '../interface/message';
+import {
+  ChatMessage,
+  FollowInfo,
+  UserDetails,
+} from '../../../../../../../libs/tiktok-client/src/interface/chat';
 
 export class UserDetailsDto implements UserDetails {
   @ApiProperty()
@@ -29,7 +33,7 @@ export class FollowInfoDto implements FollowInfo {
   }
 }
 
-export class MessageDto implements ChatMessage {
+export class ChatDto implements ChatMessage {
   @ApiProperty()
   comment: string;
   @ApiProperty()

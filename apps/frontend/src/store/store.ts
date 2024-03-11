@@ -10,7 +10,7 @@ import platformSlice from './features/platformSlice';
 import socketSlice from './features/socketSlice';
 import partySlice from './features/partySlice';
 import matchSlice from './features/matchSlice';
-import { localStorage } from '../utils/local-storage';
+import { storage } from '../utils/storage';
 
 export const store = configureStore({
   reducer: {
@@ -34,11 +34,11 @@ store.subscribe(() => {
   const session = store.getState().session;
   const user = store.getState().user;
   if ((!user && session) || (user && user.id !== session.user_id)) {
-    localStorage.setItem({
+    storage.setItem({
       key: LOCAL_STORAGE_AUTH_KEY,
       value: session.token,
     });
-    localStorage.setItem({
+    storage.setItem({
       key: LOCAL_STORAGE_REFRESH_KEY,
       value: session.refresh_token,
     });

@@ -1,0 +1,23 @@
+{
+  "name": "tiktok-client",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/tiktok-client/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/tiktok-client",
+        "main": "libs/tiktok-client/src/index.ts",
+        "tsConfig": "libs/tiktok-client/tsconfig.lib.json",
+        "assets": ["libs/tiktok-client/*.md"]
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs tiktok-client {args.ver} {args.tag}",
+      "dependsOn": ["build"]
+    }
+  },
+  "tags": []
+}

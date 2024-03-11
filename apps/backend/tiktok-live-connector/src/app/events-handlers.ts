@@ -1,5 +1,5 @@
-import { MessageDto } from './chat/dto/message.dto';
-import { TikTokLiveEvents } from './app.gateway';
+import { ChatDto } from './chat/dto/chat.dto';
+import { TikTokLiveEvents } from '@core/tiktok-client';
 
 export const tiktokEvents = [
   {
@@ -16,7 +16,7 @@ export const tiktokEvents = [
   },
   {
     key: TikTokLiveEvents.CHAT,
-    handler: (data) => new MessageDto(data),
+    handler: (data) => new ChatDto(data),
   },
   {
     key: TikTokLiveEvents.GIFT,

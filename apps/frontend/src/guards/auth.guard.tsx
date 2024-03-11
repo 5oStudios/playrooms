@@ -11,6 +11,7 @@ import { setSession } from '../store/features/sessionSlice';
 import { nanoid } from 'nanoid';
 import { generateUsername } from 'unique-username-generator';
 import { genConfig } from 'react-nice-avatar';
+import { storage } from '../utils/storage';
 
 const generatedUsername = generateUsername('', 0, 8, '');
 const generatedAvatarConfig = JSON.stringify(genConfig());
@@ -22,14 +23,8 @@ enum SessionState {
   UNAVAILABLE,
 }
 
-const auth =
-  typeof window !== 'undefined'
-    ? window.localStorage.getItem(LOCAL_STORAGE_AUTH_KEY)
-    : null;
-const refresh =
-  typeof window !== 'undefined'
-    ? window.localStorage.getItem(LOCAL_STORAGE_REFRESH_KEY)
-    : null;
+const auth = storage.getItem(LOCAL_STORAGE_AUTH_KEY) as string;
+const refresh = storage.getItem(LOCAL_STORAGE_REFRESH_KEY) as string;
 const session = (auth && refresh && Session.restore(auth, refresh)) || null;
 
 const sessionState = ((session: Session) => {
