@@ -47,6 +47,7 @@ export const ExternalPlatformsModal = ({
       <form
         onSubmit={supportedPlatformsForm.handleSubmit((data) => {
           parentForm.setValue('externalPlatforms', data.externalPlatforms);
+          onClose();
         })}
       >
         <ModalContent className="gap-3">
@@ -55,10 +56,18 @@ export const ExternalPlatformsModal = ({
             <React.Fragment key={index}>
               <Controller
                 name={`externalPlatforms.${index}.id`}
+                rules={{
+                  required: {
+                    value: true,
+                    message: 'Required',
+                  },
+                }}
                 control={supportedPlatformsForm.control}
-                render={({ field }) => (
+                render={({ field, fieldState }) => (
                   <Autocomplete
                     {...field}
+                    errorMessage={fieldState?.error?.message}
+                    required
                     onSelectionChange={(value) => {
                       const selectedPlatform = supportedPlatforms.find(
                         (platform) => platform.id === value
@@ -69,14 +78,21 @@ export const ExternalPlatformsModal = ({
                       );
                       field.onChange(value);
                     }}
-                    label="Allowed Platforms"
+                    label="Supported Platforms"
                     placeholder="Select a platform"
                   >
                     {supportedPlatforms.map((platform) => (
                       <AutocompleteItem
+                        variant={'faded'}
                         key={platform.id}
                         value={platform.id}
-                        startContent={<Avatar size="sm" src={platform.logo} />}
+                        startContent={
+                          <Avatar
+                            size="sm"
+                            className={'bg-transparent'}
+                            src={platform.logo}
+                          />
+                        }
                       >
                         {platform.title}
                       </AutocompleteItem>
@@ -87,9 +103,16 @@ export const ExternalPlatformsModal = ({
               <Controller
                 name={`externalPlatforms.${index}.username`}
                 control={supportedPlatformsForm.control}
-                render={({ field }) => (
+                rules={{
+                  required: {
+                    value: true,
+                    message: 'Required',
+                  },
+                }}
+                render={({ field, fieldState }) => (
                   <Input
                     {...field}
+                    errorMessage={fieldState?.error?.message}
                     label="Username"
                     placeholder="Enter your username"
                   />
@@ -127,16 +150,7 @@ export const ExternalPlatformsModal = ({
           >
             Add Platform
           </Button>
-          <Button
-            className={'w-full'}
-            onClick={() => {
-              onClose();
-              parentForm.setValue(
-                'externalPlatforms',
-                supportedPlatformsForm.getValues().externalPlatforms
-              );
-            }}
-          >
+          <Button type={'submit'} className={'w-full'}>
             Save
           </Button>
         </ModalContent>

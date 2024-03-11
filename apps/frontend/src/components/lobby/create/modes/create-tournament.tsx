@@ -49,18 +49,19 @@ export default function CreateTournamentModal({
 
   const supportedPlatforms = [
     {
-      id: '1',
-      title: 'Playrooms',
-      logo: 'https://playrooms.app/favicon.ico',
-      description: 'Allow players to join from This Platform',
-      active: true,
-    },
-    {
       id: '2',
       title: 'TikTok',
       logo: 'https://www.tiktok.com/favicon.ico',
       description: 'Allow players to join from Live Stream',
       active: true,
+      external: true,
+    },
+    {
+      id: '3',
+      title: 'YouTube',
+      logo: 'https://www.youtube.com/favicon.ico',
+      description: 'Allow players to join from Live Stream',
+      active: false,
       external: true,
     },
     {
