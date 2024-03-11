@@ -10,7 +10,7 @@ import { AsyncApiDocumentBuilder, AsyncApiModule } from 'nestjs-asyncapi';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  const globalPrefix = 'api';
+  const globalPrefix = '';
   app.setGlobalPrefix(globalPrefix);
   const port = process.env.PORT || 4444;
   const asyncApiOptions = new AsyncApiDocumentBuilder()
@@ -23,6 +23,10 @@ async function bootstrap() {
       protocol: 'socket.io',
     })
     .build();
+
+  app.enableCors({
+    origin: '*',
+  });
 
   const asyncApiDocument = AsyncApiModule.createDocument(app, asyncApiOptions);
   await AsyncApiModule.setup(globalPrefix, app, asyncApiDocument);

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ChatMessage, FollowInfo, UserDetails } from './interface/message';
+import { ChatMessage, FollowInfo, UserDetails } from '../interface/message';
 
 export class UserDetailsDto implements UserDetails {
   @ApiProperty()
