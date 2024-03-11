@@ -36,5 +36,14 @@ export class AppGateway {
         this.logger.log(`received event: ${key} from streamer: ${username}`);
       });
     });
+
+    client.on('connect', () => {
+      this.logger.log(`connected to streamer: ${username}`);
+    });
+
+    client.on('disconnect', () => {
+      connection.disconnect();
+      this.logger.log(`disconnected from streamer: ${username}`);
+    });
   }
 }

@@ -5,8 +5,9 @@ export enum NODE_ENV_STATE {
   TEST = 'test',
 }
 export const SERVER_KEY = 'defaultkey',
-  HOST = 'nakama.5ostudios.com',
-  PORT = '',
-  USE_SSL = true,
+  // HOST = 'nakama.5ostudios.com',
+  HOST = 'localhost',
+  PORT = '7350',
+  USE_SSL = false,
   TIMEOUT = 7500,
   AUTO_REFRESH_SESSION = true;
