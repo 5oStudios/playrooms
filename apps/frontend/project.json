@@ -141,6 +141,20 @@
           "cmd": "update android"
         }
       }
+    },
+    "native-build": {
+      "executor": "@nxext/capacitor:cap",
+      "options": {
+        "cmd": "build"
+      },
+      "configurations": {
+        "ios": {
+          "cmd": "build ios"
+        },
+        "android": {
+          "cmd": "build android"
+        }
+      }
     }
   },
   "tags": []
