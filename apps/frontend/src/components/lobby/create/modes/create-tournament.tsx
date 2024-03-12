@@ -36,6 +36,7 @@ export default function CreateTournamentModal({
   const createTournamentData = useForm({
     defaultValues: {
       questionsCollectionId: '',
+      tournamentTitle: '',
       maxPlayers: '4',
       externalPlatforms: [],
       allowThisPlatform: true,
@@ -111,14 +112,42 @@ export default function CreateTournamentModal({
           <ModalContent className={'gap-4 w-full'}>
             <ModalHeader>Create Tournament</ModalHeader>
             <Controller
+              name="tournamentTitle"
+              control={createTournamentData.control}
+              rules={{
+                required: {
+                  value: true,
+                  message: 'Tournament Title is required',
+                },
+              }}
+              render={({ field, fieldState }) => (
+                <Input
+                  {...field}
+                  label="Tournament Title"
+                  placeholder="My Tournament"
+                  className={'w-full'}
+                  errorMessage={fieldState.error?.message}
+                />
+              )}
+            />
+
+            <Controller
               control={createTournamentData.control}
               name="questionsCollectionId"
+              rules={{
+                required: {
+                  value: true,
+                  message: 'Questions Collection is required',
+                },
+              }}
               render={({ field, fieldState }) => (
                 <Autocomplete
                   {...field}
                   label="Questions Collection"
                   placeholder="Select a questions collection"
                   errorMessage={fieldState.error?.message}
+                  isRequired={true}
+                  onSelectionChange={field.onChange}
                 >
                   {MockedQuestionsCollections.data.map((collection) => (
                     <AutocompleteItem key={collection.id} value={collection.id}>
@@ -181,7 +210,6 @@ export default function CreateTournamentModal({
                 </Checkbox>
               )}
             />
-
             <Button
               disableRipple
               className={'w-full'}

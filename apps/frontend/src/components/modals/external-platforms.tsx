@@ -38,6 +38,7 @@ export const ExternalPlatformsModal = ({
       maxPlayers: string;
       externalPlatforms: any[];
       allowThisPlatform: boolean;
+      tournamentTitle: string;
     },
     any,
     {
@@ -45,6 +46,7 @@ export const ExternalPlatformsModal = ({
       maxPlayers: string;
       externalPlatforms: any[];
       allowThisPlatform: boolean;
+      tournamentTitle: string;
     }
   >;
 }) => {
@@ -112,7 +114,7 @@ export const ExternalPlatformsModal = ({
                     {...field}
                     defaultSelectedKey={field.value}
                     errorMessage={fieldState?.error?.message}
-                    required
+                    isRequired={true}
                     onSelectionChange={(value) => {
                       const selectedPlatform = supportedPlatforms.find(
                         (platform) => platform.id === value
