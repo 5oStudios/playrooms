@@ -1,3 +1,4 @@
+'use client';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAppDispatch } from '../../../../hooks/use-redux-typed';
 import { Controller, useForm } from 'react-hook-form';
@@ -13,6 +14,7 @@ import {
   Input,
   ModalContent,
   ModalHeader,
+  useDisclosure,
 } from '@nextui-org/react';
 import React, { useEffect } from 'react';
 import { MockedQuestionsCollections } from '../../../../../mocks';
@@ -23,13 +25,10 @@ enum TournamentType {
   Private = 'private',
 }
 
-export default function CreateTournamentModal({
-  createTournamentModal,
-  setCreateTournamentModal,
-}: {
-  createTournamentModal: boolean;
-  setCreateTournamentModal: (value: boolean) => void;
-}) {
+export default function CreateTournamentStaticModal() {
+  const { isOpen, onOpen, onOpenChange } = useDisclosure({
+    defaultOpen: true,
+  });
   const router = useRouter();
   const dispatch = useAppDispatch();
   const path = usePathname();
@@ -105,8 +104,7 @@ export default function CreateTournamentModal({
     <>
       <BaseModal
         size={'lg'}
-        isOpen={createTournamentModal}
-        onClose={() => setCreateTournamentModal(false)}
+        isOpen={isOpen}
         closeButton={
           <>
             <div className={'flex self-start'}>

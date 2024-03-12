@@ -7,8 +7,6 @@ import CreatePartyModal from './modes/create-party';
 export const CreateLobby = () => {
   const router = useRouter();
   const [createPartyModal, setCreatePartyModal] = React.useState(false);
-  const [createTournamentModal, setCreateTournamentModal] =
-    React.useState(false);
 
   return (
     <>
