@@ -5,6 +5,8 @@ import BaseModal from '../../../modals/base.modal';
 import {
   Autocomplete,
   AutocompleteItem,
+  BreadcrumbItem,
+  Breadcrumbs,
   Button,
   Checkbox,
   Divider,
@@ -105,6 +107,22 @@ export default function CreateTournamentModal({
         size={'lg'}
         isOpen={createTournamentModal}
         onClose={() => setCreateTournamentModal(false)}
+        closeButton={
+          <>
+            <div className={'flex self-start'}>
+              <Breadcrumbs variant={'solid'}>
+                <BreadcrumbItem href={'/games'}>Games</BreadcrumbItem>
+                <BreadcrumbItem href={'/games/trivia'}>Trivia</BreadcrumbItem>
+                <BreadcrumbItem href={'/games/trivia/create'}>
+                  Create
+                </BreadcrumbItem>
+                <BreadcrumbItem href={'/games/trivia/create/tournament'}>
+                  Tournament
+                </BreadcrumbItem>
+              </Breadcrumbs>
+            </div>
+          </>
+        }
       >
         <form
           onSubmit={createTournamentData.handleSubmit(handleCreateTournament)}
