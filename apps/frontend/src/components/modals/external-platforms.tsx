@@ -1,5 +1,10 @@
-import React from 'react';
-import { Controller, useFieldArray, useForm } from 'react-hook-form';
+import React, { useEffect } from 'react';
+import {
+  Controller,
+  useFieldArray,
+  useForm,
+  UseFormReturn,
+} from 'react-hook-form';
 import {
   Autocomplete,
   AutocompleteItem,
@@ -27,26 +32,65 @@ export const ExternalPlatformsModal = ({
   }[];
   isOpen: boolean;
   onClose: () => void;
-  parentForm: any;
+  parentForm: UseFormReturn<
+    {
+      questionsCollectionId: string;
+      maxPlayers: string;
+      externalPlatforms: any[];
+      allowThisPlatform: boolean;
+    },
+    any,
+    {
+      questionsCollectionId: string;
+      maxPlayers: string;
+      externalPlatforms: any[];
+      allowThisPlatform: boolean;
+    }
+  >;
 }) => {
-  const supportedPlatformsForm = useForm({
+  const parentFormValues = parentForm.getValues();
+  console.log('parentFormValues', parentFormValues);
+  const _externalPlatforms = useForm({
+    context: parentForm,
     defaultValues: {
-      externalPlatforms: [{ id: '', label: '', username: '' }],
+      _externalPlatforms: parentFormValues.externalPlatforms,
     },
   });
   const { fields, append, prepend, remove, swap, move, insert } = useFieldArray(
     {
-      control: supportedPlatformsForm.control,
-      name: 'externalPlatforms',
+      name: '_externalPlatforms',
+      control: _externalPlatforms.control,
     }
   );
+  const [isDirty, setIsDirty] = React.useState(false);
   console.log('fields', fields);
+  const externalPlatformsLength = fields.length;
+
+  if (externalPlatformsLength === 0 && !isDirty) {
+    append({});
+  }
+
+  // useEffect(() => {
+  //   if (parentFormValues.externalPlatforms.length > 0) {
+  //     _externalPlatforms.setValue(
+  //       '_externalPlatforms',
+  //       parentFormValues.externalPlatforms
+  //     );
+  //   }
+  // }, [_externalPlatforms, append, parentFormValues.externalPlatforms]);
+
+  // Clean up
+  useEffect(() => {
+    return () => {
+      _externalPlatforms.reset();
+    };
+  }, [_externalPlatforms]);
 
   return (
     <BaseModal isOpen={isOpen} onClose={onClose}>
       <form
-        onSubmit={supportedPlatformsForm.handleSubmit((data) => {
-          parentForm.setValue('externalPlatforms', data.externalPlatforms);
+        onSubmit={_externalPlatforms.handleSubmit((data) => {
+          parentForm.setValue('externalPlatforms', data._externalPlatforms);
           onClose();
         })}
       >
@@ -55,25 +99,26 @@ export const ExternalPlatformsModal = ({
           {fields.map((_, index) => (
             <React.Fragment key={index}>
               <Controller
-                name={`externalPlatforms.${index}.id`}
+                name={`_externalPlatforms.${index}.id`}
                 rules={{
                   required: {
                     value: true,
                     message: 'Required',
                   },
                 }}
-                control={supportedPlatformsForm.control}
+                control={_externalPlatforms.control}
                 render={({ field, fieldState }) => (
                   <Autocomplete
                     {...field}
+                    defaultSelectedKey={field.value}
                     errorMessage={fieldState?.error?.message}
                     required
                     onSelectionChange={(value) => {
                       const selectedPlatform = supportedPlatforms.find(
                         (platform) => platform.id === value
                       );
-                      supportedPlatformsForm.setValue(
-                        `externalPlatforms.${index}.label`,
+                      _externalPlatforms.setValue(
+                        `_externalPlatforms.${index}.label`,
                         selectedPlatform?.title
                       );
                       field.onChange(value);
@@ -83,16 +128,15 @@ export const ExternalPlatformsModal = ({
                   >
                     {supportedPlatforms.map((platform) => (
                       <AutocompleteItem
-                        variant={'faded'}
-                        key={platform.id}
-                        value={platform.id}
                         startContent={
                           <Avatar
-                            size="sm"
-                            className={'bg-transparent'}
                             src={platform.logo}
+                            className={'bg-transparent'}
+                            size={'sm'}
                           />
                         }
+                        key={platform.id}
+                        value={platform.id}
                       >
                         {platform.title}
                       </AutocompleteItem>
@@ -101,8 +145,8 @@ export const ExternalPlatformsModal = ({
                 )}
               />
               <Controller
-                name={`externalPlatforms.${index}.username`}
-                control={supportedPlatformsForm.control}
+                name={`_externalPlatforms.${index}.username`}
+                control={_externalPlatforms.control}
                 rules={{
                   required: {
                     value: true,
@@ -133,6 +177,7 @@ export const ExternalPlatformsModal = ({
                   color={'danger'}
                   onClick={() => {
                     remove(index);
+                    setIsDirty(true);
                   }}
                 >
                   Remove
@@ -145,7 +190,7 @@ export const ExternalPlatformsModal = ({
           <Button
             className={'w-full'}
             onClick={() => {
-              append({ id: '', label: '', username: '' });
+              append({});
             }}
           >
             Add Platform

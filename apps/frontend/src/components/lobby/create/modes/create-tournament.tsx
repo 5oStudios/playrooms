@@ -6,6 +6,7 @@ import {
   Autocomplete,
   AutocompleteItem,
   Button,
+  Checkbox,
   Divider,
   Input,
   ModalContent,
@@ -37,9 +38,11 @@ export default function CreateTournamentModal({
       questionsCollectionId: '',
       maxPlayers: '4',
       externalPlatforms: [],
+      allowThisPlatform: true,
     },
   });
 
+  console.log('createTournamentData', createTournamentData.getValues());
   // Clean up
   useEffect(() => {
     return () => {
@@ -152,15 +155,32 @@ export default function CreateTournamentModal({
               )}
             />
             <Divider />
+            <h2 className={'self-start font-semibold'}>Allowed Platforms</h2>
+
             {createTournamentData
-              .getValues()
-              .externalPlatforms.map((platform: any, index: number) => (
+              .getValues('externalPlatforms')
+              .map((platform, index: number) => (
                 <div key={index} className={'w-full'}>
                   <h4>{platform.id}</h4>
                   <h3 className={'text-lg'}>{platform.label}</h3>
                   <p>Username: {platform.username}</p>
                 </div>
               ))}
+            <Controller
+              control={createTournamentData.control}
+              name="allowThisPlatform"
+              render={({ field: { onChange, value } }) => (
+                <Checkbox
+                  defaultSelected
+                  onChange={onChange}
+                  isSelected={value}
+                  color={'default'}
+                  className={'self-start'}
+                >
+                  Allow this platform
+                </Checkbox>
+              )}
+            />
 
             <Button
               disableRipple
