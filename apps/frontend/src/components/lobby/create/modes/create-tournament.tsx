@@ -123,7 +123,7 @@ export default function CreateTournamentModal({
               render={({ field, fieldState }) => (
                 <Input
                   {...field}
-                  label="Tournament Title"
+                  label="Title"
                   placeholder="My Tournament"
                   className={'w-full'}
                   errorMessage={fieldState.error?.message}
@@ -218,7 +218,13 @@ export default function CreateTournamentModal({
               Add External Platforms
             </Button>
             <Divider />
-            <Button disableRipple type={'submit'} className={'w-full'}>
+            <Button
+              disableRipple
+              type={'submit'}
+              className={'w-full'}
+              size={'lg'}
+              color={'secondary'}
+            >
               Create Tournament
             </Button>
           </ModalContent>

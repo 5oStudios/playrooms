@@ -14,7 +14,24 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: colors.neutral,
+        primary: {
+          DEFAULT: colors.neutral[100],
+          dark: colors.neutral[700],
+          50: colors.neutral[50],
+          100: colors.neutral[100],
+          200: colors.neutral[200],
+          300: colors.neutral[300],
+          400: colors.neutral[400],
+          500: colors.neutral[500],
+          600: colors.neutral[600],
+          700: colors.neutral[700],
+          800: colors.neutral[800],
+          900: colors.neutral[900],
+        },
+        secondary: {
+          DEFAULT: colors.blue[500],
+          dark: colors.blue[700],
+        },
       },
     },
   },
