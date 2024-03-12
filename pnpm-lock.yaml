@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@brianmcallister/react-auto-scroll':
+    specifier: ^1.1.0
+    version: 1.1.0(react-dom@18.2.0)(react@18.2.0)
   '@capacitor/core':
     specifier: ^5.0.3
     version: 5.7.2
@@ -139,6 +142,9 @@ devDependencies:
   '@capacitor/ios':
     specifier: ^5.0.3
     version: 5.7.2(@capacitor/core@5.7.2)
+  '@faker-js/faker':
+    specifier: ^8.4.1
+    version: 8.4.1
   '@nestjs/schematics':
     specifier: ^10.0.1
     version: 10.1.1(typescript@5.3.3)
@@ -2945,6 +2951,17 @@ packages:
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
     dev: true
 
+  /@brianmcallister/react-auto-scroll@1.1.0(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-2oMdyFbm73nPHwalHNTUEOr/KmuXPxqWhgOGQG7vgIkldExK2ibw7QycjNoNpA+XYD7wDI/BsGXO71A720jCFg==}
+    peerDependencies:
+      react: ^16.8
+      react-dom: ^16.8
+    dependencies:
+      classnames: 2.5.1
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    dev: false
+
   /@capacitor/android@5.7.2(@capacitor/core@5.7.2):
     resolution: {integrity: sha512-T4U+15R/1PyokW0Le92j7AV19kuO25his2ymF2xf2I04fZUDj8RjmXA+za7i3K8vhxtKkTdY2dPAywrfNAM09Q==}
     peerDependencies:
@@ -3100,6 +3117,11 @@ packages:
   /@eslint/js@8.48.0:
     resolution: {integrity: sha512-ZSjtmelB7IJfWD2Fvb7+Z+ChTIKWq6kjda95fLcQKNS5aheVHn4IkfgRQE3sIIzTcSLwLcLZUD9UBt+V7+h+Pw==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
+    dev: true
+
+  /@faker-js/faker@8.4.1:
+    resolution: {integrity: sha512-XQ3cU+Q8Uqmrbf2e0cIC/QN43sTBSC8KF12u29Mb47tWrt2hAgBXSgpZMj4Ao8Uk0iJcU99QsOCaIL8934obCg==}
+    engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0, npm: '>=6.14.13'}
     dev: true
 
   /@fmvilas/pseudo-yaml-ast@0.3.1:
@@ -9832,6 +9854,10 @@ packages:
   /cjs-module-lexer@1.2.3:
     resolution: {integrity: sha512-0TNiGstbQmCFwt4akjjBg5pLRTSyj/PkWQ1ZoO2zntmg9yLqSRxwEa4iCfQLGjqhiqBfOJa7W/E8wfGrTDmlZQ==}
     dev: true
+
+  /classnames@2.5.1:
+    resolution: {integrity: sha512-saHYOzhIQs6wy2sVxTM6bUDsQO4F50V9RQ22qBpEdCW+I+/Wmke2HOl6lS6dTpdxVhb88/I6+Hs+438c3lfUow==}
+    dev: false
 
   /clean-stack@2.2.0:
     resolution: {integrity: sha512-4diC9HaTE+KRAMWhDhrGOECgWZxoevMc5TlkObMqNSsVU62PYzXZ/SMTjzyGAFF1YusgxGcSWTEXBhp0CPwQ1A==}

@@ -19,10 +19,27 @@ import {
 import React, { useEffect } from 'react';
 import { MockedQuestionsCollections } from '../../../../../mocks';
 import { ExternalPlatformsModal } from '../../../modals/external-platforms';
+import { gameSocket } from '@core/game-client';
+import {
+  LobbyMode,
+  lobbyModeSearchParamKey,
+} from '../../lobby-actions/joinLobby';
 
 enum TournamentType {
   Public = 'public',
   Private = 'private',
+}
+export const tournamentIdSearchParamKey = 'tournamentId';
+export interface TournamentFormData {
+  questionsCollectionId: string;
+  tournamentTitle: string;
+  maxPlayers: string;
+  externalPlatforms: {
+    id: string;
+    label: string;
+    username: string;
+  }[];
+  allowThisPlatform: boolean;
 }
 
 export default function CreateTournamentStaticModal() {
@@ -34,7 +51,8 @@ export default function CreateTournamentStaticModal() {
   const path = usePathname();
   const [isExternalPlatformsModalOpen, setIsExternalPlatformsModalOpen] =
     React.useState(false);
-  const createTournamentData = useForm({
+
+  const createTournamentData = useForm<TournamentFormData>({
     defaultValues: {
       questionsCollectionId: '',
       tournamentTitle: '',
@@ -79,11 +97,15 @@ export default function CreateTournamentStaticModal() {
     },
   ];
 
-  const handleCreateTournament = async () => {
-    console.log(
-      'createTournamentData.getValues()',
-      createTournamentData.getValues()
-    );
+  const handleCreateTournament = async (data: TournamentFormData) => {
+    gameSocket.createMatch(data.tournamentTitle).then((match) => {
+      const newPath = path.replace('create', 'join');
+      const params = new URLSearchParams(newPath);
+      params.append(tournamentIdSearchParamKey, match.match_id);
+      params.append(lobbyModeSearchParamKey, LobbyMode.TOURNAMENT.toString());
+      router.push(newPath);
+    });
+    // gameSocket.createMatch(data);
     // const { maxPlayers, partyType } = createTournamentData.getValues();
     // gameSocket
     //   .createParty(partyType === TournamentType.Public, Number(maxPlayers))

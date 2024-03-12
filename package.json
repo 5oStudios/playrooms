@@ -5,6 +5,7 @@
   "scripts": {},
   "private": true,
   "dependencies": {
+    "@brianmcallister/react-auto-scroll": "^1.1.0",
     "@capacitor/core": "^5.0.3",
     "@capacitor/preferences": "^5.0.7",
     "@heroiclabs/nakama-js": "^2.7.1",
@@ -51,6 +52,7 @@
     "@capacitor/android": "^5.0.3",
     "@capacitor/cli": "^5.0.3",
     "@capacitor/ios": "^5.0.3",
+    "@faker-js/faker": "^8.4.1",
     "@nestjs/schematics": "^10.0.1",
     "@nestjs/testing": "^10.0.2",
     "@nx/cypress": "18.0.4",
