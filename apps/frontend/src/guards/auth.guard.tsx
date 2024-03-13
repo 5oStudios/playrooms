@@ -40,28 +40,39 @@ export function AuthGuard({ children }: Readonly<{ children: ReactNode }>) {
   switch (sessionState) {
     case SessionState.TOKEN_EXPIRED:
       console.log('Auth Token expired');
-      gameClient.sessionRefresh(session).then((session) => {
-        store.dispatch(setSession(session));
-      });
+      gameClient
+        .sessionRefresh(session)
+        .then((session) => {
+          store.dispatch(setSession(session));
+        })
+        .catch((error) => {
+          console.error('Error refreshing session: ', error.message);
+        });
       break;
+
     case SessionState.VALID:
       console.log('Session is valid');
       store.dispatch(setSession(session));
       break;
+
     case SessionState.REFRESH_EXPIRED:
     case SessionState.UNAVAILABLE:
       console.log('Session unavailable or refresh expired');
       console.log('Authenticating device...');
       (async () => {
-        const session = await gameClient.authenticateDevice(
-          nanoid(16),
-          true,
-          generatedUsername
-        );
-        await gameClient.updateAccount(session, {
-          avatar_url: generatedAvatarConfig,
-        });
-        store.dispatch(setSession(session));
+        try {
+          const session = await gameClient.authenticateDevice(
+            nanoid(16),
+            true,
+            generatedUsername
+          );
+          await gameClient.updateAccount(session, {
+            avatar_url: generatedAvatarConfig,
+          });
+          store.dispatch(setSession(session));
+        } catch (error) {
+          console.error('Error authenticating device: ', error.message);
+        }
       })();
       break;
   }

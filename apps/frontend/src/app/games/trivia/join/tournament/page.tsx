@@ -12,11 +12,14 @@ import {
   Divider,
   ModalContent,
   ModalHeader,
+  ScrollShadow,
   useDisclosure,
 } from '@nextui-org/react';
 import { IoChatbubbles } from 'react-icons/io5';
 import { useChat } from '../../../../../hooks/use-chat';
 import AutoScroll from '@brianmcallister/react-auto-scroll';
+import { useAppSelector } from '../../../../../hooks/use-redux-typed';
+import { useMatch } from '../../../../../hooks/use-match';
 
 export default function Page() {
   const { isOpen, onOpenChange } = useDisclosure({
@@ -30,8 +33,6 @@ export default function Page() {
   useEffect(() => {
     if (autoScrollRef.current) {
       const parentHeight = autoScrollRef.current.clientHeight;
-      console.log('parentHeight', parentHeight);
-      console.log('parentHeight', parentHeight);
       setHeight(parentHeight);
     }
   }, [messages]);
@@ -49,34 +50,24 @@ export default function Page() {
             <h2 className={'text-2xl font-bold'}>Chat</h2>
           </ModalHeader>
           <Divider />
-          <div ref={autoScrollRef} className={'h-full'}>
+          <ScrollShadow
+            visibility={'both'}
+            ref={autoScrollRef}
+            className={'h-full'}
+          >
             <AutoScroll
               showOption={false}
               height={height}
               scrollBehavior={'smooth'}
+              className={'bg-transparent'}
             >
               <div className={'flex flex-col gap-3 p-3'}>
                 {messages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={
-                      'flex gap-3 items-center p-3 bg-background/40 w-full rounded-md'
-                    }
-                  >
-                    <Avatar
-                      src={message.avatar}
-                      alt={message.username}
-                      className={'min-w-8 min-h-8 w-8 h-8'}
-                    />
-                    <div className={'flex flex-col gap-1'}>
-                      <p className={'text-sm font-bold'}>{message.username}</p>
-                      <p>{message.message}</p>
-                    </div>
-                  </div>
+                  <ChatMessage key={message.id} {...message} />
                 ))}
               </div>
             </AutoScroll>
-          </div>
+          </ScrollShadow>
         </ModalContent>
       </Drawer>
       <Suspense fallback={<div>Loading...</div>}>
@@ -87,12 +78,34 @@ export default function Page() {
 }
 
 const SuspendedJoinLobby = () => {
+  const socket = useAppSelector((state) => state.socket);
   const searchParams = useSearchParams();
   const lobbyMode =
     searchParams.get(lobbyModeSearchParamKey) || LobbyMode.TOURNAMENT;
   const tournamentId = searchParams.get(tournamentIdSearchParamKey);
+  const session = useAppSelector((state) => state.session);
+  const { matchState } = useMatch({ matchId: tournamentId });
+  console.log('matchState', matchState);
 
-  return tournamentId;
-
+  return 'test';
   // return <JoinLobby partyId={partyId} mode={+lobbyMode} />;
 };
+function ChatMessage({ avatar, username, message }: Record<string, string>) {
+  return (
+    <div
+      className={
+        'flex gap-3 items-center p-3 bg-background/40 w-full rounded-md'
+      }
+    >
+      <Avatar
+        src={avatar}
+        alt={username}
+        className={'min-w-8 min-h-8 w-8 h-8'}
+      />
+      <div className={'flex flex-col gap-1'}>
+        <p className={'text-sm font-bold'}>{username}</p>
+        <p>{message}</p>
+      </div>
+    </div>
+  );
+}

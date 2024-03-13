@@ -100,10 +100,13 @@ export default function CreateTournamentStaticModal() {
   const handleCreateTournament = async (data: TournamentFormData) => {
     gameSocket.createMatch(data.tournamentTitle).then((match) => {
       const newPath = path.replace('create', 'join');
-      const params = new URLSearchParams(newPath);
+      // .replace('tournament', 'match');
+
+      const params = new URLSearchParams(window.location.search);
       params.append(tournamentIdSearchParamKey, match.match_id);
       params.append(lobbyModeSearchParamKey, LobbyMode.TOURNAMENT.toString());
-      router.push(newPath);
+
+      router.push(newPath + '?' + params.toString());
     });
     // gameSocket.createMatch(data);
     // const { maxPlayers, partyType } = createTournamentData.getValues();

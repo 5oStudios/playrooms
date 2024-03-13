@@ -9,6 +9,7 @@ import { QuestionsFinishedEventKey } from './use-questions';
 import { useAppDispatch, useAppSelector } from './use-redux-typed';
 import { setCurrentMatch } from '../store/features/matchSlice';
 import { MatchData } from '@heroiclabs/nakama-js';
+import { SocketState } from '../store/features/socketSlice';
 
 export enum MatchState {
   LOADING = 'LOADING',
@@ -19,9 +20,15 @@ export enum MatchState {
 }
 export const MatchEventsKey = 'match_events';
 
-export function useMatch({ ticket, token }: { ticket: string; token: string }) {
-  const match = useAppSelector((state) => state.match.currentMatch);
-  const dispatch = useAppDispatch();
+export function useMatch({
+  matchId,
+  ticket,
+  token,
+}: {
+  matchId?: string;
+  ticket?: string;
+  token?: string;
+}) {
   const { publish, subscribe } = usePubSub();
 
   const [hostState, setHostState] = useState<HostState>(HostState.NOT_ELECTED);
@@ -29,40 +36,8 @@ export function useMatch({ ticket, token }: { ticket: string; token: string }) {
     PlayerState.NOT_READY
   );
   const [matchState, setMatchState] = useState<MatchState>(MatchState.LOADING);
-  useEffect(() => {
-    publish(MatchEventsKey, matchState);
-  }, [matchState, publish]);
 
-  useEffect(() => {
-    if (match) return;
-    gameSocket
-      .joinMatch(ticket, token)
-      .then((match) => {
-        dispatch(setCurrentMatch(match));
-      })
-      .then(() => {
-        setMatchState(MatchState.READY);
-        gameSocket.sendMatchState(
-          match?.match_id,
-          MatchOpCodes.MATCH_STATE,
-          MatchState.READY
-        );
-      })
-      .catch((error) => {
-        console.error('Error joining match', error);
-        setMatchState(MatchState.NOT_FOUND);
-      });
-  }, [dispatch, match, publish, ticket, token]);
-
-  // Cleanup
-  useEffect(() => {
-    return () => {
-      match &&
-        gameSocket
-          .leaveMatch(match.match_id)
-          .then(() => dispatch(setCurrentMatch(null)));
-    };
-  }, [dispatch, match]);
+  useJoinMatch({ matchId, ticket, token });
 
   subscribe({
     event: HostEventsKey,
@@ -72,6 +47,11 @@ export function useMatch({ ticket, token }: { ticket: string; token: string }) {
   subscribe({
     event: PlayerStateEventsKey,
     callback: setMyPlayerState,
+  });
+
+  subscribe({
+    event: MatchEventsKey,
+    callback: setMatchState,
   });
 
   subscribe({
@@ -113,3 +93,51 @@ export function useMatch({ ticket, token }: { ticket: string; token: string }) {
     setMatchState,
   };
 }
+
+const useJoinMatch = ({
+  matchId,
+  ticket,
+  token,
+}: {
+  matchId?: string;
+  ticket?: string;
+  token?: string;
+}) => {
+  const match = useAppSelector((state) => state.match.currentMatch);
+  const socket = useAppSelector((state) => state.socket);
+  const dispatch = useAppDispatch();
+  const { publish } = usePubSub();
+
+  useEffect(() => {
+    if (socket !== SocketState.CONNECTED) return;
+    if (match) return;
+
+    gameSocket
+      .joinMatch(matchId || ticket, token)
+      .then((match) => {
+        dispatch(setCurrentMatch(match));
+      })
+      .then(() => {
+        publish(MatchEventsKey, MatchState.READY);
+        gameSocket.sendMatchState(
+          match?.match_id,
+          MatchOpCodes.MATCH_STATE,
+          MatchState.READY
+        );
+      })
+      .catch((error) => {
+        console.error('Error joining match', error);
+        publish(MatchEventsKey, MatchState.NOT_FOUND);
+      });
+  }, [dispatch, match, matchId, token, ticket, publish, socket]);
+
+  // Cleanup
+  useEffect(() => {
+    return () => {
+      match &&
+        gameSocket
+          .leaveMatch(match.match_id)
+          .then(() => dispatch(setCurrentMatch(null)));
+    };
+  }, [dispatch, match]);
+};
