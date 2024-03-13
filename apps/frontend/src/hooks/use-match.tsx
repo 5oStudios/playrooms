@@ -1,5 +1,4 @@
 'use client';
-import { useEffect, useRef } from 'react';
 import { gameSocket } from '@core/game-client';
 import { usePubSub } from './use-pub-sub';
 import { QuestionsFinishedEventKey } from './use-questions';
@@ -11,9 +10,9 @@ import {
 } from '../store/features/matchSlice';
 import { MatchOpCodes } from '../components/match/match';
 import { HostEventsKey, HostState } from './use-host';
-import { PlayerStateEventsKey } from './use-player';
 import { PlayerState } from '../store/features/playerSlice';
 import { useSafeSocket } from './use-safe-socket';
+import { useEffect } from 'react';
 
 export const MatchStateEventsKey = 'match_events';
 
@@ -22,35 +21,32 @@ export interface JoinMatchProps {
   ticket?: string;
   token?: string;
 }
-export function useMatch({ matchId, ticket, token }: JoinMatchProps) {
+export function useMatch({ stateHandler, matchId }) {
   const { publish, subscribe } = usePubSub();
   const { use } = useSafeSocket();
   const match = useAppSelector((state) => state.match.currentMatch);
   const playerState = useAppSelector((state) => state.player.myPlayerState);
+  const socket = useAppSelector((state) => state.socket);
   const dispatch = useAppDispatch();
 
-  // Ensure that the match state is set up only once
-  useMatchState();
+  stateHandler && stateHandler();
 
   // Cleanup
-  useEffect(() => {
-    return () => {
-      match &&
-        gameSocket
-          .leaveMatch(match.match_id)
-          .then(() => dispatch(setCurrentMatch(null)));
-    };
-  }, [dispatch, match]);
+  // useEffect(() => {
+  //   return () => {
+  //     match &&
+  //       gameSocket
+  //         .leaveMatch(match.match_id)
+  //         .then(() => dispatch(setCurrentMatch(null)));
+  //   };
+  // }, [dispatch, match]);
 
   // Create a flag to track whether the joinMatch function has been called
-  const joinMatchCalled = useRef(false);
+  useEffect(() => {
+    if (matchId) joinMatch({ matchId });
+  }, [matchId]);
 
   const joinMatch = ({ matchId, ticket, token }: JoinMatchProps) => {
-    if (joinMatchCalled.current) {
-      console.log('Join match function already called');
-      return;
-    }
-
     if (playerState === PlayerState.PLAYING) {
       console.log('Player is playing');
       return;
@@ -70,22 +66,17 @@ export function useMatch({ matchId, ticket, token }: JoinMatchProps) {
     }
 
     console.log('Joining match', matchId || ticket);
-    use(() =>
-      gameSocket
-        .joinMatch(matchId || ticket, token)
-        .then((match) => {
-          publish('match_joined', true);
-          console.log('Joined match', match);
-          dispatch(setCurrentMatch(match));
-        })
-        .catch((error) => {
-          publish('match_joined', false);
-          console.error('Error joining match', error);
-        })
-    );
-
-    // Mark joinMatch as called
-    joinMatchCalled.current = true;
+    gameSocket
+      .joinMatch(matchId || ticket, token)
+      .then((match) => {
+        publish('match_joined', true);
+        console.log('Joined match', match);
+        dispatch(setCurrentMatch(match));
+      })
+      .catch((error) => {
+        publish('match_joined', false);
+        console.error('Error joining match', error);
+      });
   };
 
   return {
@@ -102,7 +93,7 @@ export function useMatch({ matchId, ticket, token }: JoinMatchProps) {
   };
 }
 
-const useMatchState = () => {
+export const useMatchState = () => {
   const { subscribe, publish } = usePubSub();
   const dispatch = useAppDispatch();
 
@@ -119,12 +110,15 @@ const useMatchState = () => {
   const isPlayerReady = playerState === PlayerState.READY;
   const isHostElected = hostState === HostState.ELECTED;
 
-  if (isPlayerReady && isHostElected && !didMatchStart)
-    syncMatchState(MatchState.READY);
+  useEffect(() => {
+    if (isPlayerReady && isHostElected && !didMatchStart)
+      syncMatchState(MatchState.READY);
+  }, [isPlayerReady, isHostElected]);
 
   subscribe({
     event: 'host_requested_start',
     callback: () => {
+      console.log('isMatchReady', isMatchReady);
       console.log('Host requested start');
       if (isMatchReady) syncMatchState(MatchState.STARTED);
       else {
@@ -149,13 +143,13 @@ const useMatchState = () => {
     },
   });
 
-  subscribe({
-    event: PlayerStateEventsKey,
-    callback: (playerState: PlayerState) => {
-      if (playerState === PlayerState.NOT_READY && didMatchStart)
-        syncMatchState(MatchState.PAUSED);
-    },
-  });
+  // subscribe({
+  //   event: PlayerStateEventsKey,
+  //   callback: (playerState: PlayerState) => {
+  //     if (playerState === PlayerState.NOT_READY && didMatchStart)
+  //       syncMatchState(MatchState.PAUSED);
+  //   },
+  // });
 
   subscribe({
     event: HostEventsKey,
