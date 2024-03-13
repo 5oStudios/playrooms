@@ -123,6 +123,13 @@ export function usePlayer() {
     },
   });
 
+  subscribe({
+    event: 'match_started',
+    callback: () => {
+      dispatch(setMyPlayerState(PlayerState.PLAYING));
+    },
+  });
+
   const playerScoreSocketEventsReceiver = (matchData: MatchData) => {
     const decodedData = new TextDecoder().decode(matchData.data);
     const newPlayerScore = new PlayerScoreMessageDTO(JSON.parse(decodedData));

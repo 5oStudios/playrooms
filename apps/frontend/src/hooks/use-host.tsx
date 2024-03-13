@@ -42,7 +42,10 @@ export function useHost() {
   useEffect(() => {
     if (!match) return;
     const isFirstPlayer = !match.presences;
-    isFirstPlayer
+    const onlyOnePlayer =
+      match.presences.length === 1 &&
+      match.presences[0].user_id === match.self.user_id;
+    isFirstPlayer || onlyOnePlayer
       ? syncHostState({ amIHost: true, hostState: HostState.ELECTED })
       : syncHostState({ amIHost: false, hostState: HostState.ELECTED });
   }, [dispatch, match]);

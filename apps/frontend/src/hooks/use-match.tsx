@@ -1,5 +1,5 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { gameSocket } from '@core/game-client';
 import { usePubSub } from './use-pub-sub';
 import { QuestionsFinishedEventKey } from './use-questions';
@@ -9,28 +9,29 @@ import {
   setCurrentMatch,
   setCurrentMatchState,
 } from '../store/features/matchSlice';
-import { SocketState } from '../store/features/socketSlice';
 import { MatchOpCodes } from '../components/match/match';
 import { HostEventsKey, HostState } from './use-host';
 import { PlayerStateEventsKey } from './use-player';
 import { PlayerState } from '../store/features/playerSlice';
+import { useSafeSocket } from './use-safe-socket';
 
 export const MatchStateEventsKey = 'match_events';
 
-export function useMatch() {
+export interface JoinMatchProps {
+  matchId?: string;
+  ticket?: string;
+  token?: string;
+}
+export function useMatch({ matchId, ticket, token }: JoinMatchProps) {
   const { publish, subscribe } = usePubSub();
-  const socket = useAppSelector((state) => state.socket);
+  const { use } = useSafeSocket();
   const match = useAppSelector((state) => state.match.currentMatch);
+  const playerState = useAppSelector((state) => state.player.myPlayerState);
   const dispatch = useAppDispatch();
 
+  // Ensure that the match state is set up only once
   useMatchState();
 
-  useEffect(() => {
-    if (socket !== SocketState.CONNECTED) {
-      console.log('Socket not connected');
-      return;
-    }
-  }, [socket]);
   // Cleanup
   useEffect(() => {
     return () => {
@@ -41,55 +42,75 @@ export function useMatch() {
     };
   }, [dispatch, match]);
 
+  // Create a flag to track whether the joinMatch function has been called
+  const joinMatchCalled = useRef(false);
+
+  const joinMatch = ({ matchId, ticket, token }: JoinMatchProps) => {
+    if (joinMatchCalled.current) {
+      console.log('Join match function already called');
+      return;
+    }
+
+    if (playerState === PlayerState.PLAYING) {
+      console.log('Player is playing');
+      return;
+    }
+
+    if (match) {
+      console.log('Player already in match');
+      return;
+    }
+
+    if (!matchId && !ticket) {
+      console.log('matchId or ticket needed to join match, received:', {
+        matchId,
+        ticket,
+      });
+      return;
+    }
+
+    console.log('Joining match', matchId || ticket);
+    use(() =>
+      gameSocket
+        .joinMatch(matchId || ticket, token)
+        .then((match) => {
+          publish('match_joined', true);
+          console.log('Joined match', match);
+          dispatch(setCurrentMatch(match));
+        })
+        .catch((error) => {
+          publish('match_joined', false);
+          console.error('Error joining match', error);
+        })
+    );
+
+    // Mark joinMatch as called
+    joinMatchCalled.current = true;
+  };
+
   return {
-    matchState: useAppSelector((state) => state.match.currentMatchState),
     createMatch: async (name: string) => {
       try {
         const match = await gameSocket.createMatch(name);
-        if (match) {
-          dispatch(setCurrentMatch(match));
-          publish('match_created', true);
-        }
+        publish('match_created', true);
         return match;
       } catch (error) {
         console.error('Error creating match', error);
       }
     },
-    joinMatch: async ({ matchId, ticket, token }: JoinMatchProps) => {
-      if (match) return;
-      try {
-        gameSocket
-          .joinMatch(matchId || ticket, token)
-          .then((match) => {
-            console.log('Joined match with id: ', matchId, match);
-            dispatch(setCurrentMatch(match));
-            publish('match_joined', true);
-          })
-          .catch((error) => {
-            console.error('Error joining match with id: ', matchId, error);
-            publish('match_joined', false);
-          });
-      } catch (error) {
-        console.error('Error joining match', error);
-      }
-    },
+    joinMatch,
   };
 }
 
-export interface JoinMatchProps {
-  matchId?: string;
-  ticket?: string;
-  token?: string;
-}
-
 const useMatchState = () => {
+  const { subscribe, publish } = usePubSub();
+  const dispatch = useAppDispatch();
+
   const matchSate = useAppSelector((state) => state.match.currentMatchState);
   const amIHost = useAppSelector((state) => state.match.amIHost);
   const hostState = useAppSelector((state) => state.match.hostState);
   const playerState = useAppSelector((state) => state.player.myPlayerState);
   const match = useAppSelector((state) => state.match.currentMatch);
-  const { subscribe } = usePubSub();
-  const dispatch = useAppDispatch();
 
   const didMatchStart = matchSate === MatchState.STARTED;
   const didMatchEnd = matchSate === MatchState.ENDED;
@@ -152,6 +173,7 @@ const useMatchState = () => {
 
   function syncMatchState(newMatchState: MatchState) {
     if (didMatchEnd || isMatchNotFount) return;
+    if (newMatchState === MatchState.STARTED) publish('match_started', true);
     dispatch(setCurrentMatchState(newMatchState));
     amIHost &&
       gameSocket.sendMatchState(

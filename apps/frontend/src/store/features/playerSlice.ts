@@ -3,6 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 export enum PlayerState {
   READY = 'READY',
   NOT_READY = 'NOT_READY',
+  PLAYING = 'PLAYING',
 }
 
 const initialState = {
