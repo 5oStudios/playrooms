@@ -17,6 +17,7 @@ const useSub = ({
 
   useEffect(() => {
     emitter.on(event, callback);
+    // console.log('Subscribed to', event, 'with callback', callback);
     return unsubscribe;
   }, [callback, event, unsubscribe]);
 

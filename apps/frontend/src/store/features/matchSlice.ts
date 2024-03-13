@@ -1,25 +1,29 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { Match } from '@heroiclabs/nakama-js';
 import { MatchmakerMatched } from '@heroiclabs/nakama-js/socket';
+import { HostState } from '../../hooks/use-host';
 
-enum MatchState {
+export enum MatchState {
   LOADING = 'LOADING',
-  IN_PROGRESS = 'IN_PROGRESS',
-  FINISHED = 'FINISHED',
-  CANCELLED = 'CANCELLED',
-  ERROR = 'ERROR',
+  READY = 'READY',
+  STARTED = 'STARTED',
+  PAUSED = 'PAUSED',
+  ENDED = 'ENDED',
+  NOT_FOUND = 'NOT_FOUND',
 }
 
 const initialState: {
   currentMatch: Match | null;
   currentMatchState: MatchState;
   matchFoundData: MatchmakerMatched | null;
-  isHostForCurrentMatch: boolean;
+  amIHost: boolean;
+  hostState: HostState;
 } = {
   currentMatch: null,
-  currentMatchState: MatchState.LOADING,
+  currentMatchState: null,
   matchFoundData: null,
-  isHostForCurrentMatch: null,
+  amIHost: null,
+  hostState: null,
 };
 
 const matchSlice = createSlice({
@@ -29,23 +33,27 @@ const matchSlice = createSlice({
     setCurrentMatch(state, action) {
       state.currentMatch = action.payload;
     },
-    setMatchState(state, action) {
+    setCurrentMatchState(state, action) {
       state.currentMatchState = action.payload;
     },
-    setMatchHost(state, action) {
-      state.isHostForCurrentMatch = action.payload;
+    setAmIHost(state, action) {
+      state.amIHost = action.payload;
     },
     setMatchFoundData(state, action) {
       state.matchFoundData = action.payload;
+    },
+    setHostState(state, action) {
+      state.hostState = action.payload;
     },
   },
 });
 
 export const {
   setCurrentMatch,
-  setMatchState,
-  setMatchHost,
+  setCurrentMatchState,
+  setAmIHost,
   setMatchFoundData,
+  setHostState,
 } = matchSlice.actions;
 
 export default matchSlice.reducer;

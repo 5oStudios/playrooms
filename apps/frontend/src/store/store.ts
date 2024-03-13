@@ -11,13 +11,14 @@ import socketSlice from './features/socketSlice';
 import partySlice from './features/partySlice';
 import matchSlice from './features/matchSlice';
 import { storage } from '../utils/storage';
+import playerSlice from './features/playerSlice';
 
 export const store = configureStore({
   reducer: {
     platform: platformSlice,
-    // player: playerSlice,
     party: partySlice,
 
+    player: playerSlice,
     session: sessionSlice,
     user: userSlice,
     socket: socketSlice,

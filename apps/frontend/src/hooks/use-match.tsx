@@ -1,136 +1,36 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { gameSocket } from '@core/game-client';
-import { MatchOpCodes } from '../components/match/match';
-import { PlayerState, PlayerStateEventsKey } from './use-player';
-import { HostEventsKey, HostState } from './use-host';
 import { usePubSub } from './use-pub-sub';
 import { QuestionsFinishedEventKey } from './use-questions';
 import { useAppDispatch, useAppSelector } from './use-redux-typed';
-import { setCurrentMatch } from '../store/features/matchSlice';
-import { MatchData } from '@heroiclabs/nakama-js';
+import {
+  MatchState,
+  setCurrentMatch,
+  setCurrentMatchState,
+} from '../store/features/matchSlice';
 import { SocketState } from '../store/features/socketSlice';
+import { MatchOpCodes } from '../components/match/match';
+import { HostEventsKey, HostState } from './use-host';
+import { PlayerStateEventsKey } from './use-player';
+import { PlayerState } from '../store/features/playerSlice';
 
-export enum MatchState {
-  LOADING = 'LOADING',
-  READY = 'READY',
-  STARTED = 'STARTED',
-  ENDED = 'ENDED',
-  NOT_FOUND = 'NOT_FOUND',
-}
-export const MatchEventsKey = 'match_events';
+export const MatchStateEventsKey = 'match_events';
 
-export function useMatch({
-  matchId,
-  ticket,
-  token,
-}: {
-  matchId?: string;
-  ticket?: string;
-  token?: string;
-}) {
+export function useMatch() {
   const { publish, subscribe } = usePubSub();
-
-  const [hostState, setHostState] = useState<HostState>(HostState.NOT_ELECTED);
-  const [myPlayerState, setMyPlayerState] = useState<PlayerState>(
-    PlayerState.NOT_READY
-  );
-  const [matchState, setMatchState] = useState<MatchState>(MatchState.LOADING);
-
-  useJoinMatch({ matchId, ticket, token });
-
-  subscribe({
-    event: HostEventsKey,
-    callback: setHostState,
-  });
-
-  subscribe({
-    event: PlayerStateEventsKey,
-    callback: setMyPlayerState,
-  });
-
-  subscribe({
-    event: MatchEventsKey,
-    callback: setMatchState,
-  });
-
-  subscribe({
-    event: QuestionsFinishedEventKey,
-    callback: () => setMatchState(MatchState.ENDED),
-  });
-
-  useEffect(() => {
-    if (
-      matchState === MatchState.READY &&
-      myPlayerState === PlayerState.READY &&
-      hostState === HostState.ELECTED
-    ) {
-      setMatchState(MatchState.STARTED);
-    }
-  }, [matchState, myPlayerState, hostState]);
-
-  const matchSocketEventsReceiver = (matchData: MatchData) => {
-    const decodedData = new TextDecoder().decode(matchData.data);
-    switch (decodedData) {
-      case MatchState.STARTED:
-        setMatchState(MatchState.STARTED);
-        break;
-      case MatchState.ENDED:
-        setMatchState(MatchState.ENDED);
-        break;
-      case MatchState.LOADING:
-        setMatchState(MatchState.LOADING);
-        break;
-      case MatchState.READY:
-        setMatchState(MatchState.READY);
-        break;
-    }
-  };
-
-  return {
-    matchState,
-    matchSocketEventsReceiver,
-    setMatchState,
-  };
-}
-
-const useJoinMatch = ({
-  matchId,
-  ticket,
-  token,
-}: {
-  matchId?: string;
-  ticket?: string;
-  token?: string;
-}) => {
-  const match = useAppSelector((state) => state.match.currentMatch);
   const socket = useAppSelector((state) => state.socket);
+  const match = useAppSelector((state) => state.match.currentMatch);
   const dispatch = useAppDispatch();
-  const { publish } = usePubSub();
+
+  useMatchState();
 
   useEffect(() => {
-    if (socket !== SocketState.CONNECTED) return;
-    if (match) return;
-
-    gameSocket
-      .joinMatch(matchId || ticket, token)
-      .then((match) => {
-        dispatch(setCurrentMatch(match));
-      })
-      .then(() => {
-        publish(MatchEventsKey, MatchState.READY);
-        gameSocket.sendMatchState(
-          match?.match_id,
-          MatchOpCodes.MATCH_STATE,
-          MatchState.READY
-        );
-      })
-      .catch((error) => {
-        console.error('Error joining match', error);
-        publish(MatchEventsKey, MatchState.NOT_FOUND);
-      });
-  }, [dispatch, match, matchId, token, ticket, publish, socket]);
-
+    if (socket !== SocketState.CONNECTED) {
+      console.log('Socket not connected');
+      return;
+    }
+  }, [socket]);
   // Cleanup
   useEffect(() => {
     return () => {
@@ -140,4 +40,126 @@ const useJoinMatch = ({
           .then(() => dispatch(setCurrentMatch(null)));
     };
   }, [dispatch, match]);
+
+  return {
+    matchState: useAppSelector((state) => state.match.currentMatchState),
+    createMatch: async (name: string) => {
+      try {
+        const match = await gameSocket.createMatch(name);
+        if (match) {
+          dispatch(setCurrentMatch(match));
+          publish('match_created', true);
+        }
+        return match;
+      } catch (error) {
+        console.error('Error creating match', error);
+      }
+    },
+    joinMatch: async ({ matchId, ticket, token }: JoinMatchProps) => {
+      if (match) return;
+      try {
+        gameSocket
+          .joinMatch(matchId || ticket, token)
+          .then((match) => {
+            console.log('Joined match with id: ', matchId, match);
+            dispatch(setCurrentMatch(match));
+            publish('match_joined', true);
+          })
+          .catch((error) => {
+            console.error('Error joining match with id: ', matchId, error);
+            publish('match_joined', false);
+          });
+      } catch (error) {
+        console.error('Error joining match', error);
+      }
+    },
+  };
+}
+
+export interface JoinMatchProps {
+  matchId?: string;
+  ticket?: string;
+  token?: string;
+}
+
+const useMatchState = () => {
+  const matchSate = useAppSelector((state) => state.match.currentMatchState);
+  const amIHost = useAppSelector((state) => state.match.amIHost);
+  const hostState = useAppSelector((state) => state.match.hostState);
+  const playerState = useAppSelector((state) => state.player.myPlayerState);
+  const match = useAppSelector((state) => state.match.currentMatch);
+  const { subscribe } = usePubSub();
+  const dispatch = useAppDispatch();
+
+  const didMatchStart = matchSate === MatchState.STARTED;
+  const didMatchEnd = matchSate === MatchState.ENDED;
+  const isMatchReady = matchSate === MatchState.READY;
+  const isMatchNotFount = matchSate === MatchState.NOT_FOUND;
+  const isPlayerReady = playerState === PlayerState.READY;
+  const isHostElected = hostState === HostState.ELECTED;
+
+  if (isPlayerReady && isHostElected && !didMatchStart)
+    syncMatchState(MatchState.READY);
+
+  subscribe({
+    event: 'host_requested_start',
+    callback: () => {
+      console.log('Host requested start');
+      if (isMatchReady) syncMatchState(MatchState.STARTED);
+      else {
+        console.log('isMatchReady', isMatchReady);
+        console.log('isPlayerReady', isPlayerReady);
+        console.log('isHostElected', isHostElected);
+      }
+    },
+  });
+
+  subscribe({
+    event: 'match_created',
+    callback: () => syncMatchState(MatchState.LOADING),
+  });
+
+  subscribe({
+    event: 'match_joined',
+    callback: (isJoined: boolean) => {
+      isJoined
+        ? syncMatchState(MatchState.LOADING)
+        : syncMatchState(MatchState.NOT_FOUND);
+    },
+  });
+
+  subscribe({
+    event: PlayerStateEventsKey,
+    callback: (playerState: PlayerState) => {
+      if (playerState === PlayerState.NOT_READY && didMatchStart)
+        syncMatchState(MatchState.PAUSED);
+    },
+  });
+
+  subscribe({
+    event: HostEventsKey,
+    callback: (hostState: HostState) => {
+      if (hostState === HostState.NOT_ELECTED && didMatchStart) {
+        syncMatchState(MatchState.PAUSED);
+      }
+    },
+  });
+
+  subscribe({
+    event: QuestionsFinishedEventKey,
+    callback: () => syncMatchState(MatchState.ENDED),
+  });
+
+  function syncMatchState(newMatchState: MatchState) {
+    if (didMatchEnd || isMatchNotFount) return;
+    dispatch(setCurrentMatchState(newMatchState));
+    amIHost &&
+      gameSocket.sendMatchState(
+        match?.match_id,
+        MatchOpCodes.MATCH_STATE,
+        newMatchState
+      );
+  }
 };
+
+export const createMatchEventKey = 'createMatch';

@@ -1,6 +1,10 @@
 'use client';
-import { useHost } from '../../hooks/use-host';
-import { MatchState, useMatch } from '../../hooks/use-match';
+import { HostEventsKey, useHost } from '../../hooks/use-host';
+import {
+  JoinMatchProps,
+  MatchStateEventsKey,
+  useMatch,
+} from '../../hooks/use-match';
 import { PlayerScoreAction, usePlayer } from '../../hooks/use-player';
 import {
   QuestionAnswerEventKey,
@@ -13,7 +17,10 @@ import { Leaderboard } from './leaderboard';
 import { Question } from '../sections/mcq/questions/question';
 import { Answers } from '../sections/mcq/answers/answers';
 import { usePubSub } from '../../hooks/use-pub-sub';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { MatchState } from '../../store/features/matchSlice';
+import { Button } from '@nextui-org/react';
+import { useAppSelector } from '../../hooks/use-redux-typed';
 
 export enum MatchOpCodes {
   MATCH_STATE = 100,
@@ -27,24 +34,21 @@ export enum MatchOpCodes {
 const STARTING_QUESTION_INDEX = 0;
 const SHOW_LEADERBOARD_FOR_TIME_IN_MS = 5000;
 
-export default function Match({
-  ticket,
-  token,
-}: {
-  ticket: string;
-  token: string;
-}) {
+export default function Match(matchProps: JoinMatchProps) {
+  const amIHost = useAppSelector((state) => state.match.amIHost);
+  console.log('Am I host?', amIHost);
   const { publish } = usePubSub();
 
   // TODO: refactor this to pub/sub pattern
   const [remainingTime, setRemainingTime] = useState<number>(0);
 
-  const { matchState, matchSocketEventsReceiver } = useMatch({
-    ticket,
-    token,
-  });
-
-  const { amIHost, hostSocketEventsReceiver } = useHost();
+  const { matchState, joinMatch } = useMatch();
+  useHost();
+  useEffect(() => {
+    (async () => {
+      await joinMatch(matchProps);
+    })();
+  }, [joinMatch, matchProps]);
 
   const { playerScoreSocketEventsReceiver, playersScore } = usePlayer();
 
@@ -65,12 +69,13 @@ export default function Match({
   });
 
   gameSocket.onmatchdata = (matchData) => {
+    const decodedData = new TextDecoder().decode(matchData.data);
     switch (matchData.op_code) {
       case MatchOpCodes.MATCH_STATE:
-        matchSocketEventsReceiver(matchData);
+        publish(MatchStateEventsKey, decodedData);
         break;
       case MatchOpCodes.HOST_STATE:
-        hostSocketEventsReceiver(matchData);
+        publish(HostEventsKey, decodedData);
         break;
       case MatchOpCodes.QUESTION_INDEX:
         questionsSocketEventsReceiver(matchData);
@@ -92,8 +97,21 @@ export default function Match({
 
   switch (matchState) {
     case MatchState.LOADING:
-    case MatchState.READY:
       return <>Loading...</>;
+    case MatchState.READY:
+      return amIHost ? (
+        <>
+          <p>Match is ready</p>
+          <Button onClick={() => publish('host_requested_start', true)}>
+            Start Match
+          </Button>
+        </>
+      ) : (
+        <>
+          <p>Waiting for host to start the match</p>
+        </>
+      );
+
     case MatchState.STARTED:
       return (
         <div className="flex justify-center items-center">
