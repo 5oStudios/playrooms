@@ -21,6 +21,7 @@ import { useEffect, useState } from 'react';
 import { MatchState } from '../../store/features/matchSlice';
 import { Button } from '@nextui-org/react';
 import { useAppSelector } from '../../hooks/use-redux-typed';
+import { SocketState } from '../../store/features/socketSlice';
 
 export enum MatchOpCodes {
   MATCH_STATE = 100,
@@ -36,19 +37,22 @@ const SHOW_LEADERBOARD_FOR_TIME_IN_MS = 5000;
 
 export default function Match(matchProps: JoinMatchProps) {
   const amIHost = useAppSelector((state) => state.match.amIHost);
-  console.log('Am I host?', amIHost);
+  const matchState = useAppSelector((state) => state.match.currentMatchState);
   const { publish } = usePubSub();
+  const socket = useAppSelector((state) => state.socket);
 
   // TODO: refactor this to pub/sub pattern
   const [remainingTime, setRemainingTime] = useState<number>(0);
 
-  const { matchState, joinMatch } = useMatch();
+  const { joinMatch } = useMatch({
+    matchId: matchProps?.matchId,
+    ticket: matchProps?.ticket,
+    token: matchProps?.token,
+  });
   useHost();
   useEffect(() => {
-    (async () => {
-      await joinMatch(matchProps);
-    })();
-  }, [joinMatch, matchProps]);
+    joinMatch(matchProps);
+  }, [matchProps]);
 
   const { playerScoreSocketEventsReceiver, playersScore } = usePlayer();
 
@@ -68,6 +72,9 @@ export default function Match(matchProps: JoinMatchProps) {
     showLeaderboardForTimeInMs: SHOW_LEADERBOARD_FOR_TIME_IN_MS,
   });
 
+  if (socket !== SocketState.CONNECTED) {
+    return <>Socket not connected</>;
+  }
   gameSocket.onmatchdata = (matchData) => {
     const decodedData = new TextDecoder().decode(matchData.data);
     switch (matchData.op_code) {

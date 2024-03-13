@@ -94,7 +94,7 @@ export default function CreateTournamentStaticModal() {
     },
   ];
 
-  const { createMatch } = useMatch();
+  const { createMatch } = useMatch({});
 
   const handleCreateTournament = async (data: TournamentFormData) => {
     // const { maxPlayers, partyType } = createTournamentData.getValues();
