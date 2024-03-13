@@ -1,6 +1,6 @@
 'use client';
 import { useCallback, useEffect, useState } from 'react';
-import { MatchData, Presence } from '@heroiclabs/nakama-js';
+import { Presence } from '@heroiclabs/nakama-js';
 import { gameSocket } from '@core/game-client';
 import { AnswerEvent, MatchOpCodes } from '../components/match/match';
 import { usePubSub } from './use-pub-sub';
@@ -9,6 +9,7 @@ import { QuestionAnswerEventKey } from './use-questions';
 import { PlayerState, setMyPlayerState } from '../store/features/playerSlice';
 
 export const PlayerStateEventsKey = 'player_events';
+export const PlayerScoreEventKey = 'player_score';
 
 export enum PlayerScoreAction {
   ADD = 'add',
@@ -76,12 +77,18 @@ export function usePlayer() {
       score: 0,
       action: PlayerScoreAction.ADD,
     });
+    match.presences &&
+      match.presences.forEach((player) => {
+        setPlayers((prevPlayers) => [...prevPlayers, player]);
+        changeLocalPlayerScore({
+          id: player.user_id,
+          username: player.username,
+          score: 0,
+          action: PlayerScoreAction.ADD,
+        });
+      });
     dispatch(setMyPlayerState(PlayerState.READY));
   }, [changeScore, match]);
-
-  useEffect(() => {
-    publish(PlayerStateEventsKey, myPlayerState);
-  }, [myPlayerState, publish]);
 
   // Cleanup
   useEffect(() => {
@@ -130,22 +137,22 @@ export function usePlayer() {
     },
   });
 
-  const playerScoreSocketEventsReceiver = (matchData: MatchData) => {
-    const decodedData = new TextDecoder().decode(matchData.data);
-    const newPlayerScore = new PlayerScoreMessageDTO(JSON.parse(decodedData));
-
-    changeLocalPlayerScore({
-      id: newPlayerScore.id,
-      username: newPlayerScore.username,
-      score: newPlayerScore.score,
-      action: newPlayerScore.action,
-    });
-  };
+  subscribe({
+    event: PlayerScoreEventKey,
+    callback: (decodedData: string) => {
+      const newPlayerScore = new PlayerScoreMessageDTO(JSON.parse(decodedData));
+      changeLocalPlayerScore({
+        id: newPlayerScore.id,
+        username: newPlayerScore.username,
+        score: newPlayerScore.score,
+        action: newPlayerScore.action,
+      });
+    },
+  });
 
   return {
     players,
     playersScore,
-    playerScoreSocketEventsReceiver,
   };
 }
 export function objectToUint8Array(obj: Record<string, unknown>): Uint8Array {

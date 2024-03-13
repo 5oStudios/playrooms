@@ -6,7 +6,11 @@ import {
   useMatch,
   useMatchState,
 } from '../../hooks/use-match';
-import { PlayerScoreAction, usePlayer } from '../../hooks/use-player';
+import {
+  PlayerScoreAction,
+  PlayerScoreEventKey,
+  usePlayer,
+} from '../../hooks/use-player';
 import {
   QuestionAnswerEventKey,
   useQuestions,
@@ -50,7 +54,7 @@ export default function Match(matchProps: JoinMatchProps) {
   });
   useHost();
 
-  const { playerScoreSocketEventsReceiver, playersScore } = usePlayer();
+  const { playersScore } = usePlayer();
 
   const { currentQuestion, nextQuestion, questionsSocketEventsReceiver } =
     useQuestions({
@@ -84,7 +88,7 @@ export default function Match(matchProps: JoinMatchProps) {
         leaderboardSocketEventsReceiver(matchData);
         break;
       case MatchOpCodes.PLAYER_SCORE:
-        playerScoreSocketEventsReceiver(matchData);
+        publish(PlayerScoreEventKey, decodedData);
         break;
     }
   };
