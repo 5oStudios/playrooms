@@ -21,7 +21,13 @@ export interface JoinMatchProps {
   ticket?: string;
   token?: string;
 }
-export function useMatch({ stateHandler, matchId }) {
+export function useMatch({
+  stateHandler,
+  matchId,
+}: {
+  stateHandler?: () => void;
+  matchId?: string;
+}) {
   const { publish, subscribe } = usePubSub();
   const { use } = useSafeSocket();
   const match = useAppSelector((state) => state.match.currentMatch);
@@ -143,6 +149,10 @@ export const useMatchState = () => {
     },
   });
 
+  subscribe({
+    event: MatchStateEventsKey,
+    callback: (newMatchState: MatchState) => syncMatchState(newMatchState),
+  });
   // subscribe({
   //   event: PlayerStateEventsKey,
   //   callback: (playerState: PlayerState) => {
@@ -167,7 +177,11 @@ export const useMatchState = () => {
 
   function syncMatchState(newMatchState: MatchState) {
     if (didMatchEnd || isMatchNotFount) return;
-    if (newMatchState === MatchState.STARTED) publish('match_started', true);
+    if (newMatchState === MatchState.STARTED) {
+      console.log('Match started');
+      console.log('amIHost', amIHost);
+      publish('match_started', true);
+    }
     dispatch(setCurrentMatchState(newMatchState));
     amIHost &&
       gameSocket.sendMatchState(
