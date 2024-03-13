@@ -51,7 +51,7 @@ export const ExternalPlatformsModal = ({
   >;
 }) => {
   const parentFormValues = parentForm.getValues();
-  console.log('parentFormValues', parentFormValues);
+  // console.log('parentFormValues', parentFormValues);
   const _externalPlatforms = useForm({
     context: parentForm,
     defaultValues: {

@@ -1,11 +1,7 @@
 'use client';
 import React, { Suspense, useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
-import {
-  LobbyMode,
-  lobbyModeSearchParamKey,
-} from '../../../../../components/lobby/lobby-actions/joinLobby';
-import { tournamentIdSearchParamKey } from '../../../../../components/lobby/create/modes/create-tournament';
+import { matchIdSearchParamKey } from '../../../../../components/lobby/create/modes/create-tournament';
 import Drawer from '../../../../../components/ui/drawer';
 import {
   Avatar,
@@ -16,10 +12,8 @@ import {
   useDisclosure,
 } from '@nextui-org/react';
 import { IoChatbubbles } from 'react-icons/io5';
-import { useChat } from '../../../../../hooks/use-chat';
 import AutoScroll from '@brianmcallister/react-auto-scroll';
-import { useAppSelector } from '../../../../../hooks/use-redux-typed';
-import { useMatch } from '../../../../../hooks/use-match';
+import Match from '../../../../../components/match/match';
 
 export default function Page() {
   const { isOpen, onOpenChange } = useDisclosure({
@@ -28,7 +22,8 @@ export default function Page() {
   const [height, setHeight] = React.useState(0);
 
   const autoScrollRef = useRef(null);
-  const { messages } = useChat();
+  // const { messages } = useChat();
+  const messages = [];
 
   useEffect(() => {
     if (autoScrollRef.current) {
@@ -78,17 +73,10 @@ export default function Page() {
 }
 
 const SuspendedJoinLobby = () => {
-  const socket = useAppSelector((state) => state.socket);
   const searchParams = useSearchParams();
-  const lobbyMode =
-    searchParams.get(lobbyModeSearchParamKey) || LobbyMode.TOURNAMENT;
-  const tournamentId = searchParams.get(tournamentIdSearchParamKey);
-  const session = useAppSelector((state) => state.session);
-  const { matchState } = useMatch({ matchId: tournamentId });
-  console.log('matchState', matchState);
+  const matchId = searchParams.get(matchIdSearchParamKey);
 
-  return 'test';
-  // return <JoinLobby partyId={partyId} mode={+lobbyMode} />;
+  return <Match matchId={matchId} />;
 };
 function ChatMessage({ avatar, username, message }: Record<string, string>) {
   return (

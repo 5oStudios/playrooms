@@ -19,17 +19,14 @@ import {
 import React, { useEffect } from 'react';
 import { MockedQuestionsCollections } from '../../../../../mocks';
 import { ExternalPlatformsModal } from '../../../modals/external-platforms';
-import { gameSocket } from '@core/game-client';
-import {
-  LobbyMode,
-  lobbyModeSearchParamKey,
-} from '../../lobby-actions/joinLobby';
+import { useMatch } from '../../../../hooks/use-match';
 
 enum TournamentType {
   Public = 'public',
   Private = 'private',
 }
 export const tournamentIdSearchParamKey = 'tournamentId';
+export const matchIdSearchParamKey = 'matchId';
 export interface TournamentFormData {
   questionsCollectionId: string;
   tournamentTitle: string;
@@ -62,7 +59,7 @@ export default function CreateTournamentStaticModal() {
     },
   });
 
-  console.log('createTournamentData', createTournamentData.getValues());
+  // console.log('createTournamentData', createTournamentData.getValues());
   // Clean up
   useEffect(() => {
     return () => {
@@ -97,34 +94,22 @@ export default function CreateTournamentStaticModal() {
     },
   ];
 
+  const { createMatch } = useMatch();
+
   const handleCreateTournament = async (data: TournamentFormData) => {
-    gameSocket.createMatch(data.tournamentTitle).then((match) => {
-      const newPath = path.replace('create', 'join');
-      // .replace('tournament', 'match');
-
-      const params = new URLSearchParams(window.location.search);
-      params.append(tournamentIdSearchParamKey, match.match_id);
-      params.append(lobbyModeSearchParamKey, LobbyMode.TOURNAMENT.toString());
-
-      router.push(newPath + '?' + params.toString());
-    });
-    // gameSocket.createMatch(data);
     // const { maxPlayers, partyType } = createTournamentData.getValues();
     // gameSocket
     //   .createParty(partyType === TournamentType.Public, Number(maxPlayers))
-    //   .then((party) => {
-    //     dispatch(setTournament(party));
-    //     setCreateTournamentModal(false);
-    //
-    //     const newPath = path.replace('create', 'join');
-    //
-    //     const params = new URLSearchParams(window.location.search);
-    //     params.append(partyIdSearchParamKey, party.party_id);
-    //     params.append(lobbyModeSearchParamKey, LobbyMode.PARTY.toString());
-    //
-    //     router.push(newPath + '?' + params.toString());
-    //   });
+    createMatch(data.tournamentTitle).then((match) => {
+      const newPath = path.replace('create', 'join');
+
+      const params = new URLSearchParams(window.location.search);
+      params.append(matchIdSearchParamKey, match.match_id);
+
+      router.push(newPath + '?' + params.toString());
+    });
   };
+
   return (
     <>
       <BaseModal

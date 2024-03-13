@@ -4,13 +4,9 @@ import { MatchData, Presence } from '@heroiclabs/nakama-js';
 import { gameSocket } from '@core/game-client';
 import { AnswerEvent, MatchOpCodes } from '../components/match/match';
 import { usePubSub } from './use-pub-sub';
-import { useAppSelector } from './use-redux-typed';
+import { useAppDispatch, useAppSelector } from './use-redux-typed';
 import { QuestionAnswerEventKey } from './use-questions';
-
-export enum PlayerState {
-  READY = 'READY',
-  NOT_READY = 'NOT_READY',
-}
+import { PlayerState, setMyPlayerState } from '../store/features/playerSlice';
 
 export const PlayerStateEventsKey = 'player_events';
 
@@ -20,9 +16,10 @@ export enum PlayerScoreAction {
 }
 export function usePlayer() {
   const match = useAppSelector((state) => state.match.currentMatch);
+  const myPlayerState = useAppSelector((state) => state.player.myPlayerState);
+  const dispatch = useAppDispatch();
 
   const [players, setPlayers] = useState<Presence[]>([]);
-  const [myPlayerState, setMyPlayerState] = useState(PlayerState.NOT_READY);
   const [playersScore, setPlayersScore] = useState<
     Array<{ id: string; username: string; score: number }>
   >([]);
@@ -79,7 +76,7 @@ export function usePlayer() {
       score: 0,
       action: PlayerScoreAction.ADD,
     });
-    setMyPlayerState(PlayerState.READY);
+    dispatch(setMyPlayerState(PlayerState.READY));
   }, [changeScore, match]);
 
   useEffect(() => {
@@ -89,11 +86,11 @@ export function usePlayer() {
   // Cleanup
   useEffect(() => {
     return () => {
-      setMyPlayerState(PlayerState.NOT_READY);
+      dispatch(setMyPlayerState(PlayerState.NOT_READY));
       setPlayers([]);
       setPlayersScore([]);
     };
-  }, []);
+  }, [dispatch]);
 
   gameSocket.onmatchpresence = (matchPresence) => {
     matchPresence.joins &&
