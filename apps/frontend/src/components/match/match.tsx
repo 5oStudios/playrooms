@@ -4,6 +4,7 @@ import {
   JoinMatchProps,
   MatchStateEventsKey,
   useMatch,
+  useMatchState,
 } from '../../hooks/use-match';
 import { PlayerScoreAction, usePlayer } from '../../hooks/use-player';
 import {
@@ -17,11 +18,10 @@ import { Leaderboard } from './leaderboard';
 import { Question } from '../sections/mcq/questions/question';
 import { Answers } from '../sections/mcq/answers/answers';
 import { usePubSub } from '../../hooks/use-pub-sub';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { MatchState } from '../../store/features/matchSlice';
 import { Button } from '@nextui-org/react';
 import { useAppSelector } from '../../hooks/use-redux-typed';
-import { SocketState } from '../../store/features/socketSlice';
 
 export enum MatchOpCodes {
   MATCH_STATE = 100,
@@ -44,15 +44,11 @@ export default function Match(matchProps: JoinMatchProps) {
   // TODO: refactor this to pub/sub pattern
   const [remainingTime, setRemainingTime] = useState<number>(0);
 
-  const { joinMatch } = useMatch({
-    matchId: matchProps?.matchId,
-    ticket: matchProps?.ticket,
-    token: matchProps?.token,
+  useMatch({
+    stateHandler: useMatchState,
+    matchId: matchProps.matchId,
   });
   useHost();
-  useEffect(() => {
-    joinMatch(matchProps);
-  }, [matchProps]);
 
   const { playerScoreSocketEventsReceiver, playersScore } = usePlayer();
 
@@ -72,9 +68,6 @@ export default function Match(matchProps: JoinMatchProps) {
     showLeaderboardForTimeInMs: SHOW_LEADERBOARD_FOR_TIME_IN_MS,
   });
 
-  if (socket !== SocketState.CONNECTED) {
-    return <>Socket not connected</>;
-  }
   gameSocket.onmatchdata = (matchData) => {
     const decodedData = new TextDecoder().decode(matchData.data);
     switch (matchData.op_code) {
