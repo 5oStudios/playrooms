@@ -27,10 +27,10 @@ jobs:
         with:
           file: apps/frontend/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/frontend:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/playrooms-staging-frontend:latest
 
-#      - name: Send webhook to server
-#        run: |
-#          curl -X POST -H 'Content-type: application/json' --data \
-#          '{"channel": "#playrooms", "username": "5oStudios", "text": "Docker Build and Push GitHub Action: Success!", "icon_emoji": ":ghost:"}' \
-#            ${{ secrets.SLACK_WEBHOOK }}
+      - name: Send webhook to server
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data \
+          '{"channel": "#playrooms", "username": "5oStudios", "text": "Docker Build and Push GitHub Action: Success!", "icon_emoji": ":ghost:"}' \
+            ${{ secrets.SLACK_WEBHOOK }}
