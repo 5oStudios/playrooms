@@ -18,7 +18,7 @@ COPY ../../package*.json ../../pnpm-lock.yaml ./
 ENV DOCKER_BUILDKIT=1
 
 # Install dependencies using pnpm with caching
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile --ignore-scripts
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --ignore-scripts
 
 # Install nx globally
 RUN pnpm install -g nx
