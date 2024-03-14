@@ -7,8 +7,8 @@ import {
   useMatchState,
 } from '../../hooks/use-match';
 import {
+  OtherPlayersScoreEventKey,
   PlayerScoreAction,
-  PlayerScoreEventKey,
   usePlayer,
 } from '../../hooks/use-player';
 import {
@@ -43,7 +43,7 @@ const SHOW_LEADERBOARD_FOR_TIME_IN_MS = 5000;
 export default function Match(matchProps: JoinMatchProps) {
   const amIHost = useAppSelector((state) => state.match.amIHost);
   const matchState = useAppSelector((state) => state.match.currentMatchState);
-  const myScore = useAppSelector((state) => state.player.score);
+  const myScore = useAppSelector((state) => state.players.myPlayer.score);
   const { publish } = usePubSub();
   const socket = useAppSelector((state) => state.socket);
 
@@ -87,7 +87,7 @@ export default function Match(matchProps: JoinMatchProps) {
         leaderboardSocketEventsReceiver(matchData);
         break;
       case MatchOpCodes.PLAYER_SCORE:
-        publish(PlayerScoreEventKey, decodedData);
+        publish(OtherPlayersScoreEventKey, decodedData);
         break;
     }
   };
