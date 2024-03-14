@@ -7,11 +7,11 @@ services:
     volumes:
       - data:/var/lib/cockroach
     expose:
-      - "8080"
+      - "28080"
       - "26257"
     ports:
       - "26257:26257"
-      - "8080:8080"
+      - "28080:8080"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health?ready=1"]
       interval: 3s
