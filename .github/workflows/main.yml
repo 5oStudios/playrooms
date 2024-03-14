@@ -22,17 +22,15 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Send webhook to server
-        run: |
-          curl -X POST -H 'Content-type: application/json' --data \
-          '{"channel": "#playrooms", "username": "5oStudios", "text": "Docker Build and Push GitHub Action: Success!", "icon_emoji": ":ghost:"}' \
-            ${{ secrets.SLACK_WEBHOOK }}
-
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: apps/frontend/Dockerfile
+          context: apps/frontend
           push: true
-          tags: user/app:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/frontend:latest
 
+#      - name: Send webhook to server
+#        run: |
+#          curl -X POST -H 'Content-type: application/json' --data \
+#          '{"channel": "#playrooms", "username": "5oStudios", "text": "Docker Build and Push GitHub Action: Success!", "icon_emoji": ":ghost:"}' \
+#            ${{ secrets.SLACK_WEBHOOK }}
