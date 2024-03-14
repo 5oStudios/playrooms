@@ -71,7 +71,9 @@ export function AuthGuard({ children }: Readonly<{ children: ReactNode }>) {
           });
           store.dispatch(setSession(session));
         } catch (error) {
-          console.error('Error authenticating device: ', error.message);
+          storage.remove(LOCAL_STORAGE_AUTH_KEY);
+          storage.remove(LOCAL_STORAGE_REFRESH_KEY);
+          console.error('Error authenticating device: ', error);
         }
       })();
       break;
