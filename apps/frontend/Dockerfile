@@ -2,8 +2,8 @@
 FROM node:lts-slim
 
 # Set environment variables for pnpm
-#ENV PNPM_HOME="/pnpm"
-#ENV PATH="$PNPM_HOME:$PATH"
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
 
 # Enable corepack
 RUN corepack enable
@@ -16,8 +16,7 @@ COPY ../../pnpm-lock.yaml ./
 COPY ../../package.json ./
 
 # Install dependencies using pnpm with caching
-#RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --ignore-scripts
-RUN pnpm install
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --ignore-scripts
 
 # Copy the entire application
 COPY ../../ .
