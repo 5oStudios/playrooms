@@ -13,7 +13,7 @@ services:
       - "26257:26257"
       - "18080:8080"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:18080/health?ready=1"]
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health?ready=1"]
       interval: 3s
       timeout: 3s
       retries: 5
@@ -80,8 +80,8 @@ services:
     depends_on:
       - "nakama"
     build:
-        context: .
-        dockerfile: apps/frontend/Dockerfile
+        context: apps/frontend/
+        dockerfile: Dockerfile
 
     ports:
         - "3035:3035"
