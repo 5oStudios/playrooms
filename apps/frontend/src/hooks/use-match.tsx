@@ -20,13 +20,7 @@ export interface JoinMatchProps {
   ticket?: string;
   token?: string;
 }
-export function useMatch({
-  stateHandler,
-  matchId,
-}: {
-  stateHandler?: () => void;
-  matchId?: string;
-}) {
+export function useMatch({ matchId }: { matchId?: string }) {
   const { publish, subscribe } = usePubSub();
   const { use } = useSafeSocket();
   const match = useAppSelector((state) => state.match.currentMatch);
@@ -34,7 +28,7 @@ export function useMatch({
   const socket = useAppSelector((state) => state.socket);
   const dispatch = useAppDispatch();
 
-  stateHandler && stateHandler();
+  useMatchState();
 
   const joinMatch = useCallback(
     ({ matchId, ticket, token }: JoinMatchProps) => {
