@@ -19,7 +19,6 @@ jobs:
       - name: Build and push Docker image
         run: |
           docker buildx build \
-              --platform linux/amd64,linux/arm64 \
               -f apps/frontend/Dockerfile \
               -t ${{ secrets.DOCKER_USERNAME }}/playrooms-staging:latest \
               --push .
