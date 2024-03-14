@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { IQuestion } from '../components/sections/mcq/questions/MCQQuestions';
 import { gameSocket } from '@core/game-client';
 import { numToUint8Array, uint8ArrayToNum } from '../utils/convert';
@@ -16,12 +16,11 @@ export const QuestionAnswerEventKey = 'question_answer';
 export function useQuestions({
   questions,
   startingQuestionIndex = 0,
-  amIHost,
 }: Readonly<{
   questions: IQuestion[];
   startingQuestionIndex: number;
-  amIHost: boolean;
 }>) {
+  const amIHost = useAppSelector((state) => state.match.amIHost);
   const match = useAppSelector((state) => state.match.currentMatch);
   const [currentQuestion, setCurrentQuestion] = useState(questions[0]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(
@@ -34,17 +33,16 @@ export function useQuestions({
     setCurrentQuestionIndex(uint8ArrayToNum(matchData.data));
   };
 
-  const nextQuestion = () => {
+  const nextQuestion = useCallback(() => {
     if (!amIHost) return;
     setCurrentQuestion(questions[currentQuestionIndex + 1]);
     setCurrentQuestionIndex(currentQuestionIndex + 1);
-
     gameSocket.sendMatchState(
-      match.match_id,
+      match?.match_id,
       MatchOpCodes.QUESTION_INDEX,
       numToUint8Array(currentQuestionIndex + 1)
     );
-  };
+  }, [amIHost, currentQuestionIndex, match?.match_id, questions]);
 
   useEffect(() => {
     if (currentQuestionIndex === questions.length - 1) {

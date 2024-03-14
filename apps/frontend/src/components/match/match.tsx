@@ -22,10 +22,11 @@ import { Leaderboard } from './leaderboard';
 import { Question } from '../sections/mcq/questions/question';
 import { Answers } from '../sections/mcq/answers/answers';
 import { usePubSub } from '../../hooks/use-pub-sub';
-import { useState } from 'react';
 import { MatchState } from '../../store/features/matchSlice';
 import { Button } from '@nextui-org/react';
 import { useAppSelector } from '../../hooks/use-redux-typed';
+import { Answer } from '../sections/mcq/answers/answer';
+import { useCallback } from 'react';
 
 export enum MatchOpCodes {
   MATCH_STATE = 100,
@@ -42,11 +43,11 @@ const SHOW_LEADERBOARD_FOR_TIME_IN_MS = 5000;
 export default function Match(matchProps: JoinMatchProps) {
   const amIHost = useAppSelector((state) => state.match.amIHost);
   const matchState = useAppSelector((state) => state.match.currentMatchState);
+  const myScore = useAppSelector((state) => state.player.score);
   const { publish } = usePubSub();
   const socket = useAppSelector((state) => state.socket);
 
   // TODO: refactor this to pub/sub pattern
-  const [remainingTime, setRemainingTime] = useState<number>(0);
 
   useMatch({
     stateHandler: useMatchState,
@@ -54,11 +55,10 @@ export default function Match(matchProps: JoinMatchProps) {
   });
   useHost();
 
-  const { playersScore } = usePlayer();
+  usePlayer();
 
   const { currentQuestion, nextQuestion, questionsSocketEventsReceiver } =
     useQuestions({
-      amIHost,
       questions: MockedMCQQuestions,
       startingQuestionIndex: STARTING_QUESTION_INDEX,
     });
@@ -68,7 +68,6 @@ export default function Match(matchProps: JoinMatchProps) {
     leaderboardSocketEventsReceiver,
     previewLeaderboard,
   } = useLeaderboard({
-    amIHost,
     showLeaderboardForTimeInMs: SHOW_LEADERBOARD_FOR_TIME_IN_MS,
   });
 
@@ -93,11 +92,24 @@ export default function Match(matchProps: JoinMatchProps) {
     }
   };
 
-  const onTimeUp = () => {
+  const onTimeUp = useCallback(() => {
     previewLeaderboard()
       .then(() => nextQuestion())
       .catch((error) => console.error('Error previewing leaderboard', error));
-  };
+  }, [nextQuestion, previewLeaderboard]);
+
+  const handleAnswer = useCallback(
+    (answer: Answer) => {
+      console.log('Answered', answer);
+      publish(QuestionAnswerEventKey, {
+        deservedScore: answer.isCorrect ? 1 : 0,
+        scoreAction: answer.isCorrect
+          ? PlayerScoreAction.ADD
+          : PlayerScoreAction.SUBTRACT,
+      });
+    },
+    [publish]
+  );
 
   switch (matchState) {
     case MatchState.LOADING:
@@ -126,26 +138,13 @@ export default function Match(matchProps: JoinMatchProps) {
               <Question
                 questionText={currentQuestion.question}
                 allowedTimeInMS={currentQuestion.allowedTimeInMS}
-                onTimeTick={setRemainingTime}
                 onTimeUp={onTimeUp}
               />
               <Answers
                 answers={currentQuestion.answers}
-                onClick={(answer) =>
-                  publish(QuestionAnswerEventKey, {
-                    deservedScore: answer.isCorrect ? remainingTime : 0,
-                    scoreAction: answer.isCorrect
-                      ? PlayerScoreAction.ADD
-                      : PlayerScoreAction.SUBTRACT,
-                  })
-                }
+                onClick={handleAnswer}
               />
-              {playersScore.map((playerScore) => (
-                <div key={playerScore.id}>
-                  <p>{playerScore.username}</p>
-                  <p>{playerScore.score}</p>
-                </div>
-              ))}
+              my score: {myScore}
             </div>
           )}
         </div>

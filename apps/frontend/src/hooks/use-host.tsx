@@ -1,5 +1,5 @@
 'use client';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { gameSocket } from '@core/game-client';
 import { MatchOpCodes } from '../components/match/match';
 import { usePubSub } from './use-pub-sub';
@@ -17,22 +17,19 @@ export function useHost() {
   const dispatch = useAppDispatch();
   const amIHost = useAppSelector((state) => state.match.amIHost);
 
-  const syncHostState = ({
-    amIHost,
-    hostState,
-  }: {
-    amIHost: boolean;
-    hostState: HostState;
-  }) => {
-    dispatch(setHostState(hostState));
-    dispatch(setAmIHost(amIHost));
-    amIHost &&
-      gameSocket.sendMatchState(
-        match.match_id,
-        MatchOpCodes.HOST_STATE,
-        hostState
-      );
-  };
+  const syncHostState = useCallback(
+    ({ amIHost, hostState }: { amIHost: boolean; hostState: HostState }) => {
+      dispatch(setHostState(hostState));
+      dispatch(setAmIHost(amIHost));
+      amIHost &&
+        gameSocket.sendMatchState(
+          match.match_id,
+          MatchOpCodes.HOST_STATE,
+          hostState
+        );
+    },
+    [dispatch, match]
+  );
 
   subscribe({
     event: HostEventsKey,
@@ -48,7 +45,7 @@ export function useHost() {
     isFirstPlayer || onlyOnePlayer
       ? syncHostState({ amIHost: true, hostState: HostState.ELECTED })
       : syncHostState({ amIHost: false, hostState: HostState.ELECTED });
-  }, [dispatch, match]);
+  }, [dispatch, match, syncHostState]);
 
   // Cleanup
   useEffect(() => {

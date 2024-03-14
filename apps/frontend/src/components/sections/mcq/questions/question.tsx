@@ -5,7 +5,7 @@ import { CountDown } from './count-down';
 interface Props {
   questionText: string;
   allowedTimeInMS: number;
-  onTimeTick: (remainingTime: number) => void;
+  // onTimeTick: (remainingTime: number) => void;
   onTimeUp?: () => void;
   isMatchStarted?: boolean;
 }
@@ -13,7 +13,7 @@ interface Props {
 export const Question: React.FC<Props> = ({
   questionText,
   allowedTimeInMS,
-  onTimeTick,
+  // onTimeTick,
   onTimeUp,
   isMatchStarted = true,
 }) => {
@@ -27,7 +27,7 @@ export const Question: React.FC<Props> = ({
         <CountDown
           isMatchStarted={isMatchStarted}
           milSecond={allowedTimeInMS}
-          onUpdate={(remainingTime) => onTimeTick(remainingTime)}
+          // onUpdate={(remainingTime) => onTimeTick(remainingTime)}
           onComplete={onTimeUp}
         />
       </div>
