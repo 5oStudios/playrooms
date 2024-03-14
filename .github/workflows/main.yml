@@ -9,11 +9,11 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     steps:
-      - name: Notify Slack
-        run: |
-          curl -X POST -H 'Content-type: application/json' --data \
-          '{"channel": "#playrooms", "username": "5oStudios", "text": "New Build Starts!", "icon_emoji": ":5ostudios:"}' \
-            ${{ secrets.SLACK_WEBHOOK }}
+#      - name: Notify Slack
+#        run: |
+#          curl -X POST -H 'Content-type: application/json' --data \
+#          '{"channel": "#playrooms", "username": "5oStudios", "text": "New Build Starts!", "icon_emoji": ":5ostudios:"}' \
+#            ${{ secrets.SLACK_WEBHOOK }}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -42,11 +42,11 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/playrooms-staging-frontend:latest
 
-      - name: Notify Slack
-        run: |
-          curl -X POST -H 'Content-type: application/json' --data \
-          '{"channel": "#playrooms", "username": "5oStudios", "text": "Build Success!", "icon_emoji": ":5ostudios:"}' \
-            ${{ secrets.SLACK_WEBHOOK }}
+#      - name: Notify Slack
+#        run: |
+#          curl -X POST -H 'Content-type: application/json' --data \
+#          '{"channel": "#playrooms", "username": "5oStudios", "text": "Build Success!", "icon_emoji": ":5ostudios:"}' \
+#            ${{ secrets.SLACK_WEBHOOK }}
 
       - name: Deploy to Staging
         run: |
