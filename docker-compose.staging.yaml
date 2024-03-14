@@ -50,6 +50,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
   prometheus:
     image: prom/prometheus
     entrypoint: /bin/sh -c

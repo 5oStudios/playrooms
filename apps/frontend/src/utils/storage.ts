@@ -5,8 +5,8 @@ const webLocalStorage = {
   setItem: (options: SetOptions) =>
     window?.localStorage.setItem(options.key, options.value),
   getItem: (key: string) => window?.localStorage.getItem(key),
-  remove: (key: string) => window.localStorage.remove(key),
-  clear: () => window.localStorage.clear(),
+  remove: (key: string) => window?.localStorage.removeItem(key),
+  clear: () => window?.localStorage.clear(),
 };
 const nativeLocalStorage = {
   setItem: (options: SetOptions) => Preferences.set(options),

@@ -8,6 +8,10 @@ export const Socket = () => {
   const session = useAppSelector((state) => state.session);
   const dispatch = useAppDispatch();
 
+  if (!session) {
+    dispatch(setSocket(SocketState.DISCONNECTED));
+  }
+
   useEffect(() => {
     if (session) {
       (async () => {

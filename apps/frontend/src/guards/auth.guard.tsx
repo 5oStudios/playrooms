@@ -6,12 +6,12 @@ import {
   LOCAL_STORAGE_REFRESH_KEY,
 } from '@core/game-client';
 import { Session } from '@heroiclabs/nakama-js';
-import { store } from '../store/store';
 import { setSession } from '../store/features/sessionSlice';
 import { nanoid } from 'nanoid';
 import { generateUsername } from 'unique-username-generator';
 import { genConfig } from 'react-nice-avatar';
 import { storage } from '../utils/storage';
+import { useAppDispatch } from '../hooks/use-redux-typed';
 
 const generatedUsername = generateUsername('', 0, 8, '');
 const generatedAvatarConfig = JSON.stringify(genConfig());
@@ -37,13 +37,14 @@ const sessionState = ((session: Session) => {
 })(session);
 
 export function AuthGuard({ children }: Readonly<{ children: ReactNode }>) {
+  const dispatch = useAppDispatch();
   switch (sessionState) {
     case SessionState.TOKEN_EXPIRED:
       console.log('Auth Token expired');
       gameClient
         .sessionRefresh(session)
         .then((session) => {
-          store.dispatch(setSession(session));
+          dispatch(setSession(session));
         })
         .catch((error) => {
           console.error('Error refreshing session: ', error.message);
@@ -52,8 +53,8 @@ export function AuthGuard({ children }: Readonly<{ children: ReactNode }>) {
 
     case SessionState.VALID:
       console.log('Session is valid');
-      store.dispatch(setSession(session));
-      break;
+      dispatch(setSession(session));
+      return <>{children}</>;
 
     case SessionState.REFRESH_EXPIRED:
     case SessionState.UNAVAILABLE:
@@ -69,15 +70,13 @@ export function AuthGuard({ children }: Readonly<{ children: ReactNode }>) {
           await gameClient.updateAccount(session, {
             avatar_url: generatedAvatarConfig,
           });
-          store.dispatch(setSession(session));
+          dispatch(setSession(session));
         } catch (error) {
           storage.remove(LOCAL_STORAGE_AUTH_KEY);
           storage.remove(LOCAL_STORAGE_REFRESH_KEY);
           console.error('Error authenticating device: ', error);
         }
       })();
-      break;
+      return <>Could not connect to the server</>;
   }
-
-  return <>{children}</>;
 }

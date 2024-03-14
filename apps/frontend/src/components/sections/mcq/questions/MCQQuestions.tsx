@@ -76,7 +76,7 @@ export function MCQQuestions({
         questionText={questions[currentQuestionIndex].question}
         allowedTimeInMS={allowedTimeInMS}
         isMatchStarted={true}
-        onTimeTick={() => console.log('time ticked')}
+        // onTimeTick={() => console.log('time ticked')}
         onTimeUp={() => {
           setState(CURRENT_QUESTION_STATE_KEY, QuestionState.MISSED);
         }}
