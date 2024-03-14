@@ -13,6 +13,7 @@ const nextConfig = {
     svgr: false,
   },
   reactStrictMode: true,
+  output: 'export',
 };
 
 const plugins = [
