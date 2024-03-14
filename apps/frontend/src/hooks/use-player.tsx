@@ -1,97 +1,47 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Presence } from '@heroiclabs/nakama-js';
-import { AnswerEvent, SOCKET_SYNC } from '../components/match/match';
+import {
+  PLAYER_COMMANDS,
+  SOCKET_OP_CODES,
+  SOCKET_SYNC,
+} from '../components/match/match';
 import { usePubSub } from './use-pub-sub';
 import { useAppDispatch, useAppSelector } from './use-redux-typed';
-import { QuestionAnswerEventKey } from './use-questions';
 import {
+  addPlayer,
+  clearPlayers,
+  PlayerScoreAction,
   PlayerState,
-  setMyPlayer,
-  setOtherPlayersScore,
+  removePlayer,
   setPlayerScore,
   setPlayerState,
 } from '../store/features/playersSlice';
+import { gameSocket } from '@core/game-client';
 
 export const PlayerStateEventsKey = 'player_events';
 export const OtherPlayersScoreEventKey = 'other_players_score';
 
-export enum PlayerScoreAction {
-  ADD = 'add',
-  SUBTRACT = 'subtract',
-}
 export function usePlayer() {
   const match = useAppSelector((state) => state.match.currentMatch);
   const dispatch = useAppDispatch();
-
-  const [players, setPlayers] = useState<Presence[]>([]);
   const { publish, subscribe } = usePubSub();
-
-  // const changeLocalPlayerScore = useCallback(
-  //   ({ id, username, score, action }: IPlayerScoreMessageDTO) => {
-  //     console.log('Changing local score', id, username, score, action);
-  //   //   setPlayersScore((prevPlayersScore) => {
-  //   //     const playerIndex = prevPlayersScore.findIndex(
-  //   //       (player) => player.id === id
-  //   //     );
-  //   //     const newPlayer = playerIndex === -1;
-  //   //     if (newPlayer) {
-  //   //       return [...prevPlayersScore, { id, username, score }];
-  //   //     }
-  //   //     prevPlayersScore[playerIndex].score =
-  //   //       action === PlayerScoreAction.ADD
-  //   //         ? prevPlayersScore[playerIndex].score + score
-  //   //         : prevPlayersScore[playerIndex].score - score;
-  //   //
-  //   //     return prevPlayersScore;
-  //   //   });
-  //   // },
-  //   []
-  // );
-  //
-  // const syncScore = useCallback(
-  //   ({ score, action }: { score: number; action: PlayerScoreAction }) => {
-  //     console.log('Changing score', score, action);
-  //     const playerScoreMessage = new PlayerScoreMessageDTO({
-  //       id: match?.self.user_id,
-  //       username: match?.self.username,
-  //       score,
-  //       action,
-  //     });
-  //     // changeLocalPlayerScore(playerScoreMessage);
-  //     gameSocket.sendMatchState(
-  //       match?.match_id,
-  //       MatchOpCodes.PLAYER_SCORE,
-  //       playerScoreMessage.toUint8Array()
-  //     );
-  //   },
-  //   [
-  //     // changeLocalPlayerScore,
-  //     match?.match_id,
-  //     match?.self.user_id,
-  //     match?.self.username,
-  //   ]
-  // );
 
   useEffect(() => {
     if (!match) return;
 
-    // syncScore({
-    //   score: 0,
-    //   action: PlayerScoreAction.ADD,
-    // });
-    // match.presences &&
-    //   match.presences.forEach((player) => {
-    //     setPlayers((prevPlayers) => [...prevPlayers, player]);
-    //     changeLocalPlayerScore({
-    //       id: player.user_id,
-    //       username: player.username,
-    //       score: 0,
-    //       action: PlayerScoreAction.ADD,
-    //     });
-    //   });
+    match.presences.forEach((oldPlayer) => {
+      dispatch(
+        addPlayer({
+          id: oldPlayer.user_id,
+          username: oldPlayer.username,
+          score: 0,
+          state: PlayerState.READY,
+        })
+      );
+    });
     dispatch(
-      setMyPlayer({
+      addPlayer({
         id: match.self.user_id,
         username: match.self.username,
         score: 0,
@@ -103,73 +53,62 @@ export function usePlayer() {
   // Cleanup
   useEffect(() => {
     return () => {
-      dispatch(setMyPlayer(null));
-      setPlayers([]);
+      dispatch(clearPlayers());
     };
   }, [dispatch]);
-  //
-  // gameSocket.onmatchpresence = (matchPresence) => {
-  //   matchPresence.joins &&
-  //     (() => {
-  //       matchPresence.joins.forEach((player) => {
-  //         if (!players.find((p) => p.user_id === player.user_id)) {
-  //           setPlayers((prevPlayers) => [...prevPlayers, player]);
-  //         }
-  //         // changeLocalPlayerScore({
-  //         //   id: player.user_id,
-  //         //   username: player.username,
-  //         //   score: 0,
-  //         //   action: PlayerScoreAction.ADD,
-  //         // });
-  //       });
-  //     })();
-  //   matchPresence.leaves &&
-  //     setPlayers((prevPlayers) =>
-  //       prevPlayers.filter((player) => !matchPresence.leaves.includes(player))
-  //     );
-  // };
-
-  subscribe({
-    event: QuestionAnswerEventKey,
-    callback: (answerEvent: AnswerEvent) => {
-      console.log('Got Answer', answerEvent);
-      dispatch(
-        setPlayerScore({
-          points: answerEvent.deservedScore,
-          action: answerEvent.scoreAction,
-        })
-      );
-      publish(SOCKET_SYNC.PLAYERS_SCORE, {
-        id: match?.self.user_id,
-        points: answerEvent.deservedScore,
-        action: answerEvent.scoreAction,
-      });
-    },
-  });
 
   subscribe({
     event: 'match_started',
     callback: () => {
-      dispatch(setPlayerState(PlayerState.PLAYING));
+      dispatch(
+        setPlayerState({ id: match?.self.user_id, state: PlayerState.PLAYING })
+      );
     },
   });
 
   subscribe({
-    event: SOCKET_SYNC.PLAYERS_SCORE,
-    callback: ({ id, score, action }: IPlayerScoreMessageDTO) => {
+    event: PLAYER_COMMANDS.SYNC_SCORE,
+    callback: (playerScore: {
+      id: string;
+      points: number;
+      action: PlayerScoreAction;
+    }) => {
+      dispatch(setPlayerScore(playerScore));
+      gameSocket.sendMatchState(
+        match?.match_id,
+        SOCKET_OP_CODES.PLAYERS_SCORE,
+        JSON.stringify(playerScore)
+      );
+    },
+  });
+
+  subscribe({
+    event: SOCKET_SYNC.PLAYER_SCORE,
+    callback: (decodedData: string) => {
+      dispatch(setPlayerScore(JSON.parse(decodedData)));
+    },
+  });
+
+  subscribe({
+    event: 'match_presence_joined',
+    callback: (player: Presence) => {
       dispatch(
-        setOtherPlayersScore({
-          id,
-          action,
-          points: score,
+        addPlayer({
+          id: player.user_id,
+          username: player.username,
+          score: 0,
+          state: PlayerState.READY,
         })
       );
     },
   });
 
-  return {
-    players,
-  };
+  subscribe({
+    event: 'match_presence_left',
+    callback: (player: Presence) => {
+      dispatch(removePlayer(player.user_id));
+    },
+  });
 }
 export function objectToUint8Array(obj: Record<string, unknown>): Uint8Array {
   const jsonString = JSON.stringify(obj);

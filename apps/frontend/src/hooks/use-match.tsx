@@ -7,9 +7,12 @@ import {
   setCurrentMatch,
   setCurrentMatchState,
 } from '../store/features/matchSlice';
-import { SOCKET_OP_CODES, SOCKET_SYNC } from '../components/match/match';
+import {
+  HOST_COMMANDS,
+  SOCKET_OP_CODES,
+  SOCKET_SYNC,
+} from '../components/match/match';
 import { HostState } from './use-host';
-import { PlayerState } from '../store/features/playersSlice';
 import { useCallback, useEffect } from 'react';
 
 export const MatchStateEventsKey = 'match_events';
@@ -22,17 +25,16 @@ export interface JoinMatchProps {
 export function useMatch({ matchId }: { matchId?: string }) {
   const { publish, subscribe } = usePubSub();
   const match = useAppSelector((state) => state.match.currentMatch);
-  const playerState = useAppSelector((state) => state.players.myPlayer?.state);
   const dispatch = useAppDispatch();
 
   useMatchState();
 
   const joinMatch = useCallback(
     ({ matchId, ticket, token }: JoinMatchProps) => {
-      if (playerState === PlayerState.PLAYING) {
-        console.log('Player is playing');
-        return;
-      }
+      // if (playerState === PlayerState.PLAYING) {
+      //   console.log('Player is playing');
+      //   return;
+      // }
       if (match) {
         console.log('Player already in match');
         return;
@@ -57,7 +59,7 @@ export function useMatch({ matchId }: { matchId?: string }) {
           console.error('Error joining match', error);
         });
     },
-    [dispatch, match, playerState, publish]
+    [dispatch, match, publish]
   );
 
   // Cleanup
@@ -95,14 +97,13 @@ export const useMatchState = () => {
   const matchSate = useAppSelector((state) => state.match.currentMatchState);
   const amIHost = useAppSelector((state) => state.match.amIHost);
   const hostState = useAppSelector((state) => state.match.hostState);
-  const playerState = useAppSelector((state) => state.players.myPlayer?.state);
   const match = useAppSelector((state) => state.match.currentMatch);
 
   const didMatchStart = matchSate === MatchState.STARTED;
   const didMatchEnd = matchSate === MatchState.ENDED;
   const isMatchReady = matchSate === MatchState.READY;
   const isMatchNotFount = matchSate === MatchState.NOT_FOUND;
-  const isPlayerReady = playerState === PlayerState.READY;
+  // const isPlayerReady = playerState === PlayerState.READY;
   const isHostElected = hostState === HostState.ELECTED;
 
   const syncMatchState = useCallback(
@@ -125,9 +126,8 @@ export const useMatchState = () => {
   );
 
   useEffect(() => {
-    if (isPlayerReady && isHostElected && !didMatchStart)
-      syncMatchState(MatchState.READY);
-  }, [isPlayerReady, isHostElected, didMatchStart, syncMatchState]);
+    if (isHostElected && !didMatchStart) syncMatchState(MatchState.READY);
+  }, [isHostElected, didMatchStart, syncMatchState]);
 
   // Cleanup
   useEffect(() => {
@@ -137,16 +137,10 @@ export const useMatchState = () => {
   }, [dispatch]);
 
   subscribe({
-    event: 'host_requested_start',
+    event: HOST_COMMANDS.START_MATCH,
     callback: () => {
-      console.log('isMatchReady', isMatchReady);
-      console.log('Host requested start');
       if (isMatchReady) syncMatchState(MatchState.STARTED);
-      else {
-        console.log('isMatchReady', isMatchReady);
-        console.log('isPlayerReady', isPlayerReady);
-        console.log('isHostElected', isHostElected);
-      }
+      else console.log('Match is not ready');
     },
   });
   subscribe({

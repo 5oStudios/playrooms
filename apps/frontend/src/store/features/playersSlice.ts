@@ -1,5 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { PlayerScoreAction } from '../../hooks/use-player';
+
+export enum PlayerScoreAction {
+  ADD = 'add',
+  SUBTRACT = 'subtract',
+}
 
 export enum PlayerState {
   READY = 'READY',
@@ -13,38 +17,30 @@ interface Player {
   score: number;
   state: PlayerState;
 }
-
-const initialState: {
-  myPlayer: Player;
-  otherPlayers: Player[];
-} = {
-  myPlayer: null,
-  otherPlayers: [],
-};
+const initialState: Player[] = [];
 
 const playersSlice = createSlice({
   name: 'players',
   initialState,
   reducers: {
-    setPlayerState(state, action: PayloadAction<PlayerState>) {
-      state.myPlayer.state = action.payload;
-    },
-    setPlayerScore(
+    setPlayerState(
       state,
       action: PayloadAction<{
-        points: number;
-        action: PlayerScoreAction;
+        id: string;
+        state: PlayerState;
       }>
     ) {
-      state.myPlayer.score =
-        action.payload.action === PlayerScoreAction.ADD
-          ? state.myPlayer.score + action.payload.points
-          : state.myPlayer.score - action.payload.points;
+      const player = state.find((p) => p.id === action.payload.id);
+      console.log(
+        'REDUX updating player state',
+        player.username,
+        action.payload.state
+      );
+      if (player) {
+        player.state = action.payload.state;
+      }
     },
-    setMyPlayer(state, action: PayloadAction<Player>) {
-      state.myPlayer = action.payload;
-    },
-    setOtherPlayersScore(
+    setPlayerScore(
       state,
       action: PayloadAction<{
         id: string;
@@ -52,7 +48,12 @@ const playersSlice = createSlice({
         action: PlayerScoreAction;
       }>
     ) {
-      const player = state.otherPlayers.find((p) => p.id === action.payload.id);
+      const player = state.find((p) => p.id === action.payload.id);
+      console.log(
+        'REDUX updating player score',
+        player.username,
+        action.payload.points
+      );
       if (player) {
         player.score =
           action.payload.action === PlayerScoreAction.ADD
@@ -60,13 +61,20 @@ const playersSlice = createSlice({
             : player.score - action.payload.points;
       }
     },
-    addOtherPlayer(state, action: PayloadAction<Player>) {
-      state.otherPlayers.push(action.payload);
+    addPlayer(state, action: PayloadAction<Player>) {
+      const isPlayerExist = state.find((p) => p.id === action.payload.id);
+      console.log('REDUX adding player', action.payload.username);
+      if (!isPlayerExist) {
+        state.push(action.payload);
+      }
     },
-    removeOtherPlayer(state, action: PayloadAction<string>) {
-      state.otherPlayers = state.otherPlayers.filter(
-        (p) => p.id !== action.payload
-      );
+    removePlayer(state, action: PayloadAction<string>) {
+      console.log('REDUX removing player', action.payload);
+      return state.filter((p) => p.id !== action.payload);
+    },
+    clearPlayers() {
+      console.log('REDUX clearing players');
+      return [];
     },
   },
 });
@@ -75,8 +83,7 @@ export default playersSlice.reducer;
 export const {
   setPlayerState,
   setPlayerScore,
-  setOtherPlayersScore,
-  setMyPlayer,
-  addOtherPlayer,
-  removeOtherPlayer,
+  addPlayer,
+  removePlayer,
+  clearPlayers,
 } = playersSlice.actions;

@@ -1,12 +1,8 @@
 'use client';
 import { useHost } from '../../hooks/use-host';
 import { JoinMatchProps, useMatch } from '../../hooks/use-match';
-import { PlayerScoreAction, usePlayer } from '../../hooks/use-player';
-import {
-  QuestionAnswerEventKey,
-  TimeUpEventKey,
-  useQuestions,
-} from '../../hooks/use-questions';
+import { usePlayer } from '../../hooks/use-player';
+import { TimeUpEventKey, useQuestions } from '../../hooks/use-questions';
 import { MockedMCQQuestions } from '../../../mocks';
 import { useLeaderboard } from '../../hooks/use-leaderboard';
 import { Leaderboard } from './leaderboard';
@@ -17,6 +13,7 @@ import { MatchState } from '../../store/features/matchSlice';
 import { Button } from '@nextui-org/react';
 import { useAppSelector } from '../../hooks/use-redux-typed';
 import { gameSocket } from '@core/game-client';
+import { PlayerScoreAction } from '../../store/features/playersSlice';
 
 export enum SOCKET_OP_CODES {
   MATCH_STATE = 100,
@@ -28,9 +25,17 @@ export enum SOCKET_OP_CODES {
 export enum SOCKET_SYNC {
   MATCH_STATE = 'match_state',
   HOST_STATE = 'host_state',
-  PLAYERS_SCORE = 'player_score',
+  PLAYER_SCORE = 'player_score',
   QUESTION_INDEX = 'question_index',
   LEADERBOARD = 'leaderboard',
+}
+
+export enum HOST_COMMANDS {
+  START_MATCH = 'host_requested_start',
+}
+
+export enum PLAYER_COMMANDS {
+  SYNC_SCORE = 'sync_score',
 }
 
 const STARTING_QUESTION_INDEX = 0;
@@ -40,6 +45,7 @@ export default function Match(matchProps: JoinMatchProps) {
   const amIHost = useAppSelector((state) => state.match.amIHost);
   const matchState = useAppSelector((state) => state.match.currentMatchState);
   const { publish } = usePubSub();
+  const session = useAppSelector((state) => state.session);
 
   useMatch({
     matchId: matchProps.matchId,
@@ -67,12 +73,26 @@ export default function Match(matchProps: JoinMatchProps) {
         publish(SOCKET_SYNC.LEADERBOARD, decodedData);
         break;
       case SOCKET_OP_CODES.PLAYERS_SCORE:
-        publish(SOCKET_SYNC.PLAYERS_SCORE, decodedData);
+        publish(SOCKET_SYNC.PLAYER_SCORE, decodedData);
         break;
       case SOCKET_OP_CODES.QUESTION_INDEX:
         publish(SOCKET_SYNC.QUESTION_INDEX, decodedData);
         break;
     }
+  };
+
+  gameSocket.onmatchpresence = (matchPresence) => {
+    matchPresence.joins &&
+      matchPresence.joins.forEach((player) => {
+        console.log('Player_joined', player);
+        publish('match_presence_joined', player);
+      });
+
+    matchPresence.leaves &&
+      matchPresence.leaves.forEach((player) => {
+        console.log('Player_left', player);
+        publish('match_presence_left', player);
+      });
   };
 
   switch (matchState) {
@@ -82,7 +102,7 @@ export default function Match(matchProps: JoinMatchProps) {
       return amIHost ? (
         <>
           <p>Match is ready</p>
-          <Button onClick={() => publish('host_requested_start', true)}>
+          <Button onClick={() => publish(HOST_COMMANDS.START_MATCH, true)}>
             Start Match
           </Button>
         </>
@@ -107,9 +127,10 @@ export default function Match(matchProps: JoinMatchProps) {
               <Answers
                 answers={currentQuestion.answers}
                 onClick={(answer) =>
-                  publish(QuestionAnswerEventKey, {
-                    deservedScore: answer.isCorrect ? 1 : 0,
-                    scoreAction: answer.isCorrect
+                  publish(PLAYER_COMMANDS.SYNC_SCORE, {
+                    id: session.user_id,
+                    points: answer.isCorrect ? 1 : 0,
+                    action: answer.isCorrect
                       ? PlayerScoreAction.ADD
                       : PlayerScoreAction.SUBTRACT,
                   })
