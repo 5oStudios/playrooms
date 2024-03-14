@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { IQuestion } from '../components/sections/mcq/questions/MCQQuestions';
 import { gameSocket } from '@core/game-client';
-import { MatchOpCodes, MatchSocketEvents } from '../components/match/match';
+import { SOCKET_OP_CODES, SOCKET_SYNC } from '../components/match/match';
 import { usePubSub } from './use-pub-sub';
 import { useAppSelector } from './use-redux-typed';
 
@@ -33,7 +33,7 @@ export function useQuestions({
     setCurrentQuestionIndex(currentQuestionIndex + 1);
     gameSocket.sendMatchState(
       match?.match_id,
-      MatchOpCodes.QUESTION_INDEX,
+      SOCKET_OP_CODES.QUESTION_INDEX,
       (currentQuestionIndex + 1).toString()
     );
   }, [amIHost, currentQuestionIndex, match?.match_id, questions]);
@@ -45,7 +45,7 @@ export function useQuestions({
   }, [currentQuestionIndex, publish, questions, questions.length]);
 
   subscribe({
-    event: MatchSocketEvents.QUESTION_INDEX,
+    event: SOCKET_SYNC.QUESTION_INDEX,
     callback: (decodedData: string) => {
       const questionIndex = parseInt(decodedData);
       setCurrentQuestion(questions[questionIndex]);

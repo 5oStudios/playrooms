@@ -1,7 +1,7 @@
 'use client';
 import { useCallback, useEffect } from 'react';
 import { gameSocket } from '@core/game-client';
-import { MatchOpCodes } from '../components/match/match';
+import { SOCKET_OP_CODES, SOCKET_SYNC } from '../components/match/match';
 import { usePubSub } from './use-pub-sub';
 import { useAppDispatch, useAppSelector } from './use-redux-typed';
 import { setAmIHost, setHostState } from '../store/features/matchSlice';
@@ -10,7 +10,6 @@ export enum HostState {
   ELECTED = 'ELECTED',
   NOT_ELECTED = 'NOT_ELECTED',
 }
-export const HostEventsKey = 'host_events';
 export function useHost() {
   const match = useAppSelector((state) => state.match.currentMatch);
   const { publish, subscribe } = usePubSub();
@@ -24,7 +23,7 @@ export function useHost() {
       amIHost &&
         gameSocket.sendMatchState(
           match.match_id,
-          MatchOpCodes.HOST_STATE,
+          SOCKET_OP_CODES.HOST_STATE,
           hostState
         );
     },
@@ -32,7 +31,7 @@ export function useHost() {
   );
 
   subscribe({
-    event: HostEventsKey,
+    event: SOCKET_SYNC.HOST_STATE,
     callback: (hostState: HostState) => syncHostState({ amIHost, hostState }),
   });
 

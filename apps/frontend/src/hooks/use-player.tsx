@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { Presence } from '@heroiclabs/nakama-js';
-import { AnswerEvent } from '../components/match/match';
+import { AnswerEvent, SOCKET_SYNC } from '../components/match/match';
 import { usePubSub } from './use-pub-sub';
 import { useAppDispatch, useAppSelector } from './use-redux-typed';
 import { QuestionAnswerEventKey } from './use-questions';
@@ -139,7 +139,7 @@ export function usePlayer() {
           action: answerEvent.scoreAction,
         })
       );
-      publish(OtherPlayersScoreEventKey, {
+      publish(SOCKET_SYNC.PLAYERS_SCORE, {
         id: match?.self.user_id,
         points: answerEvent.deservedScore,
         action: answerEvent.scoreAction,
@@ -155,7 +155,7 @@ export function usePlayer() {
   });
 
   subscribe({
-    event: OtherPlayersScoreEventKey,
+    event: SOCKET_SYNC.PLAYERS_SCORE,
     callback: ({ id, score, action }: IPlayerScoreMessageDTO) => {
       dispatch(
         setOtherPlayersScore({

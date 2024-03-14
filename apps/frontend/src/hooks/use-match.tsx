@@ -7,10 +7,9 @@ import {
   setCurrentMatch,
   setCurrentMatchState,
 } from '../store/features/matchSlice';
-import { MatchOpCodes } from '../components/match/match';
-import { HostEventsKey, HostState } from './use-host';
+import { SOCKET_OP_CODES, SOCKET_SYNC } from '../components/match/match';
+import { HostState } from './use-host';
 import { PlayerState } from '../store/features/playersSlice';
-import { useSafeSocket } from './use-safe-socket';
 import { useCallback, useEffect } from 'react';
 
 export const MatchStateEventsKey = 'match_events';
@@ -22,10 +21,8 @@ export interface JoinMatchProps {
 }
 export function useMatch({ matchId }: { matchId?: string }) {
   const { publish, subscribe } = usePubSub();
-  const { use } = useSafeSocket();
   const match = useAppSelector((state) => state.match.currentMatch);
   const playerState = useAppSelector((state) => state.players.myPlayer?.state);
-  const socket = useAppSelector((state) => state.socket);
   const dispatch = useAppDispatch();
 
   useMatchState();
@@ -120,7 +117,7 @@ export const useMatchState = () => {
       amIHost &&
         gameSocket.sendMatchState(
           match?.match_id,
-          MatchOpCodes.MATCH_STATE,
+          SOCKET_OP_CODES.MATCH_STATE,
           newMatchState
         );
     },
@@ -176,7 +173,8 @@ export const useMatchState = () => {
   //   },
   // });
   subscribe({
-    event: HostEventsKey,
+    // Todo: if host left then this will not run
+    event: SOCKET_SYNC.HOST_STATE,
     callback: (hostState: HostState) => {
       if (hostState === HostState.NOT_ELECTED && didMatchStart) {
         syncMatchState(MatchState.PAUSED);
