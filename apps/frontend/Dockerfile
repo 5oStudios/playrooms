@@ -15,7 +15,8 @@ WORKDIR /app
 COPY package*.json pnpm-lock.yaml ./
 
 # Install dependencies using pnpm with caching
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --ignore-scripts
+#RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --ignore-scripts
+RUN pnpm install --frozen-lockfile
 
 # Install nx globally
 RUN pnpm install -g nx
