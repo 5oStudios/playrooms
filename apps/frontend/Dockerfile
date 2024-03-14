@@ -12,6 +12,7 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
 RUN npm install -g nx
 
+
 COPY . .
 
 CMD ["nx", "run", "frontend:serve:development"]
