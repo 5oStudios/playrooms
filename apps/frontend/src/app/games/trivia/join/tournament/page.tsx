@@ -21,10 +21,6 @@ export default function Page() {
   const { isOpen, onOpenChange } = useDisclosure({
     defaultOpen: false,
   });
-  const isSocketConnected = useAppSelector(
-    (state) => state.socket === SocketState.CONNECTED
-  );
-
   const [height, setHeight] = React.useState(0);
 
   const autoScrollRef = useRef(null);
@@ -37,8 +33,6 @@ export default function Page() {
       setHeight(parentHeight);
     }
   }, [messages]);
-
-  if (!isSocketConnected) return null;
 
   return (
     <>
@@ -83,6 +77,10 @@ export default function Page() {
 const SuspendedJoinLobby = () => {
   const searchParams = useSearchParams();
   const matchId = searchParams.get(matchIdSearchParamKey);
+
+  const socket = useAppSelector((state) => state.socket);
+  if (socket !== SocketState.CONNECTED) return null;
+
   return <Match matchId={matchId} />;
 };
 function ChatMessage({ avatar, username, message }: Record<string, string>) {

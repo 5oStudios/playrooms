@@ -1,11 +1,21 @@
 import { useAppSelector } from '../../hooks/use-redux-typed';
 
 export function Leaderboard() {
-  const myScore = useAppSelector((state) => state.players.myPlayer.score);
+  const myPlayer = useAppSelector((state) => state.players.myPlayer);
+  const otherPlayer = useAppSelector((state) => state.players.otherPlayers);
+
+  const allPlayers = [myPlayer, ...otherPlayer];
+
   return (
     <div>
       Leaderboard
-      <div>My Score: {myScore}</div>
+      <ul>
+        {allPlayers.map((player) => (
+          <li key={player.id}>
+            {player.username} - {player.score}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

@@ -43,7 +43,7 @@ const SHOW_LEADERBOARD_FOR_TIME_IN_MS = 5000;
 export default function Match(matchProps: JoinMatchProps) {
   const amIHost = useAppSelector((state) => state.match.amIHost);
   const matchState = useAppSelector((state) => state.match.currentMatchState);
-  const myScore = useAppSelector((state) => state.players.myPlayer.score);
+  // const myScore = useAppSelector((state) => state.players.myPlayer.score);
   const { publish } = usePubSub();
   const socket = useAppSelector((state) => state.socket);
 
@@ -144,7 +144,7 @@ export default function Match(matchProps: JoinMatchProps) {
                 answers={currentQuestion.answers}
                 onClick={handleAnswer}
               />
-              my score: {myScore}
+              {/*my score: {myScore}*/}
             </div>
           )}
         </div>
