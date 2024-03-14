@@ -7,11 +7,11 @@ services:
     volumes:
       - data:/var/lib/cockroach
     expose:
-      - "18080"
-      - "16257"
+      - "28080"
+      - "26257"
     ports:
       - "16257:26257"
-      - "18080:8080"
+      - "28080:8080"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health?ready=1"]
       interval: 3s
@@ -37,14 +37,14 @@ services:
     volumes:
       - ./:/nakama/data
     expose:
-      - "7349"
-      - "7350"
-      - "7351"
-      - "9100"
+      - "27349"
+      - "27350"
+      - "27351"
+      - "29100"
     ports:
-      - "7349:7349"
-      - "7350:7350"
-      - "7351:7351"
+      - "27349:7349"
+      - "27350:7350"
+      - "27351:7351"
     healthcheck:
       test: ["CMD", "/nakama/nakama", "healthcheck"]
       interval: 10s
@@ -73,7 +73,7 @@ services:
       prometheus --config.file=./prometheus.yml
       EOF'
     ports:
-      - '19090:9090'
+      - '29090:9090'
 
   frontend:
     restart: always
@@ -84,7 +84,7 @@ services:
         dockerfile: Dockerfile
 
     ports:
-        - "3035:3035"
+        - "2035:3035"
 volumes:
   data:
     external: false
