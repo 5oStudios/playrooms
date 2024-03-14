@@ -14,4 +14,4 @@ RUN npm install -g nx
 
 COPY . .
 
-CMD ["nx", "run", "frontend:serve-static"]
+CMD ["nx", "run", "frontend:serve:development"]

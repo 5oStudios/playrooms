@@ -20,10 +20,10 @@
     },
     "serve": {
       "executor": "@nx/next:server",
-      "defaultConfiguration": "development",
+      "defaultConfiguration": "production",
       "options": {
-        "buildTarget": "frontend:build",
-        "dev": true,
+        "buildTarget": "frontend:build:production",
+        "dev": false,
         "port": 3035,
         "postcssConfig": "apps/frontend/next/postcss.config.js"
       },
