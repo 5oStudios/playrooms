@@ -2,13 +2,15 @@
 import { useEffect, useState } from 'react';
 import { gameSocket } from '@core/game-client';
 import { MatchOpCodes } from '../components/match/match';
-import { MatchData } from '@heroiclabs/nakama-js';
 import { useAppSelector } from './use-redux-typed';
+import { usePubSub } from './use-pub-sub';
+import { TimeUpEventKey } from './use-questions';
 
 export enum LeaderboardState {
   SHOW = 'SHOW',
   HIDE = 'HIDE',
 }
+export const LeaderboardVisibilityEventKey = 'leaderboard';
 export function useLeaderboard({
   showLeaderboardForTimeInMs = 5000,
 }: {
@@ -20,6 +22,8 @@ export function useLeaderboard({
   const [isLeaderboardVisible, setIsLeaderboardVisible] = useState(false);
   const [showLeaderboardForTime] = useState(showLeaderboardForTimeInMs);
 
+  const { subscribe } = usePubSub();
+
   // Cleanup
   useEffect(() => {
     return () => {
@@ -27,14 +31,11 @@ export function useLeaderboard({
     };
   }, []);
 
-  const leaderboardSocketEventsReceiver = (matchData: MatchData) => {
-    const decodedData = new TextDecoder().decode(matchData.data);
-    if (decodedData === LeaderboardState.SHOW) {
-      setIsLeaderboardVisible(true);
-    } else if (decodedData === LeaderboardState.HIDE) {
-      setIsLeaderboardVisible(false);
-    }
-  };
+  subscribe({
+    event: LeaderboardVisibilityEventKey,
+    callback: (decodedData: string) =>
+      setIsLeaderboardVisible(decodedData === LeaderboardState.SHOW),
+  });
 
   const previewLeaderboard = () => {
     if (amIHost) {
@@ -55,11 +56,12 @@ export function useLeaderboard({
     }
   };
 
+  subscribe({
+    event: TimeUpEventKey,
+    callback: previewLeaderboard,
+  });
+
   return {
     isLeaderboardVisible,
-    previewLeaderboard: async () => {
-      previewLeaderboard();
-    },
-    leaderboardSocketEventsReceiver,
   };
 }

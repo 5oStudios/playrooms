@@ -4,7 +4,6 @@ import {
   JoinMatchProps,
   MatchStateEventsKey,
   useMatch,
-  useMatchState,
 } from '../../hooks/use-match';
 import {
   OtherPlayersScoreEventKey,
@@ -13,11 +12,14 @@ import {
 } from '../../hooks/use-player';
 import {
   QuestionAnswerEventKey,
+  TimeUpEventKey,
   useQuestions,
 } from '../../hooks/use-questions';
 import { MockedMCQQuestions } from '../../../mocks';
-import { useLeaderboard } from '../../hooks/use-leaderboard';
-import { gameSocket } from '@core/game-client';
+import {
+  LeaderboardVisibilityEventKey,
+  useLeaderboard,
+} from '../../hooks/use-leaderboard';
 import { Leaderboard } from './leaderboard';
 import { Question } from '../sections/mcq/questions/question';
 import { Answers } from '../sections/mcq/answers/answers';
@@ -27,6 +29,7 @@ import { Button } from '@nextui-org/react';
 import { useAppSelector } from '../../hooks/use-redux-typed';
 import { Answer } from '../sections/mcq/answers/answer';
 import { useCallback } from 'react';
+import { gameSocket } from '@core/game-client';
 
 export enum MatchOpCodes {
   MATCH_STATE = 100,
@@ -36,6 +39,14 @@ export enum MatchOpCodes {
   TIME_LEFT = 105,
   LEADERBOARD = 106,
 }
+export enum MatchSocketEvents {
+  MATCH_DATA = 'match_data',
+  HOST_STATE = 'host_state',
+  PLAYER_SCORE = 'player_score',
+  QUESTION_INDEX = 'question_index',
+  TIME_LEFT = 'time_left',
+  LEADERBOARD = 'leaderboard',
+}
 
 const STARTING_QUESTION_INDEX = 0;
 const SHOW_LEADERBOARD_FOR_TIME_IN_MS = 5000;
@@ -43,32 +54,24 @@ const SHOW_LEADERBOARD_FOR_TIME_IN_MS = 5000;
 export default function Match(matchProps: JoinMatchProps) {
   const amIHost = useAppSelector((state) => state.match.amIHost);
   const matchState = useAppSelector((state) => state.match.currentMatchState);
-  // const myScore = useAppSelector((state) => state.players.myPlayer.score);
   const { publish } = usePubSub();
-  const socket = useAppSelector((state) => state.socket);
 
   // TODO: refactor this to pub/sub pattern
 
   useMatch({
-    stateHandler: useMatchState,
     matchId: matchProps.matchId,
   });
   useHost();
 
   usePlayer();
 
-  const { currentQuestion, nextQuestion, questionsSocketEventsReceiver } =
-    useQuestions({
-      questions: MockedMCQQuestions,
-      startingQuestionIndex: STARTING_QUESTION_INDEX,
-    });
-
-  const {
-    isLeaderboardVisible,
-    leaderboardSocketEventsReceiver,
-    previewLeaderboard,
-  } = useLeaderboard({
+  const { isLeaderboardVisible } = useLeaderboard({
     showLeaderboardForTimeInMs: SHOW_LEADERBOARD_FOR_TIME_IN_MS,
+  });
+
+  const { currentQuestion } = useQuestions({
+    questions: MockedMCQQuestions,
+    startingQuestionIndex: STARTING_QUESTION_INDEX,
   });
 
   gameSocket.onmatchdata = (matchData) => {
@@ -80,23 +83,17 @@ export default function Match(matchProps: JoinMatchProps) {
       case MatchOpCodes.HOST_STATE:
         publish(HostEventsKey, decodedData);
         break;
-      case MatchOpCodes.QUESTION_INDEX:
-        questionsSocketEventsReceiver(matchData);
-        break;
       case MatchOpCodes.LEADERBOARD:
-        leaderboardSocketEventsReceiver(matchData);
+        publish(LeaderboardVisibilityEventKey, decodedData);
         break;
       case MatchOpCodes.PLAYER_SCORE:
         publish(OtherPlayersScoreEventKey, decodedData);
         break;
+      case MatchOpCodes.QUESTION_INDEX:
+        publish(MatchSocketEvents.QUESTION_INDEX, decodedData);
+        break;
     }
   };
-
-  const onTimeUp = useCallback(() => {
-    previewLeaderboard()
-      .then(() => nextQuestion())
-      .catch((error) => console.error('Error previewing leaderboard', error));
-  }, [nextQuestion, previewLeaderboard]);
 
   const handleAnswer = useCallback(
     (answer: Answer) => {
@@ -138,7 +135,7 @@ export default function Match(matchProps: JoinMatchProps) {
               <Question
                 questionText={currentQuestion.question}
                 allowedTimeInMS={currentQuestion.allowedTimeInMS}
-                onTimeUp={onTimeUp}
+                onTimeUp={() => publish(TimeUpEventKey, true)}
               />
               <Answers
                 answers={currentQuestion.answers}

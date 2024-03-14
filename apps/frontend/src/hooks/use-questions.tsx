@@ -2,13 +2,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import { IQuestion } from '../components/sections/mcq/questions/MCQQuestions';
 import { gameSocket } from '@core/game-client';
-import { numToUint8Array, uint8ArrayToNum } from '../utils/convert';
-import { MatchOpCodes } from '../components/match/match';
-import { MatchData } from '@heroiclabs/nakama-js';
+import { MatchOpCodes, MatchSocketEvents } from '../components/match/match';
 import { usePubSub } from './use-pub-sub';
 import { useAppSelector } from './use-redux-typed';
 
 export const QuestionsFinishedEventKey = 'questions_finished';
+export const TimeUpEventKey = 'time_up';
 export const RemainingTimeForQuestionEventKey = (questionIndex: string) =>
   `remaining_time_for_question_${questionIndex}`;
 export const QuestionAnswerEventKey = 'question_answer';
@@ -26,12 +25,7 @@ export function useQuestions({
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(
     startingQuestionIndex
   );
-  const { publish } = usePubSub();
-
-  const questionsSocketEventsReceiver = (matchData: MatchData) => {
-    setCurrentQuestion(questions[uint8ArrayToNum(matchData.data)]);
-    setCurrentQuestionIndex(uint8ArrayToNum(matchData.data));
-  };
+  const { publish, subscribe } = usePubSub();
 
   const nextQuestion = useCallback(() => {
     if (!amIHost) return;
@@ -40,7 +34,7 @@ export function useQuestions({
     gameSocket.sendMatchState(
       match?.match_id,
       MatchOpCodes.QUESTION_INDEX,
-      numToUint8Array(currentQuestionIndex + 1)
+      (currentQuestionIndex + 1).toString()
     );
   }, [amIHost, currentQuestionIndex, match?.match_id, questions]);
 
@@ -50,10 +44,21 @@ export function useQuestions({
     }
   }, [currentQuestionIndex, publish, questions, questions.length]);
 
+  subscribe({
+    event: MatchSocketEvents.QUESTION_INDEX,
+    callback: (decodedData: string) => {
+      const questionIndex = parseInt(decodedData);
+      setCurrentQuestion(questions[questionIndex]);
+      setCurrentQuestionIndex(questionIndex);
+    },
+  });
+
+  subscribe({
+    event: TimeUpEventKey,
+    callback: nextQuestion,
+  });
+
   return {
     currentQuestion,
-    nextQuestion,
-    // currentQuestionDeservedPoints: 1,
-    questionsSocketEventsReceiver,
   };
 }
