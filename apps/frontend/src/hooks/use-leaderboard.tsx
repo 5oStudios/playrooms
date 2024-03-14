@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { gameSocket } from '@core/game-client';
-import { MatchOpCodes } from '../components/match/match';
+import { SOCKET_OP_CODES, SOCKET_SYNC } from '../components/match/match';
 import { useAppSelector } from './use-redux-typed';
 import { usePubSub } from './use-pub-sub';
 import { TimeUpEventKey } from './use-questions';
@@ -10,7 +10,6 @@ export enum LeaderboardState {
   SHOW = 'SHOW',
   HIDE = 'HIDE',
 }
-export const LeaderboardVisibilityEventKey = 'leaderboard';
 export function useLeaderboard({
   showLeaderboardForTimeInMs = 5000,
 }: {
@@ -32,7 +31,7 @@ export function useLeaderboard({
   }, []);
 
   subscribe({
-    event: LeaderboardVisibilityEventKey,
+    event: SOCKET_SYNC.LEADERBOARD,
     callback: (decodedData: string) =>
       setIsLeaderboardVisible(decodedData === LeaderboardState.SHOW),
   });
@@ -42,14 +41,14 @@ export function useLeaderboard({
       setIsLeaderboardVisible(true);
       gameSocket.sendMatchState(
         match.match_id,
-        MatchOpCodes.LEADERBOARD,
+        SOCKET_OP_CODES.LEADERBOARD,
         LeaderboardState.SHOW
       );
       setTimeout(() => {
         setIsLeaderboardVisible(false);
         gameSocket.sendMatchState(
           match.match_id,
-          MatchOpCodes.LEADERBOARD,
+          SOCKET_OP_CODES.LEADERBOARD,
           LeaderboardState.HIDE
         );
       }, showLeaderboardForTime);

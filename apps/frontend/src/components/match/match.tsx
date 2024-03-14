@@ -1,25 +1,18 @@
 'use client';
-import { HostEventsKey, useHost } from '../../hooks/use-host';
+import { useHost } from '../../hooks/use-host';
 import {
   JoinMatchProps,
   MatchStateEventsKey,
   useMatch,
 } from '../../hooks/use-match';
-import {
-  OtherPlayersScoreEventKey,
-  PlayerScoreAction,
-  usePlayer,
-} from '../../hooks/use-player';
+import { PlayerScoreAction, usePlayer } from '../../hooks/use-player';
 import {
   QuestionAnswerEventKey,
   TimeUpEventKey,
   useQuestions,
 } from '../../hooks/use-questions';
 import { MockedMCQQuestions } from '../../../mocks';
-import {
-  LeaderboardVisibilityEventKey,
-  useLeaderboard,
-} from '../../hooks/use-leaderboard';
+import { useLeaderboard } from '../../hooks/use-leaderboard';
 import { Leaderboard } from './leaderboard';
 import { Question } from '../sections/mcq/questions/question';
 import { Answers } from '../sections/mcq/answers/answers';
@@ -31,18 +24,18 @@ import { Answer } from '../sections/mcq/answers/answer';
 import { useCallback } from 'react';
 import { gameSocket } from '@core/game-client';
 
-export enum MatchOpCodes {
+export enum SOCKET_OP_CODES {
   MATCH_STATE = 100,
   HOST_STATE = 101,
-  PLAYER_SCORE = 103,
+  PLAYERS_SCORE = 103,
   QUESTION_INDEX = 104,
   TIME_LEFT = 105,
   LEADERBOARD = 106,
 }
-export enum MatchSocketEvents {
+export enum SOCKET_SYNC {
   MATCH_DATA = 'match_data',
   HOST_STATE = 'host_state',
-  PLAYER_SCORE = 'player_score',
+  PLAYERS_SCORE = 'player_score',
   QUESTION_INDEX = 'question_index',
   TIME_LEFT = 'time_left',
   LEADERBOARD = 'leaderboard',
@@ -77,20 +70,20 @@ export default function Match(matchProps: JoinMatchProps) {
   gameSocket.onmatchdata = (matchData) => {
     const decodedData = new TextDecoder().decode(matchData.data);
     switch (matchData.op_code) {
-      case MatchOpCodes.MATCH_STATE:
+      case SOCKET_OP_CODES.MATCH_STATE:
         publish(MatchStateEventsKey, decodedData);
         break;
-      case MatchOpCodes.HOST_STATE:
-        publish(HostEventsKey, decodedData);
+      case SOCKET_OP_CODES.HOST_STATE:
+        publish(SOCKET_SYNC.HOST_STATE, decodedData);
         break;
-      case MatchOpCodes.LEADERBOARD:
-        publish(LeaderboardVisibilityEventKey, decodedData);
+      case SOCKET_OP_CODES.LEADERBOARD:
+        publish(SOCKET_SYNC.LEADERBOARD, decodedData);
         break;
-      case MatchOpCodes.PLAYER_SCORE:
-        publish(OtherPlayersScoreEventKey, decodedData);
+      case SOCKET_OP_CODES.PLAYERS_SCORE:
+        publish(SOCKET_SYNC.PLAYERS_SCORE, decodedData);
         break;
-      case MatchOpCodes.QUESTION_INDEX:
-        publish(MatchSocketEvents.QUESTION_INDEX, decodedData);
+      case SOCKET_OP_CODES.QUESTION_INDEX:
+        publish(SOCKET_SYNC.QUESTION_INDEX, decodedData);
         break;
     }
   };
