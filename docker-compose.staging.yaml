@@ -84,6 +84,8 @@ services:
         dockerfile: apps/frontend/Dockerfile
     ports:
         - "2035:3035"
+    expose:
+        - "3035"
 
 volumes:
   data:
