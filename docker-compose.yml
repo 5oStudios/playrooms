@@ -73,5 +73,13 @@ services:
       EOF'
     ports:
       - '9090:9090'
+
+  frontend:
+    restart: always
+    depends_on:
+      - "nakama"
+    build: apps/frontend/Dockerfile
+    ports:
+        - "3035:3035"
 volumes:
   data:
