@@ -9,6 +9,12 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     steps:
+      - name: Notify Slack
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data \
+          '{"channel": "#playrooms", "username": "5oStudios", "text": "New Build Starts!", "icon_emoji": ":5ostudios:"}' \
+            ${{ secrets.SLACK_WEBHOOK }}
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
         id: setup_qemu
@@ -39,7 +45,7 @@ jobs:
       - name: Notify Slack
         run: |
           curl -X POST -H 'Content-type: application/json' --data \
-          '{"channel": "#playrooms", "username": "5oStudios", "text": "Docker Build and Push GitHub Action: Success! Time taken: Setup QEMU: '${{ steps.setup_qemu.outputs.time }}', Setup Buildx: '${{ steps.setup_buildx.outputs.time }}', Login to Docker Hub: '${{ steps.login_to_docker_hub.outputs.time }}', Build and Push: '${{ steps.docker_build.outputs.time }}'.", "icon_emoji": ":5ostudios:"}' \
+          '{"channel": "#playrooms", "username": "5oStudios", "text": "Build Success!", "icon_emoji": ":5ostudios:"}' \
             ${{ secrets.SLACK_WEBHOOK }}
 
       - name: Deploy to Staging
