@@ -75,16 +75,16 @@ services:
     ports:
       - '29090:9090'
 
-  frontend:
+  frontendsss:
     restart: always
     depends_on:
       - "nakama"
     build:
-        context: apps/frontend/
-        dockerfile: Dockerfile
-
+        context: .
+        dockerfile: apps/frontend/Dockerfile
     ports:
         - "2035:3035"
+
 volumes:
   data:
     external: false
