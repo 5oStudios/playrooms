@@ -8,6 +8,6 @@ export const SERVER_KEY = 'defaultkey',
   // HOST = 'nakama.5ostudios.com',
   HOST = process.env['NAKAMA_HOST'] || 'nakama',
   PORT = process.env['NAKAMA_PORT'] || '7350',
-  USE_SSL = process.env['NAKAMA_SSL'] || true,
+  USE_SSL = true,
   TIMEOUT = 7500,
   AUTO_REFRESH_SESSION = true;
