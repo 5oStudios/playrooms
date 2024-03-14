@@ -2,8 +2,8 @@
 FROM node:lts-slim
 
 # Set environment variables for pnpm
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
+#ENV PNPM_HOME="/pnpm"
+#ENV PATH="$PNPM_HOME:$PATH"
 
 # Enable corepack
 RUN corepack enable
@@ -12,20 +12,18 @@ RUN corepack enable
 WORKDIR /app
 
 # Copy package.json and lock file
-COPY package*.json pnpm-lock.yaml ./
+COPY ../../pnpm-lock.yaml ./
+COPY ../../package.json ./
 
 # Install dependencies using pnpm with caching
 #RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --ignore-scripts
-RUN pnpm install --frozen-lockfile
-
-# Install nx globally
-RUN pnpm install -g nx
+RUN pnpm install
 
 # Copy the entire application
-COPY . .
+COPY ../../ .
 
 # Build the frontend for production
-RUN nx run frontend:build:production
+RUN pnpx nx run frontend:build:production
 
 # Serve the frontend in production
-CMD ["nx", "run", "frontend:serve:production"]
+CMD ["pnpx", "nx", "run", "frontend:serve:production"]

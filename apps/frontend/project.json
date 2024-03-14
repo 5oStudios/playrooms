@@ -19,7 +19,7 @@
       "defaultConfiguration": "development",
       "options": {
         "buildTarget": "frontend:build",
-        "dev": true,
+        "dev": true
       },
       "configurations": {
         "development": {
