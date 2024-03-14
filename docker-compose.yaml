@@ -8,7 +8,7 @@ services:
       - data:/var/lib/cockroach
     expose:
       - "18080"
-      - "26257"
+      - "16257"
     ports:
       - "16257:26257"
       - "18080:8080"
@@ -73,7 +73,7 @@ services:
       prometheus --config.file=./prometheus.yml
       EOF'
     ports:
-      - '9090:9090'
+      - '19090:9090'
 
   frontend:
     restart: always
