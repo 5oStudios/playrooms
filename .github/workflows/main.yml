@@ -44,7 +44,7 @@ jobs:
 
       - name: Deploy to Staging
         run: |
-            curl -X POST \
+            curl -X GET \
               -H "Authorization: Bearer ${{ secrets.COOLIFY_KEY_FRONTEND_STAGING }}" \
                 ${{ secrets.COOLIFY_WEBHOOK_FRONTEND_STAGING }}
 
