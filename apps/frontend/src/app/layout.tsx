@@ -4,7 +4,6 @@ import Navbar from '../components/ui/navbar';
 import React, { ReactNode } from 'react';
 import { Providers } from './providers';
 import { Toaster } from 'sonner';
-import { Socket } from '../utils/socket';
 
 export const metadata = {
   title: 'Welcome to my game',
@@ -21,7 +20,7 @@ export default function RootLayout({
       <body className="relative">
         <Toaster />
         <Providers>
-          <Socket />
+          {/*<Socket />*/}
           <Navbar />
           <div
             className="p-4 flex justify-center items-center h-[calc(100vh-64px)]"

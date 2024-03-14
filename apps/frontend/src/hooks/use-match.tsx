@@ -30,7 +30,7 @@ export function useMatch({
   const { publish, subscribe } = usePubSub();
   const { use } = useSafeSocket();
   const match = useAppSelector((state) => state.match.currentMatch);
-  const playerState = useAppSelector((state) => state.players.myPlayer.state);
+  const playerState = useAppSelector((state) => state.players.myPlayer?.state);
   const socket = useAppSelector((state) => state.socket);
   const dispatch = useAppDispatch();
 
@@ -104,8 +104,9 @@ export const useMatchState = () => {
   const matchSate = useAppSelector((state) => state.match.currentMatchState);
   const amIHost = useAppSelector((state) => state.match.amIHost);
   const hostState = useAppSelector((state) => state.match.hostState);
-  const playerState = useAppSelector((state) => state.players.myPlayer.state);
+  const playerState = useAppSelector((state) => state.players.myPlayer?.state);
   const match = useAppSelector((state) => state.match.currentMatch);
+
   const didMatchStart = matchSate === MatchState.STARTED;
   const didMatchEnd = matchSate === MatchState.ENDED;
   const isMatchReady = matchSate === MatchState.READY;

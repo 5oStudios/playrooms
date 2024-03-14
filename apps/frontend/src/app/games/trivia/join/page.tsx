@@ -9,6 +9,8 @@ import JoinLobby, {
   partyIdSearchParamKey,
 } from '../../../../components/lobby/lobby-actions/joinLobby';
 import { useSearchParams } from 'next/navigation';
+import { useAppSelector } from '../../../../hooks/use-redux-typed';
+import { SocketState } from '../../../../store/features/socketSlice';
 
 export default function Page() {
   const [isOpen, setIsOpen] = useState(true);
@@ -43,6 +45,8 @@ const SuspendedJoinLobby = () => {
   const searchParams = useSearchParams();
   const lobbyMode = searchParams.get(lobbyModeSearchParamKey) || LobbyMode.SOLO;
   const partyId = searchParams.get(partyIdSearchParamKey);
+  const socket = useAppSelector((state) => state.socket);
+  if (socket !== SocketState.CONNECTED) return null;
 
   return <JoinLobby partyId={partyId} mode={+lobbyMode} />;
 };

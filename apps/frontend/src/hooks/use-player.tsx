@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from './use-redux-typed';
 import { QuestionAnswerEventKey } from './use-questions';
 import {
   PlayerState,
+  setMyPlayer,
   setOtherPlayersScore,
   setPlayerScore,
   setPlayerState,
@@ -21,12 +22,10 @@ export enum PlayerScoreAction {
 }
 export function usePlayer() {
   const match = useAppSelector((state) => state.match.currentMatch);
-  const myScore = useAppSelector((state) => state.players.myPlayer.score);
   const dispatch = useAppDispatch();
 
   const [players, setPlayers] = useState<Presence[]>([]);
   const { publish, subscribe } = usePubSub();
-  console.log('myScore', myScore);
 
   // const changeLocalPlayerScore = useCallback(
   //   ({ id, username, score, action }: IPlayerScoreMessageDTO) => {
@@ -91,13 +90,20 @@ export function usePlayer() {
     //       action: PlayerScoreAction.ADD,
     //     });
     //   });
-    dispatch(setPlayerState(PlayerState.READY));
+    dispatch(
+      setMyPlayer({
+        id: match.self.user_id,
+        username: match.self.username,
+        score: 0,
+        state: PlayerState.READY,
+      })
+    );
   }, [dispatch, match]);
 
   // Cleanup
   useEffect(() => {
     return () => {
-      dispatch(setPlayerState(PlayerState.NOT_READY));
+      dispatch(setMyPlayer(null));
       setPlayers([]);
     };
   }, [dispatch]);
@@ -127,12 +133,16 @@ export function usePlayer() {
     event: QuestionAnswerEventKey,
     callback: (answerEvent: AnswerEvent) => {
       console.log('Got Answer', answerEvent);
-      answerEvent.scoreAction === PlayerScoreAction.ADD
-        ? dispatch(setPlayerScore(myScore + answerEvent.deservedScore))
-        : dispatch(setPlayerScore(myScore - answerEvent.deservedScore));
+      dispatch(
+        setPlayerScore({
+          points: answerEvent.deservedScore,
+          action: answerEvent.scoreAction,
+        })
+      );
       publish(OtherPlayersScoreEventKey, {
         id: match?.self.user_id,
-        score: myScore,
+        points: answerEvent.deservedScore,
+        action: answerEvent.scoreAction,
       });
     },
   });
@@ -146,8 +156,14 @@ export function usePlayer() {
 
   subscribe({
     event: OtherPlayersScoreEventKey,
-    callback: ({ id, score }: { id: string; score: number }) => {
-      dispatch(setOtherPlayersScore({ id, score }));
+    callback: ({ id, score, action }: IPlayerScoreMessageDTO) => {
+      dispatch(
+        setOtherPlayersScore({
+          id,
+          action,
+          points: score,
+        })
+      );
     },
   });
 
