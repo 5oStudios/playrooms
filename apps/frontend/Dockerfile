@@ -1,5 +1,5 @@
 # Use the specific Node version
-FROM node:20.10.0
+FROM node:lts-slim
 
 # Set environment variables for pnpm
 ENV PNPM_HOME="/pnpm"
