@@ -5,7 +5,7 @@ services:
     command: start-single-node --insecure --store=attrs=ssd,path=/var/lib/cockroach/
     restart: "no"
     volumes:
-      - data:/var/lib/cockroach
+      - cockroachdb-prod:/var/lib/cockroach
     expose:
       - "18080"
       - "26257"
@@ -17,6 +17,8 @@ services:
       interval: 3s
       timeout: 3s
       retries: 5
+
+
   nakama:
     image: registry.heroiclabs.com/heroiclabs/nakama:3.20.1
     entrypoint:
@@ -34,7 +36,7 @@ services:
       prometheus:
         condition: service_started
     volumes:
-      - ./:/nakama/data
+      - nakama-prod/:/nakama/data
     expose:
       - "7349"
       - "7350"
@@ -49,6 +51,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+
   prometheus:
     image: prom/prometheus
     entrypoint: /bin/sh -c
@@ -81,9 +85,11 @@ services:
     build:
         context: .
         dockerfile: apps/frontend/Dockerfile
-
     ports:
         - "3035:3035"
+
 volumes:
-  data:
+  cockroachdb-prod:
+    external: true
+  nakama-prod:
     external: true
