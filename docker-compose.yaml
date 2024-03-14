@@ -86,3 +86,4 @@ services:
         - "3035:3035"
 volumes:
   data:
+    external: true
