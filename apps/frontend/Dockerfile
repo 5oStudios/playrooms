@@ -12,7 +12,7 @@ RUN corepack enable
 WORKDIR /app
 
 # Copy package.json and lock file
-COPY ../../package*.json ../../pnpm-lock.yaml ./
+COPY package*.json pnpm-lock.yaml ./
 
 # Enable Docker BuildKit
 ENV DOCKER_BUILDKIT=1
