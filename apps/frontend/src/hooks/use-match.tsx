@@ -162,7 +162,7 @@ export const useMatchState = () => {
     },
   });
   subscribe({
-    event: MatchStateEventsKey,
+    event: SOCKET_SYNC.MATCH_STATE,
     callback: (newMatchState: MatchState) => syncMatchState(newMatchState),
   });
   // subscribe({
