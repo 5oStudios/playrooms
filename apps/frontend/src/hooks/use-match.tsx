@@ -9,7 +9,7 @@ import {
 } from '../store/features/matchSlice';
 import { MatchOpCodes } from '../components/match/match';
 import { HostEventsKey, HostState } from './use-host';
-import { PlayerState } from '../store/features/playerSlice';
+import { PlayerState } from '../store/features/playersSlice';
 import { useSafeSocket } from './use-safe-socket';
 import { useCallback, useEffect } from 'react';
 
@@ -30,7 +30,7 @@ export function useMatch({
   const { publish, subscribe } = usePubSub();
   const { use } = useSafeSocket();
   const match = useAppSelector((state) => state.match.currentMatch);
-  const playerState = useAppSelector((state) => state.player.state);
+  const playerState = useAppSelector((state) => state.players.myPlayer.state);
   const socket = useAppSelector((state) => state.socket);
   const dispatch = useAppDispatch();
 
@@ -104,7 +104,7 @@ export const useMatchState = () => {
   const matchSate = useAppSelector((state) => state.match.currentMatchState);
   const amIHost = useAppSelector((state) => state.match.amIHost);
   const hostState = useAppSelector((state) => state.match.hostState);
-  const playerState = useAppSelector((state) => state.player.state);
+  const playerState = useAppSelector((state) => state.players.myPlayer.state);
   const match = useAppSelector((state) => state.match.currentMatch);
   const didMatchStart = matchSate === MatchState.STARTED;
   const didMatchEnd = matchSate === MatchState.ENDED;

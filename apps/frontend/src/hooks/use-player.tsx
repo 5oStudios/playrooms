@@ -7,12 +7,13 @@ import { useAppDispatch, useAppSelector } from './use-redux-typed';
 import { QuestionAnswerEventKey } from './use-questions';
 import {
   PlayerState,
+  setOtherPlayersScore,
   setPlayerScore,
   setPlayerState,
-} from '../store/features/playerSlice';
+} from '../store/features/playersSlice';
 
 export const PlayerStateEventsKey = 'player_events';
-export const PlayerScoreEventKey = 'player_score';
+export const OtherPlayersScoreEventKey = 'other_players_score';
 
 export enum PlayerScoreAction {
   ADD = 'add',
@@ -20,7 +21,7 @@ export enum PlayerScoreAction {
 }
 export function usePlayer() {
   const match = useAppSelector((state) => state.match.currentMatch);
-  const myScore = useAppSelector((state) => state.player.score);
+  const myScore = useAppSelector((state) => state.players.myPlayer.score);
   const dispatch = useAppDispatch();
 
   const [players, setPlayers] = useState<Presence[]>([]);
@@ -129,6 +130,10 @@ export function usePlayer() {
       answerEvent.scoreAction === PlayerScoreAction.ADD
         ? dispatch(setPlayerScore(myScore + answerEvent.deservedScore))
         : dispatch(setPlayerScore(myScore - answerEvent.deservedScore));
+      publish(OtherPlayersScoreEventKey, {
+        id: match?.self.user_id,
+        score: myScore,
+      });
     },
   });
 
@@ -139,18 +144,12 @@ export function usePlayer() {
     },
   });
 
-  // subscribe({
-  //   event: PlayerScoreEventKey,
-  //   callback: (decodedData: string) => {
-  //     const newPlayerScore = new PlayerScoreMessageDTO(JSON.parse(decodedData));
-  //     changeLocalPlayerScore({
-  //       id: newPlayerScore.id,
-  //       username: newPlayerScore.username,
-  //       score: newPlayerScore.score,
-  //       action: newPlayerScore.action,
-  //     });
-  //   },
-  // });
+  subscribe({
+    event: OtherPlayersScoreEventKey,
+    callback: ({ id, score }: { id: string; score: number }) => {
+      dispatch(setOtherPlayersScore({ id, score }));
+    },
+  });
 
   return {
     players,

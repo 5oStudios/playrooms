@@ -1,7 +1,7 @@
 import { useAppSelector } from '../../hooks/use-redux-typed';
 
 export function Leaderboard() {
-  const myScore = useAppSelector((state) => state.player.score);
+  const myScore = useAppSelector((state) => state.players.myPlayer.score);
   return (
     <div>
       Leaderboard
