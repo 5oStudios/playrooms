@@ -20,11 +20,13 @@ jobs:
         run: |
           docker buildx build \
               --platform linux/amd64,linux/arm64 \
+              -f apps/frontend/Dockerfile \
               -t ${{ secrets.DOCKER_USERNAME }}/playrooms-staging:latest \
               --push .
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
 
       - name: Send webhook to server
         run: |
