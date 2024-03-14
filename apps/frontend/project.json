@@ -6,26 +6,20 @@
   "targets": {
     "build": {
       "executor": "@nx/next:build",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "defaultConfiguration": "production",
       "options": {
-        "outputPath": "dist/apps/frontend/next"
-      },
-      "configurations": {
-        "development": {
-          "outputPath": "apps/frontend/next"
-        },
-        "production": {}
+        "outputPath": "dist/acme"
       }
     },
-    "serve": {
+      "serve": {
       "executor": "@nx/next:server",
-      "defaultConfiguration": "production",
+      "defaultConfiguration": "development",
       "options": {
-        "buildTarget": "frontend:build:production",
-        "dev": false,
-        "port": 3035,
-        "postcssConfig": "apps/frontend/next/postcss.config.js"
+        "buildTarget": "frontend:build",
+        "dev": true,
       },
       "configurations": {
         "development": {
@@ -34,22 +28,9 @@
         },
         "production": {
           "buildTarget": "frontend:build:production",
-          "dev": false
+          "dev": false,
+          "port": 3035
         }
-      }
-    },
-    "serve-static": {
-      "executor": "@nx/web:file-server",
-      "options": {
-        "buildTarget": "frontend:build:production",
-        "port": 3035,
-        "staticFilePath": "dist/apps/frontend/next/.next"
-      }
-    },
-    "export": {
-      "executor": "@nx/next:export",
-      "options": {
-        "buildTarget": "frontend:build:production"
       }
     },
     "cap": {
