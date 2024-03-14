@@ -75,7 +75,7 @@ services:
     ports:
       - '29090:9090'
 
-  frontendsss:
+  frontends:
     restart: always
     depends_on:
       - "nakama"
