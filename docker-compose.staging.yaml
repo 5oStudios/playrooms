@@ -17,6 +17,8 @@ services:
       interval: 3s
       timeout: 3s
       retries: 5
+    networks:
+        - playrooms
 
   nakama:
     image: registry.heroiclabs.com/heroiclabs/nakama:3.20.1
@@ -50,6 +52,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - playrooms
 
   prometheus:
     image: prom/prometheus
@@ -75,6 +79,8 @@ services:
       EOF'
     ports:
       - '29090:9090'
+    networks:
+      - playrooms
 
   frontends:
     restart: always
@@ -87,7 +93,12 @@ services:
         - "3035:3035"
     expose:
         - "3035"
+    networks:
+      - playrooms
 
 volumes:
   data:
     external: false
+networks:
+    playrooms:
+        driver: bridge
