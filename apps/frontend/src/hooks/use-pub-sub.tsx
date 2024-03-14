@@ -1,4 +1,3 @@
-'use client';
 import { useCallback, useEffect } from 'react';
 import { EventEmitter } from 'eventemitter3';
 

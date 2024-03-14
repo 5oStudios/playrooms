@@ -7,12 +7,12 @@ const renderTime = (dimension, time) => {
 
 export function CountDown({
   milSecond,
-  onUpdate,
+  // onUpdate,
   onComplete,
   isMatchStarted,
 }: Readonly<{
   milSecond: number;
-  onUpdate: (remainingTime: number) => void;
+  // onUpdate: (remainingTime: number) => void;
   isMatchStarted: boolean;
   onComplete?: () => void;
 }>) {
@@ -32,7 +32,7 @@ export function CountDown({
         };
       }}
       onUpdate={(elapsedTime) => {
-        onUpdate(elapsedTime);
+        // onUpdate(elapsedTime);
       }}
     >
       {({ elapsedTime, color }) => (

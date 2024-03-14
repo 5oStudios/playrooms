@@ -10,12 +10,11 @@ export enum LeaderboardState {
   HIDE = 'HIDE',
 }
 export function useLeaderboard({
-  amIHost,
   showLeaderboardForTimeInMs = 5000,
 }: {
-  amIHost: boolean;
   showLeaderboardForTimeInMs?: number;
 }) {
+  const amIHost = useAppSelector((state) => state.match.amIHost);
   const match = useAppSelector((state) => state.match.currentMatch);
 
   const [isLeaderboardVisible, setIsLeaderboardVisible] = useState(false);

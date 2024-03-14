@@ -7,17 +7,22 @@ export enum PlayerState {
 }
 
 const initialState = {
-  myPlayerState: PlayerState.NOT_READY,
+  state: PlayerState.NOT_READY,
+  score: 0,
 };
+
 const playerSlice = createSlice({
   name: 'player',
   initialState,
   reducers: {
-    setMyPlayerState(state, action: PayloadAction<PlayerState>) {
-      state.myPlayerState = action.payload;
+    setPlayerState(state, action: PayloadAction<PlayerState>) {
+      state.state = action.payload;
+    },
+    setPlayerScore(state, action: PayloadAction<number>) {
+      state.score = action.payload;
     },
   },
 });
 export default playerSlice.reducer;
 
-export const { setMyPlayerState } = playerSlice.actions;
+export const { setPlayerState, setPlayerScore } = playerSlice.actions;
