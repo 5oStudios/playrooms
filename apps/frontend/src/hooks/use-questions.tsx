@@ -1,6 +1,5 @@
 'use client';
 import { useCallback, useEffect, useState } from 'react';
-import { IQuestion } from '../components/sections/mcq/questions/MCQQuestions';
 import { gameSocket } from '@core/game-client';
 import {
   PLAYER_COMMANDS,
@@ -13,12 +12,21 @@ import { PlayerScoreAction } from '../store/features/playersSlice';
 import { Answer } from '../components/sections/mcq/answers/answer';
 import { QuestionAnswerEventKeyFromChat } from './use-chat/use-chat-players';
 import { MatchState } from '../store/features/matchSlice';
+import { IQuestion } from '../components/sections/mcq/questions/MCQQuestions';
+import { ChatAnswerState } from './use-chat/use-chat';
 
 export const QuestionsFinishedEventKey = 'questions_finished';
 export const TimeUpEventKey = 'time_up';
 export const RemainingTimeForQuestionEventKey = (questionIndex: string) =>
   `remaining_time_for_question_${questionIndex}`;
 export const QuestionAnswerEventKey = 'question_answer';
+
+export const patterns = {
+  A: /^a$/i,
+  B: /^b$/i,
+  C: /^c$/i,
+  D: /^d$/i,
+};
 
 export function useQuestions({
   questions,
@@ -41,6 +49,8 @@ export function useQuestions({
     if (!amIHost) return;
     setCurrentQuestion(questions[currentQuestionIndex + 1]);
     setCurrentQuestionIndex(currentQuestionIndex + 1);
+    setPlayersAnswered([]);
+
     gameSocket.sendMatchState(
       match?.match_id,
       SOCKET_OP_CODES.QUESTION_INDEX,
@@ -60,6 +70,7 @@ export function useQuestions({
       const questionIndex = parseInt(decodedData);
       setCurrentQuestion(questions[questionIndex]);
       setCurrentQuestionIndex(questionIndex);
+      setPlayersAnswered([]);
     },
   });
 
@@ -71,6 +82,7 @@ export function useQuestions({
   subscribe({
     event: QuestionAnswerEventKey,
     callback: ({ playerId, answer }: { playerId: string; answer: Answer }) => {
+      console.log('QuestionAnswerEventKey', playerId, answer);
       syncPlayerScore({
         playerId,
         points: answer.isCorrect ? 1 : 0,
@@ -87,21 +99,42 @@ export function useQuestions({
     callback: ({
       playerId,
       abbreviation,
+      msgId,
     }: {
       playerId: string;
       abbreviation: string;
+      msgId: string;
     }) => {
       const answerIndex = abbreviationToIndex(abbreviation);
-      if (answerIndex === -1) return;
-      const answer = currentQuestion.answers[answerIndex];
+      console.log('QuestionAnswerEventKeyFromChat', playerId, answerIndex);
 
+      if (playersAnswered.includes(playerId)) {
+        console.log('player already answered', playersAnswered);
+        return;
+      }
+      const answer = currentQuestion.answers[answerIndex];
+      if (!answer) {
+        console.log('invalid answer index', answerIndex);
+        return;
+      }
+
+      publish('chat_answer_state', {
+        playerId,
+        msgId,
+        state: ChatAnswerState.PROCESSING,
+      });
+      const isCorrect = answer.isCorrect;
+      isCorrect &&
+        publish('chat_answer_state', {
+          playerId,
+          msgId,
+          state: ChatAnswerState.CORRECT,
+        });
       syncPlayerScore({
         playerId,
-        points: answer.isCorrect ? 1 : 0,
+        points: isCorrect ? 1 : 0,
         answer,
-        action: answer.isCorrect
-          ? PlayerScoreAction.ADD
-          : PlayerScoreAction.SUBTRACT,
+        action: isCorrect ? PlayerScoreAction.ADD : PlayerScoreAction.SUBTRACT,
       });
     },
   });
@@ -118,8 +151,8 @@ export function useQuestions({
     action: PlayerScoreAction;
   }) => {
     if (matchState !== MatchState.STARTED) return;
-    // if (playersAnswered.includes(playerId)) return;
-    // setPlayersAnswered([...playersAnswered, playerId]);
+    if (playersAnswered.includes(playerId)) return;
+    setPlayersAnswered([...playersAnswered, playerId]);
 
     publish(PLAYER_COMMANDS.SYNC_SCORE, {
       id: playerId,
@@ -135,31 +168,12 @@ export function useQuestions({
   };
 }
 function abbreviationToIndex(abbreviation: string) {
-  switch (abbreviation) {
-    case 'A':
-      return 0;
-    case 'B':
-      return 1;
-    case 'C':
-      return 2;
-    case 'D':
-      return 3;
-    default:
-      return -1;
-  }
+  if (abbreviation.match(patterns.A)) return 0;
+  if (abbreviation.match(patterns.B)) return 1;
+  if (abbreviation.match(patterns.C)) return 2;
+  if (abbreviation.match(patterns.D)) return 3;
 }
 
 function indexToAbbreviation(index: number) {
-  switch (index) {
-    case 0:
-      return 'A';
-    case 1:
-      return 'B';
-    case 2:
-      return 'C';
-    case 3:
-      return 'D';
-    default:
-      return '';
-  }
+  return ['A', 'B', 'C', 'D'][index];
 }

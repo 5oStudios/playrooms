@@ -1,4 +1,4 @@
-export interface ChatMessage {
+export interface TikTokChatMessage {
   emotes: any[];
   comment: string;
   userId: string;

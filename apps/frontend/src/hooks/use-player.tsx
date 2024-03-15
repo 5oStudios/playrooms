@@ -18,6 +18,7 @@ import {
   setPlayerState,
 } from '../store/features/playersSlice';
 import { gameSocket } from '@core/game-client';
+import { HostState } from './use-host';
 
 export const PlayerStateEventsKey = 'player_events';
 export const OtherPlayersScoreEventKey = 'other_players_score';
@@ -38,6 +39,7 @@ export function usePlayer() {
   const match = useAppSelector((state) => state.match.currentMatch);
   const dispatch = useAppDispatch();
   const { publish, subscribe } = usePubSub();
+  const hostState = useAppSelector((state) => state.match.hostState);
 
   useEffect(() => {
     if (!match) return;
@@ -106,14 +108,16 @@ export function usePlayer() {
   subscribe({
     event: PlayerPresenceEvents.JOINED,
     callback: (player: PlayerPresenceMessageDTO) => {
-      dispatch(
-        addPlayer({
-          id: player.user_id,
-          username: player.username,
-          score: 0,
-          state: PlayerState.READY,
-        })
-      );
+      if (hostState === HostState.ELECTED) {
+        dispatch(
+          addPlayer({
+            id: player.user_id,
+            username: player.username,
+            score: 0,
+            state: PlayerState.READY,
+          })
+        );
+      }
     },
   });
 

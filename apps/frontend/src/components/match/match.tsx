@@ -86,12 +86,14 @@ export default function Match(matchProps: JoinMatchProps) {
       return <>Loading...</>;
     case MatchState.READY:
       return amIHost ? (
-        <>
+        <div className="flex flex-col gap-2">
           <p>Match is ready</p>
           <Button onClick={() => publish(HOST_COMMANDS.START_MATCH, true)}>
             Start Match
           </Button>
-        </>
+
+          <CurrentPlayers />
+        </div>
       ) : (
         <>
           <p>Waiting for host to start the match</p>
@@ -119,7 +121,6 @@ export default function Match(matchProps: JoinMatchProps) {
                   });
                 }}
               />
-              {/*my score: {myScore}*/}
             </div>
           )}
         </div>
@@ -141,4 +142,18 @@ export default function Match(matchProps: JoinMatchProps) {
 export interface AnswerEvent {
   deservedScore: number;
   scoreAction: PlayerScoreAction;
+}
+
+export function CurrentPlayers() {
+  const players = useAppSelector((state) => state.players);
+
+  return (
+    <div>
+      {players.map((player) => (
+        <div key={player.id}>
+          {player.username} : {'👍'}
+        </div>
+      ))}
+    </div>
+  );
 }

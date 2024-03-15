@@ -9,7 +9,7 @@ import { AppService } from './app.service';
 import { Logger } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { tiktokEvents } from './events-handlers';
-import { listenToStreamEventKey } from '@core/tiktok-client';
+import { ListenToStreamEventKey } from '@core/tiktok-client';
 
 @WebSocketGateway({ cors: true })
 export class AppGateway {
@@ -17,7 +17,7 @@ export class AppGateway {
     private readonly appService: AppService,
     private readonly logger: Logger
   ) {}
-  @SubscribeMessage(listenToStreamEventKey)
+  @SubscribeMessage(ListenToStreamEventKey)
   @AsyncApiPub({
     description: 'Listen to TikTok Live stream',
     channel: 'listenToStream',

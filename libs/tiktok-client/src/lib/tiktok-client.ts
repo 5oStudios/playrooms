@@ -1,4 +1,6 @@
 import { io, Socket } from 'socket.io-client';
+// import { store } from '../../../../apps/frontend/src/store/store';
+// import { addMessage } from '../../../../apps/frontend/src/store/features/externalChatSlice';
 
 export enum TikTokLiveEvents {
   ROOM_USER = 'roomUser',
@@ -15,10 +17,19 @@ export enum TikTokLiveEvents {
   ENVELOPE = 'envelope',
   SUBSCRIBE = 'subscribe',
 }
-export const listenToStreamEventKey = 'listenToStream';
+export const ListenToStreamEventKey = 'listenToStream';
 
 export const tiktokSocket: Socket = io('localhost:4444');
 tiktokSocket.connect();
 tiktokSocket.on('connect', () => {
   console.log('connected to tiktok live connector server');
+});
+
+tiktokSocket.on('disconnect', () => {
+  console.log('disconnected from tiktok live connector server');
+});
+
+tiktokSocket.on('chat', (message) => {
+  console.log('good chat', message);
+  // store.dispatch(addMessage(message));
 });

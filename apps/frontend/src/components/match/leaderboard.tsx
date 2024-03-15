@@ -35,6 +35,12 @@ export function Leaderboard() {
             Leaderboard
           </h1>
         </ModalHeader>
+
+        <div className="flex items-center justify-between px-4 py-3 bg-background/40 rounded-md w-full">
+          <p className="text-sm font-semibold">Players</p>
+          <p className="text-sm font-semibold">{players.length}</p>
+        </div>
+
         <div className="flex flex-col gap-2 w-full max-h-96 overscroll-y-auto">
           {playersClone
             .sort((a, b) => b.score - a.score)

@@ -6,6 +6,7 @@ import Drawer from '../../../../../components/ui/drawer';
 import {
   Avatar,
   Button,
+  cn,
   Divider,
   ModalContent,
   ModalHeader,
@@ -19,9 +20,10 @@ import { useMatch } from '../../../../../hooks/use-match';
 import { useHost } from '../../../../../hooks/use-host';
 import { usePlayer } from '../../../../../hooks/use-player';
 import { useAppSelector } from '../../../../../hooks/use-redux-typed';
-import { useChat } from '../../../../../hooks/use-chat/use-chat';
 import { useChatPlayers } from '../../../../../hooks/use-chat/use-chat-players';
 import { usePresence } from '../../../../../hooks/use-presence';
+import { useChat } from '../../../../../hooks/use-chat/use-chat';
+import { ChatMessage } from '../../../../../store/features/externalChatSlice';
 
 export default function Page() {
   const searchParams = useSearchParams();
@@ -44,22 +46,29 @@ export default function Page() {
   );
 }
 
-const SuspendedJoinLobby = () => {};
-function ChatMessage({ avatar, username, message }: Record<string, string>) {
+function ChatMessage(message: ChatMessage) {
+  console.log(
+    'is this message beiong processed?',
+    message.metadata?.isProcessing
+  );
   return (
     <div
-      className={
-        'flex gap-3 items-center p-3 bg-background/40 w-full rounded-md'
-      }
+      className={cn(
+        'flex gap-3 items-center p-3 w-full rounded-md',
+        'bg-background/40',
+        message.metadata?.isSelected && 'bg-blue-200',
+        message.metadata?.isProcessing && 'bg-red-300',
+        message.metadata?.isCorrect && 'bg-green-500'
+      )}
     >
       <Avatar
-        src={avatar}
-        alt={username}
+        src={message.user.avatar_url}
+        alt={message.user.username}
         className={'min-w-8 min-h-8 w-8 h-8'}
       />
       <div className={'flex flex-col gap-1'}>
-        <p className={'text-sm font-bold'}>{username}</p>
-        <p>{message}</p>
+        <p className={'text-sm font-bold'}>{message.user.username}</p>
+        <p>{message.message.comment}</p>
       </div>
     </div>
   );
@@ -70,9 +79,11 @@ const Chat = () => {
     defaultOpen: true,
   });
   const [height, setHeight] = React.useState(0);
+  const messages = useAppSelector((state) => state.externalChat);
+  useChat();
+  useChatPlayers();
 
   const autoScrollRef = useRef(null);
-  const { messages } = useChat();
   // const messages = [];
 
   useEffect(() => {
@@ -108,7 +119,7 @@ const Chat = () => {
             >
               <div className={'flex flex-col gap-3 p-3'}>
                 {messages.map((message) => (
-                  <ChatMessage key={message.id} {...message} />
+                  <ChatMessage key={message.message.id} {...message} />
                 ))}
               </div>
             </AutoScroll>
