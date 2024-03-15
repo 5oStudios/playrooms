@@ -4,10 +4,10 @@ export enum NODE_ENV_STATE {
   DEVELOPMENT = 'development',
   TEST = 'test',
 }
+const isProduction = NODE_ENV === NODE_ENV_STATE.PRODUCTION;
 export const SERVER_KEY = 'defaultkey',
-  // HOST = 'nakama.5ostudios.com',
-  HOST = process.env['NAKAMA_HOST'] || 'nakama.5ostudios.com',
-  PORT = process.env['NAKAMA_PORT'] || '',
-  USE_SSL = true,
+  HOST = isProduction ? 'nakama.5ostudios.com' : 'localhost',
+  PORT = isProduction ? '' : '7350',
+  USE_SSL = isProduction,
   TIMEOUT = 7500,
   AUTO_REFRESH_SESSION = true;

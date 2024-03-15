@@ -1,5 +1,5 @@
 'use client';
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 import {
   gameClient,
   LOCAL_STORAGE_AUTH_KEY,
@@ -11,7 +11,7 @@ import { nanoid } from 'nanoid';
 import { generateUsername } from 'unique-username-generator';
 import { genConfig } from 'react-nice-avatar';
 import { storage } from '../utils/storage';
-import { useAppDispatch } from '../hooks/use-redux-typed';
+import { useAppDispatch, useAppSelector } from '../hooks/use-redux-typed';
 
 const generatedUsername = generateUsername('', 0, 8, '');
 const generatedAvatarConfig = JSON.stringify(genConfig());
@@ -19,63 +19,92 @@ const generatedAvatarConfig = JSON.stringify(genConfig());
 enum SessionState {
   TOKEN_EXPIRED,
   REFRESH_EXPIRED,
-  VALID,
   UNAVAILABLE,
+
+  VALID,
 }
 
-const auth = storage.getItem(LOCAL_STORAGE_AUTH_KEY) as string;
-console.log('from local storage', auth);
-const refresh = storage.getItem(LOCAL_STORAGE_REFRESH_KEY) as string;
-console.log('from local storage', refresh);
-const session = (auth && refresh && Session.restore(auth, refresh)) || null;
-console.log('from local storage', session);
+const getLocalSession = () => {
+  const auth = storage.getItem(LOCAL_STORAGE_AUTH_KEY) as string;
+  const refresh = storage.getItem(LOCAL_STORAGE_REFRESH_KEY) as string;
 
-const sessionState = ((session: Session) => {
-  if (!session) return SessionState.UNAVAILABLE;
-  if (session.isrefreshexpired(Date.now() / 1000))
-    return SessionState.REFRESH_EXPIRED;
-  if (session.isexpired(Date.now() / 1000)) return SessionState.TOKEN_EXPIRED;
-
-  return SessionState.VALID;
-})(session);
-
-export function AuthGuard({ children }: Readonly<{ children: ReactNode }>) {
-  const dispatch = useAppDispatch();
-  switch (sessionState) {
-    case SessionState.TOKEN_EXPIRED:
-      console.log('Auth Token expired');
-      gameClient
-        .sessionRefresh(session)
-        .then((session) => {
-          dispatch(setSession(session));
-        })
-        .catch((error) => {
-          console.error('Error refreshing session: ', error.message);
-        });
-      break;
-
-    case SessionState.VALID:
-      console.log('Session is valid');
-      dispatch(setSession(session));
-      return children;
-    case SessionState.REFRESH_EXPIRED:
-    case SessionState.UNAVAILABLE:
-      console.log('Session unavailable or refresh expired');
-      console.log('Authenticating device...');
-      gameClient
-        .authenticateDevice(nanoid(16), true, generatedUsername)
-        .then((session) => {
-          gameClient.updateAccount(session, {
-            avatar_url: generatedAvatarConfig,
-          });
-          dispatch(setSession(session));
-        })
-        .catch((error) => {
-          console.error('Failed to authenticate device:', error);
-          storage.remove(LOCAL_STORAGE_AUTH_KEY);
-          storage.remove(LOCAL_STORAGE_REFRESH_KEY);
-        });
+  if (!auth || !refresh) {
+    console.log('no auth or refresh token');
+    return {
+      session: null,
+      state: SessionState.UNAVAILABLE,
+    };
   }
 
-  return <>Authenticating...</>;
+  const localSession = Session.restore(auth, refresh);
+
+  if (localSession.isrefreshexpired(Date.now() / 1000))
+    return {
+      session: localSession,
+      state: SessionState.REFRESH_EXPIRED,
+    };
+
+  if (localSession.isexpired(Date.now() / 1000))
+    return {
+      session: localSession,
+      state: SessionState.TOKEN_EXPIRED,
+    };
+
+  return {
+    session: localSession,
+    state: SessionState.VALID,
+  };
+};
+
+export function AuthGuard({ children }: Readonly<{ children: ReactNode }>) {
+  const session = useAppSelector((state) => state.session);
+  const { session: localSession, state } = getLocalSession();
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (session) return;
+
+    switch (state) {
+      case SessionState.TOKEN_EXPIRED:
+        console.log('Auth Token expired');
+        gameClient
+          .sessionRefresh(localSession)
+          .then((session) => {
+            dispatch(setSession(session));
+          })
+          .catch((error) => {
+            console.error('Error refreshing session: ', error.message);
+          });
+        break;
+
+      case SessionState.VALID:
+        dispatch(setSession(localSession));
+        break;
+
+      case SessionState.REFRESH_EXPIRED:
+      case SessionState.UNAVAILABLE:
+        console.log('Session unavailable or refresh expired');
+        console.log('Authenticating device...');
+        gameClient
+          .authenticateDevice(nanoid(16), true, generatedUsername)
+          .then((session) => {
+            gameClient
+              .updateAccount(session, {
+                avatar_url: generatedAvatarConfig,
+              })
+              .then(() => {
+                dispatch(setSession(session));
+              });
+          })
+          .catch((error) => {
+            console.error('Failed to authenticate device:', error);
+            storage.remove(LOCAL_STORAGE_AUTH_KEY);
+            storage.remove(LOCAL_STORAGE_REFRESH_KEY);
+          });
+        break;
+    }
+  }, [dispatch, localSession, session, state]);
+
+  if (session) return <>{children}</>;
+  else return <>Authenticating...</>;
 }
