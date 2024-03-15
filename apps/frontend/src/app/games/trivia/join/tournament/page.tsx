@@ -21,6 +21,7 @@ import { usePlayer } from '../../../../../hooks/use-player';
 import { useAppSelector } from '../../../../../hooks/use-redux-typed';
 import { useChat } from '../../../../../hooks/use-chat/use-chat';
 import { useChatPlayers } from '../../../../../hooks/use-chat/use-chat-players';
+import { usePresence } from '../../../../../hooks/use-presence';
 
 export default function Page() {
   const searchParams = useSearchParams();
@@ -33,6 +34,7 @@ export default function Page() {
   useHost();
   usePlayer();
   useChatPlayers();
+  usePresence();
 
   return (
     <>

@@ -16,7 +16,7 @@ import { Button } from '@nextui-org/react';
 import { useAppSelector } from '../../hooks/use-redux-typed';
 import { gameSocket } from '@core/game-client';
 import { PlayerScoreAction } from '../../store/features/playersSlice';
-import { Player, PlayerPresenceEvents } from '../../hooks/use-player';
+import { Player } from '../../hooks/use-player';
 
 export enum SOCKET_OP_CODES {
   MATCH_STATE = 100,
@@ -79,20 +79,6 @@ export default function Match(matchProps: JoinMatchProps) {
         publish(SOCKET_SYNC.QUESTION_INDEX, decodedData);
         break;
     }
-  };
-
-  gameSocket.onmatchpresence = (matchPresence) => {
-    matchPresence.joins &&
-      matchPresence.joins.forEach((player) => {
-        console.log('Player_joined', player);
-        publish(PlayerPresenceEvents.JOINED, player);
-      });
-
-    matchPresence.leaves &&
-      matchPresence.leaves.forEach((player) => {
-        console.log('Player_left', player);
-        publish(PlayerPresenceEvents.LEFT, player);
-      });
   };
 
   switch (matchState) {

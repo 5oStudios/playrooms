@@ -50,7 +50,7 @@ export function useChat() {
       id: message.msgId,
       username: message.nickname,
       message: message.comment[0],
-      avatar: message.profilePictureUrl,
+      avatar_url: message.profilePictureUrl,
     })),
   };
 }
