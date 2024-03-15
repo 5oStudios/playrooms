@@ -57,7 +57,7 @@ export function AuthGuard({ children }: Readonly<{ children: ReactNode }>) {
     case SessionState.VALID:
       console.log('Session is valid');
       dispatch(setSession(session));
-      break;
+      return children;
     case SessionState.REFRESH_EXPIRED:
     case SessionState.UNAVAILABLE:
       console.log('Session unavailable or refresh expired');
@@ -77,5 +77,5 @@ export function AuthGuard({ children }: Readonly<{ children: ReactNode }>) {
         });
   }
 
-  return <>{children}</>;
+  return <>Authenticating...</>;
 }

@@ -3,15 +3,16 @@ import sessionSlice from './features/sessionSlice';
 import userSlice, { setUser } from './features/userSlice';
 import {
   gameClient,
+  gameSocket,
   LOCAL_STORAGE_AUTH_KEY,
   LOCAL_STORAGE_REFRESH_KEY,
 } from '@core/game-client';
 import platformSlice from './features/platformSlice';
-import socketSlice from './features/socketSlice';
 import partySlice from './features/partySlice';
 import matchSlice from './features/matchSlice';
 import { storage } from '../utils/storage';
 import playersSlice from './features/playersSlice';
+import socketSlice, { setSocket, SocketState } from './features/socketSlice';
 
 export const store = configureStore({
   reducer: {
@@ -33,6 +34,7 @@ export const store = configureStore({
 
 store.subscribe(() => {
   const session = store.getState().session;
+  const socket = store.getState().socket;
   const user = store.getState().user;
   if ((!user && session) || (user && user.id !== session.user_id)) {
     storage.setItem({
@@ -47,6 +49,19 @@ store.subscribe(() => {
     gameClient.getAccount(session).then((user) => {
       store.dispatch(setUser(user.user));
     });
+
+    if (!session) return;
+    if (socket === SocketState.CONNECTED) return;
+    gameSocket
+      .connect(session, true)
+      .then((socket) => {
+        store.dispatch(setSocket(SocketState.CONNECTED));
+        console.log('Connected to socket');
+      })
+      .catch((error) => {
+        console.error('Error connecting to socket: ', error.message);
+        store.dispatch(setSocket(SocketState.DISCONNECTED));
+      });
   }
 });
 

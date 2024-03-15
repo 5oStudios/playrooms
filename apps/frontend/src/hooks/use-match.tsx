@@ -26,41 +26,9 @@ export function useMatch({ matchId }: { matchId?: string }) {
   const { publish, subscribe } = usePubSub();
   const match = useAppSelector((state) => state.match.currentMatch);
   const dispatch = useAppDispatch();
+  const session = useAppSelector((state) => state.session);
 
   useMatchState();
-
-  const joinMatch = useCallback(
-    ({ matchId, ticket, token }: JoinMatchProps) => {
-      // if (playerState === PlayerState.PLAYING) {
-      //   console.log('Player is playing');
-      //   return;
-      // }
-      if (match) {
-        console.log('Player already in match');
-        return;
-      }
-      if (!matchId && !ticket) {
-        console.log('matchId or ticket needed to join match, received:', {
-          matchId,
-          ticket,
-        });
-        return;
-      }
-      console.log('Joining match', matchId || ticket);
-      gameSocket
-        .joinMatch(matchId || ticket, token)
-        .then((match) => {
-          publish('match_joined', true);
-          console.log('Joined match', match);
-          dispatch(setCurrentMatch(match));
-        })
-        .catch((error) => {
-          publish('match_joined', false);
-          console.error('Error joining match', error);
-        });
-    },
-    [dispatch, match, publish]
-  );
 
   // Cleanup
   // useEffect(() => {
@@ -74,8 +42,39 @@ export function useMatch({ matchId }: { matchId?: string }) {
 
   // Create a flag to track whether the joinMatch function has been called
   useEffect(() => {
-    if (matchId) joinMatch({ matchId });
-  }, [joinMatch, matchId]);
+    if (match) {
+      console.log('Player already in match');
+      return;
+    }
+    // if (!matchId && !ticket) {
+    //   console.log('matchId or ticket needed to join match, received:', {
+    //     matchId,
+    //     ticket,
+    //   });
+    //   return;
+    // }
+    if (matchId) {
+      console.log('Joining match', matchId);
+      gameSocket
+        .connect(session, true)
+        .then(() => {
+          gameSocket
+            .joinMatch(matchId)
+            .then((match) => {
+              publish('match_joined', true);
+              console.log('Joined match', match);
+              dispatch(setCurrentMatch(match));
+            })
+            .catch((error) => {
+              publish('match_joined', false);
+              console.error('Error joining match', error);
+            });
+        })
+        .catch((error) => {
+          console.error('Error connecting to socket', error);
+        });
+    }
+  }, [dispatch, match, matchId, publish]);
 
   return {
     createMatch: async (name: string) => {
@@ -87,7 +86,6 @@ export function useMatch({ matchId }: { matchId?: string }) {
         console.error('Error creating match', error);
       }
     },
-    joinMatch,
   };
 }
 
@@ -108,7 +106,7 @@ export const useMatchState = () => {
 
   const syncMatchState = useCallback(
     (newMatchState: MatchState) => {
-      if (didMatchEnd || isMatchNotFount) return;
+      if (didMatchEnd) return;
       if (newMatchState === MatchState.STARTED) {
         console.log('Match started');
         console.log('amIHost', amIHost);
@@ -122,7 +120,7 @@ export const useMatchState = () => {
           newMatchState
         );
     },
-    [amIHost, didMatchEnd, dispatch, isMatchNotFount, match?.match_id, publish]
+    [amIHost, didMatchEnd, dispatch, match?.match_id, publish]
   );
 
   useEffect(() => {

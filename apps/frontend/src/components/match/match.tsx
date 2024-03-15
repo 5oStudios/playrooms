@@ -1,7 +1,5 @@
 'use client';
-import { useHost } from '../../hooks/use-host';
-import { JoinMatchProps, useMatch } from '../../hooks/use-match';
-import { usePlayer } from '../../hooks/use-player';
+import { JoinMatchProps } from '../../hooks/use-match';
 import { TimeUpEventKey, useQuestions } from '../../hooks/use-questions';
 import { MockedMCQQuestions } from '../../../mocks';
 import { useLeaderboard } from '../../hooks/use-leaderboard';
@@ -46,12 +44,6 @@ export default function Match(matchProps: JoinMatchProps) {
   const matchState = useAppSelector((state) => state.match.currentMatchState);
   const { publish } = usePubSub();
   const session = useAppSelector((state) => state.session);
-
-  useMatch({
-    matchId: matchProps.matchId,
-  });
-  useHost();
-  usePlayer();
   const { isLeaderboardVisible } = useLeaderboard({
     showLeaderboardForTimeInMs: SHOW_LEADERBOARD_FOR_TIME_IN_MS,
   });
@@ -145,6 +137,9 @@ export default function Match(matchProps: JoinMatchProps) {
       return <>Game Over</>;
     case MatchState.NOT_FOUND:
       return <>Match not found</>;
+
+    default:
+      return <>finding match...</>;
   }
 }
 
