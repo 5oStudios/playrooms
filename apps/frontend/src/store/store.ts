@@ -39,6 +39,7 @@ store.subscribe(() => {
       key: LOCAL_STORAGE_AUTH_KEY,
       value: session.token,
     });
+    console.log('setting refresh token', session);
     storage.setItem({
       key: LOCAL_STORAGE_REFRESH_KEY,
       value: session.refresh_token,

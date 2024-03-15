@@ -24,8 +24,11 @@ enum SessionState {
 }
 
 const auth = storage.getItem(LOCAL_STORAGE_AUTH_KEY) as string;
+console.log('from local storage', auth);
 const refresh = storage.getItem(LOCAL_STORAGE_REFRESH_KEY) as string;
+console.log('from local storage', refresh);
 const session = (auth && refresh && Session.restore(auth, refresh)) || null;
+console.log('from local storage', session);
 
 const sessionState = ((session: Session) => {
   if (!session) return SessionState.UNAVAILABLE;
@@ -54,29 +57,25 @@ export function AuthGuard({ children }: Readonly<{ children: ReactNode }>) {
     case SessionState.VALID:
       console.log('Session is valid');
       dispatch(setSession(session));
-      return <>{children}</>;
-
+      break;
     case SessionState.REFRESH_EXPIRED:
     case SessionState.UNAVAILABLE:
       console.log('Session unavailable or refresh expired');
       console.log('Authenticating device...');
-      (async () => {
-        try {
-          const session = await gameClient.authenticateDevice(
-            nanoid(16),
-            true,
-            generatedUsername
-          );
-          await gameClient.updateAccount(session, {
+      gameClient
+        .authenticateDevice(nanoid(16), true, generatedUsername)
+        .then((session) => {
+          gameClient.updateAccount(session, {
             avatar_url: generatedAvatarConfig,
           });
           dispatch(setSession(session));
-        } catch (error) {
+        })
+        .catch((error) => {
+          console.error('Failed to authenticate device:', error);
           storage.remove(LOCAL_STORAGE_AUTH_KEY);
           storage.remove(LOCAL_STORAGE_REFRESH_KEY);
-          console.error('Error authenticating device: ', error);
-        }
-      })();
-      return <>Could not connect to the server</>;
+        });
   }
+
+  return <>{children}</>;
 }
