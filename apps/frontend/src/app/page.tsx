@@ -1,6 +1,7 @@
 'use client';
 import { Button } from '@nextui-org/react';
 import { useRouter } from 'next/navigation';
+import { Leaderboard } from '../components/match/leaderboard';
 
 export default function Index() {
   const router = useRouter();
@@ -11,6 +12,7 @@ export default function Index() {
       <Button size={'lg'} onClick={() => router.push('/games')}>
         Games
       </Button>
+      <Leaderboard />
     </div>
   );
 }

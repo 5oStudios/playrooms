@@ -16,6 +16,7 @@ interface Player {
   username: string;
   score: number;
   state: PlayerState;
+  avatar_url?: string;
 }
 const initialState: Player[] = [];
 

@@ -139,7 +139,11 @@ export default function Match(matchProps: JoinMatchProps) {
         </div>
       );
     case MatchState.ENDED:
-      return <>Game Over</>;
+      return (
+        <>
+          <Leaderboard />
+        </>
+      );
     case MatchState.NOT_FOUND:
       return <>Match not found</>;
 
