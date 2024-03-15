@@ -35,6 +35,7 @@ export function useQuestions({
   );
   const matchState = useAppSelector((state) => state.match.currentMatchState);
   const { publish, subscribe } = usePubSub();
+  const [playersAnswered, setPlayersAnswered] = useState<string[]>([]);
 
   const nextQuestion = useCallback(() => {
     if (!amIHost) return;
@@ -70,9 +71,10 @@ export function useQuestions({
   subscribe({
     event: QuestionAnswerEventKey,
     callback: ({ playerId, answer }: { playerId: string; answer: Answer }) => {
-      publish(PLAYER_COMMANDS.SYNC_SCORE, {
-        id: playerId,
+      syncPlayerScore({
+        playerId,
         points: answer.isCorrect ? 1 : 0,
+        answer,
         action: answer.isCorrect
           ? PlayerScoreAction.ADD
           : PlayerScoreAction.SUBTRACT,
@@ -89,21 +91,44 @@ export function useQuestions({
       playerId: string;
       abbreviation: string;
     }) => {
-      if (matchState !== MatchState.STARTED) return;
-
       const answerIndex = abbreviationToIndex(abbreviation);
       if (answerIndex === -1) return;
-
       const answer = currentQuestion.answers[answerIndex];
-      publish(PLAYER_COMMANDS.SYNC_SCORE, {
-        id: playerId,
+
+      syncPlayerScore({
+        playerId,
         points: answer.isCorrect ? 1 : 0,
+        answer,
         action: answer.isCorrect
           ? PlayerScoreAction.ADD
           : PlayerScoreAction.SUBTRACT,
       });
     },
   });
+
+  const syncPlayerScore = ({
+    playerId,
+    points,
+    answer,
+    action,
+  }: {
+    playerId: string;
+    points: number;
+    answer: Answer;
+    action: PlayerScoreAction;
+  }) => {
+    if (matchState !== MatchState.STARTED) return;
+    // if (playersAnswered.includes(playerId)) return;
+    // setPlayersAnswered([...playersAnswered, playerId]);
+
+    publish(PLAYER_COMMANDS.SYNC_SCORE, {
+      id: playerId,
+      points: answer.isCorrect ? 1 : 0,
+      action: answer.isCorrect
+        ? PlayerScoreAction.ADD
+        : PlayerScoreAction.SUBTRACT,
+    });
+  };
 
   return {
     currentQuestion,
