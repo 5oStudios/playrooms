@@ -12,6 +12,14 @@
       "defaultConfiguration": "production",
       "options": {
         "outputPath": "dist/apps/frontend"
+      },
+      "configurations": {
+        "production": {
+          "dev": false
+        },
+        "development": {
+          "dev": true
+        }
       }
     },
       "serve": {
@@ -135,6 +143,14 @@
         "android": {
           "cmd": "build android"
         }
+      }
+    },
+    "static-test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "pnpx serve -s dist/apps/frontend/.next -l 4200"
+        ]
       }
     }
   },
