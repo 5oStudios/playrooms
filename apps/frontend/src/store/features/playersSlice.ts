@@ -51,8 +51,8 @@ const playersSlice = createSlice({
       const player = state.find((p) => p.id === action.payload.id);
       console.log(
         'REDUX updating player score',
-        player.username,
-        action.payload.points
+        player?.username,
+        action?.payload?.points
       );
       if (player) {
         player.score =

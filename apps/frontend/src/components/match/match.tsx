@@ -1,6 +1,10 @@
 'use client';
 import { JoinMatchProps } from '../../hooks/use-match';
-import { TimeUpEventKey, useQuestions } from '../../hooks/use-questions';
+import {
+  QuestionAnswerEventKey,
+  TimeUpEventKey,
+  useQuestions,
+} from '../../hooks/use-questions';
 import { MockedMCQQuestions } from '../../../mocks';
 import { useLeaderboard } from '../../hooks/use-leaderboard';
 import { Leaderboard } from './leaderboard';
@@ -12,6 +16,7 @@ import { Button } from '@nextui-org/react';
 import { useAppSelector } from '../../hooks/use-redux-typed';
 import { gameSocket } from '@core/game-client';
 import { PlayerScoreAction } from '../../store/features/playersSlice';
+import { Player, PlayerPresenceEvents } from '../../hooks/use-player';
 
 export enum SOCKET_OP_CODES {
   MATCH_STATE = 100,
@@ -44,6 +49,9 @@ export default function Match(matchProps: JoinMatchProps) {
   const matchState = useAppSelector((state) => state.match.currentMatchState);
   const { publish } = usePubSub();
   const session = useAppSelector((state) => state.session);
+  const myPlayer: Player = useAppSelector((state) =>
+    state.players.find((player) => player.id === session?.user_id)
+  );
   const { isLeaderboardVisible } = useLeaderboard({
     showLeaderboardForTimeInMs: SHOW_LEADERBOARD_FOR_TIME_IN_MS,
   });
@@ -77,13 +85,13 @@ export default function Match(matchProps: JoinMatchProps) {
     matchPresence.joins &&
       matchPresence.joins.forEach((player) => {
         console.log('Player_joined', player);
-        publish('match_presence_joined', player);
+        publish(PlayerPresenceEvents.JOINED, player);
       });
 
     matchPresence.leaves &&
       matchPresence.leaves.forEach((player) => {
         console.log('Player_left', player);
-        publish('match_presence_left', player);
+        publish(PlayerPresenceEvents.LEFT, player);
       });
   };
 
@@ -118,15 +126,12 @@ export default function Match(matchProps: JoinMatchProps) {
               />
               <Answers
                 answers={currentQuestion.answers}
-                onClick={(answer) =>
-                  publish(PLAYER_COMMANDS.SYNC_SCORE, {
-                    id: session.user_id,
-                    points: answer.isCorrect ? 1 : 0,
-                    action: answer.isCorrect
-                      ? PlayerScoreAction.ADD
-                      : PlayerScoreAction.SUBTRACT,
-                  })
-                }
+                onClick={(answer) => {
+                  publish(QuestionAnswerEventKey, {
+                    playerId: myPlayer.id,
+                    answer,
+                  });
+                }}
               />
               {/*my score: {myScore}*/}
             </div>

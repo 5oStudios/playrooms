@@ -22,6 +22,18 @@ import { gameSocket } from '@core/game-client';
 export const PlayerStateEventsKey = 'player_events';
 export const OtherPlayersScoreEventKey = 'other_players_score';
 
+export interface Player {
+  id: string;
+  username: string;
+  score: number;
+  state: PlayerState;
+}
+
+export enum PlayerPresenceEvents {
+  JOINED = 'match_presence_joined',
+  LEFT = 'match_presence_left',
+}
+
 export function usePlayer() {
   const match = useAppSelector((state) => state.match.currentMatch);
   const dispatch = useAppDispatch();
@@ -85,13 +97,15 @@ export function usePlayer() {
   subscribe({
     event: SOCKET_SYNC.PLAYER_SCORE,
     callback: (decodedData: string) => {
-      dispatch(setPlayerScore(JSON.parse(decodedData)));
+      dispatch(
+        setPlayerScore(new PlayerScoreMessageDTO(JSON.parse(decodedData)))
+      );
     },
   });
 
   subscribe({
-    event: 'match_presence_joined',
-    callback: (player: Presence) => {
+    event: PlayerPresenceEvents.JOINED,
+    callback: (player: PlayerPresenceMessageDTO) => {
       dispatch(
         addPlayer({
           id: player.user_id,
@@ -104,7 +118,7 @@ export function usePlayer() {
   });
 
   subscribe({
-    event: 'match_presence_left',
+    event: PlayerPresenceEvents.LEFT,
     callback: (player: Presence) => {
       dispatch(removePlayer(player.user_id));
     },
@@ -127,13 +141,13 @@ export function uint8ArrayToObject(
 interface IPlayerScoreMessageDTO {
   id: string;
   username: string;
-  score: number;
+  points: number;
   action: PlayerScoreAction;
 }
 export class PlayerScoreMessageDTO {
   id: string;
   username: string;
-  score: number;
+  points: number;
   action: PlayerScoreAction;
 
   constructor(obj: IPlayerScoreMessageDTO) {
@@ -144,8 +158,17 @@ export class PlayerScoreMessageDTO {
     return objectToUint8Array({
       id: this.id,
       username: this.username,
-      score: this.score,
+      points: this.points,
       action: this.action,
     });
+  }
+}
+
+export class PlayerPresenceMessageDTO {
+  user_id: string;
+  username: string;
+
+  constructor(obj: { user_id: string; username: string }) {
+    Object.assign(this, obj);
   }
 }

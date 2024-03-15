@@ -1,4 +1,4 @@
-import { usePubSub } from './use-pub-sub';
+import { usePubSub } from '../use-pub-sub';
 import { useEffect, useState } from 'react';
 import { ChatMessage } from '@core/tiktok-client';
 import { faker } from '@faker-js/faker';
@@ -49,7 +49,7 @@ export function useChat() {
     messages: messages.map((message) => ({
       id: message.msgId,
       username: message.nickname,
-      message: message.comment,
+      message: message.comment[0],
       avatar: message.profilePictureUrl,
     })),
   };

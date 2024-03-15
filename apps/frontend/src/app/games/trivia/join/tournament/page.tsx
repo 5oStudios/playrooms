@@ -5,6 +5,7 @@ import { matchIdSearchParamKey } from '../../../../../components/lobby/create/mo
 import Drawer from '../../../../../components/ui/drawer';
 import {
   Avatar,
+  Button,
   Divider,
   ModalContent,
   ModalHeader,
@@ -18,6 +19,8 @@ import { useMatch } from '../../../../../hooks/use-match';
 import { useHost } from '../../../../../hooks/use-host';
 import { usePlayer } from '../../../../../hooks/use-player';
 import { useAppSelector } from '../../../../../hooks/use-redux-typed';
+import { useChat } from '../../../../../hooks/use-chat/use-chat';
+import { useChatPlayers } from '../../../../../hooks/use-chat/use-chat-players';
 
 export default function Page() {
   const searchParams = useSearchParams();
@@ -29,6 +32,7 @@ export default function Page() {
   });
   useHost();
   usePlayer();
+  useChatPlayers();
 
   return (
     <>
@@ -61,13 +65,13 @@ function ChatMessage({ avatar, username, message }: Record<string, string>) {
 
 const Chat = () => {
   const { isOpen, onOpenChange } = useDisclosure({
-    defaultOpen: false,
+    defaultOpen: true,
   });
   const [height, setHeight] = React.useState(0);
 
   const autoScrollRef = useRef(null);
-  // const { messages } = useChat();
-  const messages = [];
+  const { messages } = useChat();
+  // const messages = [];
 
   useEffect(() => {
     if (autoScrollRef.current) {
@@ -77,36 +81,41 @@ const Chat = () => {
   }, [messages]);
 
   return (
-    <Drawer
-      className={'backdrop-blur-xl bg-background/30'}
-      isOpen={isOpen}
-      onOpenChange={onOpenChange}
-    >
-      <ModalContent className={''}>
-        <ModalHeader className={'flex items-center gap-3 text-clip'}>
-          <IoChatbubbles className={'w-6 h-6'} />
-          <h2 className={'text-2xl font-bold'}>Chat</h2>
-        </ModalHeader>
-        <Divider />
-        <ScrollShadow
-          visibility={'both'}
-          ref={autoScrollRef}
-          className={'h-full'}
-        >
-          <AutoScroll
-            showOption={false}
-            height={height}
-            scrollBehavior={'smooth'}
-            className={'bg-transparent'}
+    <>
+      <Drawer
+        className={'backdrop-blur-xl bg-background/30'}
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+      >
+        <ModalContent className={''}>
+          <ModalHeader className={'flex items-center gap-3 text-clip'}>
+            <IoChatbubbles className={'w-6 h-6'} />
+            <h2 className={'text-2xl font-bold'}>Chat</h2>
+          </ModalHeader>
+          <Divider />
+          <ScrollShadow
+            visibility={'both'}
+            ref={autoScrollRef}
+            className={'h-full'}
           >
-            <div className={'flex flex-col gap-3 p-3'}>
-              {messages.map((message) => (
-                <ChatMessage key={message.id} {...message} />
-              ))}
-            </div>
-          </AutoScroll>
-        </ScrollShadow>
-      </ModalContent>
-    </Drawer>
+            <AutoScroll
+              showOption={false}
+              height={height}
+              scrollBehavior={'smooth'}
+              className={'bg-transparent'}
+            >
+              <div className={'flex flex-col gap-3 p-3'}>
+                {messages.map((message) => (
+                  <ChatMessage key={message.id} {...message} />
+                ))}
+              </div>
+            </AutoScroll>
+          </ScrollShadow>
+        </ModalContent>
+      </Drawer>
+      <Button onClick={onOpenChange} className={'fixed bottom-4 right-4'}>
+        Chat
+      </Button>
+    </>
   );
 };
