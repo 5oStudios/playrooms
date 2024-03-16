@@ -1,12 +1,13 @@
 import { Card, CardBody } from '@nextui-org/react';
 import { Answer } from './answer';
 import React from 'react';
+import { IAnswer } from '../../../../hooks/use-questions';
 
 export function Answers({
   answers,
   onClick,
 }: Readonly<{
-  answers: Answer[];
+  answers: IAnswer[];
   onClick: (answerAbb: string) => void;
 }>) {
   const [isOneAnswerSelected, setIsOneAnswerSelected] = React.useState(false);
