@@ -6,14 +6,14 @@ import { faker } from '@faker-js/faker';
 import { MatchState } from '../../store/features/matchSlice';
 import {
   addMessage,
-  editMessageMetadata,
+  ChatAnswerState,
+  editMessageMeta,
 } from '../../store/features/externalChatSlice';
 import { ChatMessageFromExternalPlatform } from './use-chat-players';
 
-export enum ChatAnswerState {
-  PROCESSING,
-  SELECTED,
-  CORRECT,
+export enum CHAT_ANSWER_EVENTS {
+  PROCESSING = 'processing_chat_answer',
+  FINISHED_PROCESSING = 'finished_processing_chat_answer',
 }
 
 export function useChat() {
@@ -92,62 +92,33 @@ export function useChat() {
   const { subscribe } = usePubSub();
 
   subscribe({
-    event: 'chat_answer_state',
-    callback: ({
-      playerId,
-      msgId,
-      state,
-    }: {
-      playerId: string;
-      msgId: string;
-      state: ChatAnswerState;
-    }) => {
-      console.log('processing_chat_answer', playerId, msgId);
+    event: CHAT_ANSWER_EVENTS.PROCESSING,
+    callback: ({ msgId }: { msgId: string }) =>
+      dispatch(
+        editMessageMeta({
+          id: msgId,
+          meta: { state: ChatAnswerState.PROCESSING },
+        })
+      ),
+  });
 
-      // TODO: find better way [cleaner code]
-      switch (state) {
-        case ChatAnswerState.CORRECT:
-          dispatch(
-            editMessageMetadata({
-              id: msgId,
-              metadata: {
-                isCorrect: true,
-                isSelected: false,
-                isProcessing: false,
-              },
-            })
-          );
-          break;
-        case ChatAnswerState.PROCESSING:
-          dispatch(
-            editMessageMetadata({
-              id: msgId,
-              metadata: {
-                isCorrect: false,
-                isSelected: false,
-                isProcessing: true,
-              },
-            })
-          );
-          break;
-        case ChatAnswerState.SELECTED:
-          dispatch(
-            editMessageMetadata({
-              id: msgId,
-              metadata: {
-                isCorrect: false,
-                isSelected: true,
-                isProcessing: false,
-              },
-            })
-          );
-          break;
-      }
+  subscribe({
+    event: CHAT_ANSWER_EVENTS.FINISHED_PROCESSING,
+    callback: ({ msgId, isCorrect }: { msgId: string; isCorrect: boolean }) => {
+      dispatch(
+        editMessageMeta({
+          id: msgId,
+          meta: {
+            state: ChatAnswerState.FINISHED_PROCESSING,
+            isCorrectAnswer: isCorrect,
+          },
+        })
+      );
     },
   });
 }
 
-const randomPLayers = generateRandomPLayers(3);
+const randomPLayers = generateRandomPLayers(300);
 
 function generateRandomPLayers(count: number) {
   return Array.from({ length: count }, () => ({

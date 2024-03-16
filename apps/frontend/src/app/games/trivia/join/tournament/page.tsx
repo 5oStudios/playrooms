@@ -23,7 +23,10 @@ import { useAppSelector } from '../../../../../hooks/use-redux-typed';
 import { useChatPlayers } from '../../../../../hooks/use-chat/use-chat-players';
 import { usePresence } from '../../../../../hooks/use-presence';
 import { useChat } from '../../../../../hooks/use-chat/use-chat';
-import { ChatMessage } from '../../../../../store/features/externalChatSlice';
+import {
+  ChatAnswerState,
+  ChatMessage,
+} from '../../../../../store/features/externalChatSlice';
 
 export default function Page() {
   const searchParams = useSearchParams();
@@ -47,18 +50,17 @@ export default function Page() {
 }
 
 function ChatMessage(message: ChatMessage) {
-  console.log(
-    'is this message beiong processed?',
-    message.metadata?.isProcessing
-  );
+  console.log('message.meta?.state', message.meta?.state);
   return (
     <div
       className={cn(
         'flex gap-3 items-center p-3 w-full rounded-md',
-        'bg-background/40',
-        message.metadata?.isSelected && 'bg-blue-200',
-        message.metadata?.isProcessing && 'bg-red-300',
-        message.metadata?.isCorrect && 'bg-green-500'
+        message.meta?.state === ChatAnswerState.PROCESSING ||
+          (message.meta?.state === ChatAnswerState.FINISHED_PROCESSING &&
+            message.meta.isCorrectAnswer === false)
+          ? 'bg-yellow-500/50'
+          : 'bg-background/40',
+        message.meta?.isCorrectAnswer && 'bg-green-500'
       )}
     >
       <Avatar

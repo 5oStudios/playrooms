@@ -13,7 +13,7 @@ import { Answer } from '../components/sections/mcq/answers/answer';
 import { QuestionAnswerEventKeyFromChat } from './use-chat/use-chat-players';
 import { MatchState } from '../store/features/matchSlice';
 import { IQuestion } from '../components/sections/mcq/questions/MCQQuestions';
-import { ChatAnswerState } from './use-chat/use-chat';
+import { CHAT_ANSWER_EVENTS } from './use-chat/use-chat';
 
 export const QuestionsFinishedEventKey = 'questions_finished';
 export const TimeUpEventKey = 'time_up';
@@ -113,28 +113,28 @@ export function useQuestions({
         return;
       }
       const answer = currentQuestion.answers[answerIndex];
+
       if (!answer) {
         console.log('invalid answer index', answerIndex);
         return;
       }
 
-      publish('chat_answer_state', {
-        playerId,
+      publish(CHAT_ANSWER_EVENTS.PROCESSING, {
         msgId,
-        state: ChatAnswerState.PROCESSING,
       });
+
       const isCorrect = answer.isCorrect;
-      isCorrect &&
-        publish('chat_answer_state', {
-          playerId,
-          msgId,
-          state: ChatAnswerState.CORRECT,
-        });
+
       syncPlayerScore({
         playerId,
         points: isCorrect ? 1 : 0,
         answer,
         action: isCorrect ? PlayerScoreAction.ADD : PlayerScoreAction.SUBTRACT,
+      });
+
+      publish(CHAT_ANSWER_EVENTS.FINISHED_PROCESSING, {
+        msgId,
+        isCorrect,
       });
     },
   });

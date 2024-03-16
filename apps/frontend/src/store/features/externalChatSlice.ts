@@ -1,5 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+export enum ChatAnswerState {
+  PROCESSING,
+  FINISHED_PROCESSING,
+  IGNORED,
+}
+
 export interface ChatMessage {
   message: {
     id: string;
@@ -11,10 +17,9 @@ export interface ChatMessage {
     username: string;
     avatar_url: string;
   };
-  metadata?: {
-    isProcessing: boolean;
-    isSelected: boolean;
-    isCorrect: boolean;
+  meta?: {
+    state?: ChatAnswerState;
+    isCorrectAnswer?: boolean;
   };
 }
 
@@ -27,20 +32,20 @@ const externalChatSlice = createSlice({
     addMessage(state, action: { payload: ChatMessage }) {
       state.push(action.payload);
     },
-    editMessageMetadata(
+    editMessageMeta(
       state,
-      action: { payload: { id: string; metadata: ChatMessage['metadata'] } }
+      action: { payload: { id: string; meta: Partial<ChatMessage['meta']> } }
     ) {
       const message = state.find(
         (message) => message.message.id === action.payload.id
       );
       if (message) {
-        message.metadata = action.payload.metadata;
+        message.meta = { ...message.meta, ...action.payload.meta };
       }
     },
   },
 });
 
-export const { addMessage, editMessageMetadata } = externalChatSlice.actions;
+export const { addMessage, editMessageMeta } = externalChatSlice.actions;
 
 export default externalChatSlice.reducer;
