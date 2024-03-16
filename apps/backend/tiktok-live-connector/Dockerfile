@@ -23,4 +23,4 @@ COPY ../../../ .
 
 EXPOSE 4444
 
-CMD ["pnpx", "nx", "run", "tiiktok-live-connector:serve:production"]
+CMD ["pnpx", "nx", "run", "tiktok-live-connector:serve:production"]
