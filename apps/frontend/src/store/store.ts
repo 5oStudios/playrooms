@@ -14,6 +14,7 @@ import { storage } from '../utils/storage';
 import playersSlice from './features/playersSlice';
 import socketSlice, { setSocket, SocketState } from './features/socketSlice';
 import externalChatSlice from './features/externalChatSlice';
+import tournamentSlice from './features/tournamentSlice';
 
 export const store = configureStore({
   reducer: {
@@ -21,6 +22,7 @@ export const store = configureStore({
     party: partySlice,
 
     players: playersSlice,
+    tournament: tournamentSlice,
     externalChat: externalChatSlice,
     session: sessionSlice,
     user: userSlice,

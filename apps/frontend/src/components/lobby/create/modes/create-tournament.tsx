@@ -20,6 +20,7 @@ import React, { useEffect } from 'react';
 import { MockedQuestionsCollections } from '../../../../../mocks';
 import { ExternalPlatformsModal } from '../../../modals/external-platforms';
 import { useMatch } from '../../../../hooks/use-match';
+import { setTournamentFormData } from '../../../../store/features/tournamentSlice';
 
 enum TournamentType {
   Public = 'public',
@@ -100,6 +101,8 @@ export default function CreateTournamentStaticModal() {
     // const { maxPlayers, partyType } = createTournamentData.getValues();
     // gameSocket
     //   .createParty(partyType === TournamentType.Public, Number(maxPlayers))
+
+    dispatch(setTournamentFormData(data));
     createMatch(data.tournamentTitle).then((match) => {
       const newPath = path.replace('create', 'join');
 

@@ -1,6 +1,10 @@
 import { usePubSub } from '../use-pub-sub';
-import { useEffect, useRef } from 'react';
-import { TikTokChatMessage, tiktokSocket } from '@core/tiktok-client';
+import { useEffect } from 'react';
+import {
+  ListenToStreamEventKey,
+  TikTokChatMessage,
+  tiktokSocket,
+} from '@core/tiktok-client';
 import { useAppDispatch, useAppSelector } from '../use-redux-typed';
 import { faker } from '@faker-js/faker';
 import { MatchState } from '../../store/features/matchSlice';
@@ -10,6 +14,7 @@ import {
   ChatMessage,
   editMessageMeta,
 } from '../../store/features/externalChatSlice';
+import { store } from '../../store/store';
 import { ChatMessageFromExternalPlatform } from './use-chat-players';
 
 export enum CHAT_ANSWER_EVENTS {
@@ -27,57 +32,37 @@ const tiktokAdapter = (message: TikTokChatMessage): ChatMessage => {
     },
     message: {
       id: message.msgId,
-      comment: message.comment,
+      comment: message.comment[0],
       timestamp: new Date().getTime(),
     },
   };
 };
 
-export function useChat() {
-  const { publish } = usePubSub();
+export function useChat(
+  sources: {
+    platform?: 'tiktok' | 'youtube';
+    username: string;
+  }[]
+) {
+  const { publish, subscribe } = usePubSub();
   const dispatch = useAppDispatch();
 
   const isMatchStarted = useAppSelector(
     (state) => state.match.currentMatchState === MatchState.STARTED
   );
 
-  const isEmitted = useRef(false);
   useEffect(() => {
-    if (isEmitted.current) return;
-
     console.log('emitting');
-    // tiktokSocket.emit(ListenToStreamEventKey, 'dicquewuopamela');
-    isEmitted.current = true;
-  }, []);
+    sources.forEach(({ platform, username }) => {
+      tiktokSocket.emit(ListenToStreamEventKey, username);
+    });
 
-  tiktokSocket.on('chat', (message) => {
-    console.log('bd chat', message);
-    // store.dispatch(addMessage(message));
-  });
-
-  useEffect(() => {
-    if (isMatchStarted) {
-      const randomnessMessageInterval = setInterval(() => {
-        const message = tiktokAdapter(
-          randomPLayers[Math.floor(Math.random() * 30)]
-        );
-        dispatch(addMessage(message));
-        publish(ChatMessageFromExternalPlatform, message);
-      }, 1000);
-      return () => clearInterval(randomnessMessageInterval);
-    }
-
-    const randomMessageInterval = setInterval(() => {
-      const message = tiktokAdapter(
-        randomPLayers[Math.floor(Math.random() * 30)]
-      );
-      dispatch(addMessage(message));
-      publish(ChatMessageFromExternalPlatform, message);
-    }, 1000);
-    return () => clearInterval(randomMessageInterval);
-  }, [dispatch, isMatchStarted, publish]);
-
-  const { subscribe } = usePubSub();
+    tiktokSocket.on('chat', (message) => {
+      console.log('bd chat', message);
+      store.dispatch(addMessage(tiktokAdapter(message)));
+      publish(ChatMessageFromExternalPlatform, tiktokAdapter(message));
+    });
+  }, []); // Add isMatchStarted as a dependency
 
   subscribe({
     event: CHAT_ANSWER_EVENTS.PROCESSING,

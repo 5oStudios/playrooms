@@ -18,6 +18,8 @@ export function useChatPlayers() {
   subscribe({
     event: ChatMessageFromExternalPlatform,
     callback: (message: ChatMessage) => {
+      if (!message.user) return;
+
       if (matchState === MatchState.READY) {
         console.log('match is ready');
         const isNewPlayer = players.every(

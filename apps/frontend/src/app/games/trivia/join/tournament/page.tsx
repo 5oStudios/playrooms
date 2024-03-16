@@ -82,7 +82,9 @@ const Chat = () => {
   });
   const [height, setHeight] = React.useState(0);
   const messages = useAppSelector((state) => state.externalChat);
-  useChat();
+
+  const tournament = useAppSelector((state) => state.tournament);
+  useChat(tournament.externalPlatforms);
   useChatPlayers();
 
   const autoScrollRef = useRef(null);
