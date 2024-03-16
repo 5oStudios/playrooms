@@ -18,6 +18,7 @@ interface Player {
   state: PlayerState;
   avatar_url?: string;
 }
+
 const initialState: Player[] = [];
 
 const playersSlice = createSlice({
@@ -34,11 +35,45 @@ const playersSlice = createSlice({
       const player = state.find((p) => p.user_id === action.payload.user_id);
       console.log(
         'REDUX updating player state',
-        player.username,
+        player?.username,
         action.payload.state
       );
       if (player) {
         player.state = action.payload.state;
+      }
+    },
+    addPlayerScore(
+      state,
+      action: PayloadAction<{
+        user_id: string;
+        score: number;
+      }>
+    ) {
+      const player = state.find((p) => p.user_id === action.payload.user_id);
+      console.log(
+        'REDUX updating player score',
+        player?.username,
+        action.payload.score
+      );
+      if (player) {
+        player.score += action.payload.score;
+      }
+    },
+    subPlayerScore(
+      state,
+      action: PayloadAction<{
+        user_id: string;
+        score: number;
+      }>
+    ) {
+      const player = state.find((p) => p.user_id === action.payload.user_id);
+      console.log(
+        'REDUX updating player score',
+        player?.username,
+        action.payload.score
+      );
+      if (player) {
+        player.score -= action.payload.score;
       }
     },
     setPlayerScore(
@@ -53,15 +88,14 @@ const playersSlice = createSlice({
       console.log(
         'REDUX updating player score',
         player?.username,
-        action?.payload?.points
+        action.payload.points
       );
       if (player) {
-        player.score =
-          action.payload.action === PlayerScoreAction.ADD
-            ? player.score + action.payload.points
-            : player.score - action.payload.points;
-      } else {
-        console.log('REDUX player not found', action.payload);
+        if (action.payload.action === PlayerScoreAction.ADD) {
+          player.score += action.payload.points;
+        } else {
+          player.score -= action.payload.points;
+        }
       }
     },
     addPlayer(state, action: PayloadAction<Player>) {
@@ -77,18 +111,21 @@ const playersSlice = createSlice({
       console.log('REDUX removing player', action.payload);
       return state.filter((p) => p.user_id !== action.payload);
     },
-    clearPlayers() {
+    clearPlayers(state) {
       console.log('REDUX clearing players');
-      return [];
+      state.splice(0, state.length);
     },
   },
 });
+
 export default playersSlice.reducer;
 
 export const {
   setPlayerState,
-  setPlayerScore,
   addPlayer,
   removePlayer,
   clearPlayers,
+  subPlayerScore,
+  addPlayerScore,
+  setPlayerScore,
 } = playersSlice.actions;

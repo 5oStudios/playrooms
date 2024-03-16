@@ -175,7 +175,7 @@ export function useQuestions({
     action: PlayerScoreAction;
   }) => {
     publish(PLAYER_COMMANDS.SYNC_SCORE, {
-      id: playerId,
+      user_id: playerId,
       points,
       action,
     });

@@ -1,12 +1,13 @@
 import { usePubSub } from '../use-pub-sub';
 import { useEffect, useRef } from 'react';
-import { tiktokSocket } from '@core/tiktok-client';
+import { TikTokChatMessage, tiktokSocket } from '@core/tiktok-client';
 import { useAppDispatch, useAppSelector } from '../use-redux-typed';
 import { faker } from '@faker-js/faker';
 import { MatchState } from '../../store/features/matchSlice';
 import {
   addMessage,
   ChatAnswerState,
+  ChatMessage,
   editMessageMeta,
 } from '../../store/features/externalChatSlice';
 import { ChatMessageFromExternalPlatform } from './use-chat-players';
@@ -15,13 +16,28 @@ export enum CHAT_ANSWER_EVENTS {
   PROCESSING = 'processing_chat_answer',
   FINISHED_PROCESSING = 'finished_processing_chat_answer',
 }
+const randomPLayers = mockedTikTokChatMessages(30);
+
+const tiktokAdapter = (message: TikTokChatMessage): ChatMessage => {
+  return {
+    user: {
+      id: message.userId,
+      username: message.nickname,
+      avatar_url: message.profilePictureUrl,
+    },
+    message: {
+      id: message.msgId,
+      comment: message.comment,
+      timestamp: new Date().getTime(),
+    },
+  };
+};
 
 export function useChat() {
   const { publish } = usePubSub();
-  const messages = useAppSelector((state) => state.externalChat);
   const dispatch = useAppDispatch();
 
-  const isMAtchStarted = useAppSelector(
+  const isMatchStarted = useAppSelector(
     (state) => state.match.currentMatchState === MatchState.STARTED
   );
 
@@ -39,24 +55,12 @@ export function useChat() {
     // store.dispatch(addMessage(message));
   });
 
-  const randomPlayer =
-    randomPLayers[Math.floor(Math.random() * randomPLayers.length)];
-
   useEffect(() => {
-    if (isMAtchStarted) {
+    if (isMatchStarted) {
       const randomnessMessageInterval = setInterval(() => {
-        const message = {
-          user: {
-            id: randomPlayer.uniqueId,
-            username: randomPlayer.nickname,
-            avatar_url: randomPlayer.profilePictureUrl,
-          },
-          message: {
-            id: faker.database.mongodbObjectId(),
-            comment: ['a', 'b', 'c', 'd'][Math.floor(Math.random() * 4)],
-            timestamp: Date.now(),
-          },
-        };
+        const message = tiktokAdapter(
+          randomPLayers[Math.floor(Math.random() * 30)]
+        );
         dispatch(addMessage(message));
         publish(ChatMessageFromExternalPlatform, message);
       }, 1000);
@@ -64,30 +68,14 @@ export function useChat() {
     }
 
     const randomMessageInterval = setInterval(() => {
-      const message = {
-        user: {
-          id: randomPlayer.uniqueId,
-          username: randomPlayer.nickname,
-          avatar_url: randomPlayer.profilePictureUrl,
-        },
-        message: {
-          id: faker.database.mongodbObjectId(),
-          comment: faker.lorem.sentence(),
-          timestamp: Date.now(),
-        },
-      };
+      const message = tiktokAdapter(
+        randomPLayers[Math.floor(Math.random() * 30)]
+      );
       dispatch(addMessage(message));
       publish(ChatMessageFromExternalPlatform, message);
     }, 1000);
     return () => clearInterval(randomMessageInterval);
-  }, [
-    dispatch,
-    isMAtchStarted,
-    publish,
-    randomPlayer.nickname,
-    randomPlayer.profilePictureUrl,
-    randomPlayer.uniqueId,
-  ]);
+  }, [dispatch, isMatchStarted, publish]);
 
   const { subscribe } = usePubSub();
 
@@ -118,12 +106,11 @@ export function useChat() {
   });
 }
 
-const randomPLayers = generateRandomPLayers(300);
-
-function generateRandomPLayers(count: number) {
+function mockedTikTokChatMessages(count: number) {
   return Array.from({ length: count }, () => ({
     isModerator: false,
     isNewGifter: false,
+    comment: faker.lorem.sentence()[0],
     isSubscriber: false,
     createTime: new Date().toISOString(),
     emotes: [],
