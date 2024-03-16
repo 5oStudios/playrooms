@@ -12,15 +12,15 @@ RUN corepack enable
 WORKDIR /app
 
 # Copy package.json and lock file
-COPY ../../pnpm-lock.yaml ./pnpm-lock.yaml
-COPY ../../package.json ./package.json
+COPY ../../../pnpm-lock.yaml ./pnpm-lock.yaml
+COPY ../../../package.json ./package.json
 
 # Install dependencies using pnpm with caching
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --ignore-scripts
 
 # Copy the entire application
-COPY ../../ .
+COPY ../../../ .
 
-EXPOSE 3000
+EXPOSE 4444
 
-CMD ["pnpx", "nx", "run", "frontend:start"]
+CMD ["pnpx", "nx", "run", "tiiktok-live-connector:serve:production"]
