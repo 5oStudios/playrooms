@@ -4,43 +4,6 @@
   "sourceRoot": "apps/frontend",
   "projectType": "application",
   "targets": {
-    "build": {
-      "executor": "@nx/next:build",
-      "outputs": [
-        "{options.outputPath}"
-      ],
-      "defaultConfiguration": "production",
-      "options": {
-        "outputPath": "dist/apps/frontend"
-      },
-      "configurations": {
-        "production": {
-          "dev": false
-        },
-        "development": {
-          "dev": true
-        }
-      }
-    },
-      "serve": {
-      "executor": "@nx/next:server",
-      "defaultConfiguration": "development",
-      "options": {
-        "buildTarget": "frontend:build",
-        "dev": true
-      },
-      "configurations": {
-        "development": {
-          "buildTarget": "frontend:build:development",
-          "dev": true
-        },
-        "production": {
-          "buildTarget": "frontend:build:production",
-          "dev": false,
-          "port": 3035
-        }
-      }
-    },
     "cap": {
       "executor": "@nxext/capacitor:cap",
       "options": {

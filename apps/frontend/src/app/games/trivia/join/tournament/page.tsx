@@ -84,7 +84,8 @@ const Chat = () => {
   const messages = useAppSelector((state) => state.externalChat);
 
   const tournament = useAppSelector((state) => state.tournament);
-  useChat(tournament.externalPlatforms);
+
+  useChat(tournament && tournament?.externalPlatforms);
   useChatPlayers();
 
   const autoScrollRef = useRef(null);

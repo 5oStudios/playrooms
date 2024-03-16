@@ -41,11 +41,12 @@ const tiktokAdapter = (message: TikTokChatMessage): ChatMessage => {
 export function useChat(
   sources: {
     platform?: 'tiktok' | 'youtube';
-    username: string;
+    username?: string;
   }[]
 ) {
   const { publish, subscribe } = usePubSub();
   const dispatch = useAppDispatch();
+  const amIHost = useAppSelector((state) => state.match.amIHost);
 
   const isMatchStarted = useAppSelector(
     (state) => state.match.currentMatchState === MatchState.STARTED
@@ -53,9 +54,10 @@ export function useChat(
 
   useEffect(() => {
     console.log('emitting');
-    sources.forEach(({ platform, username }) => {
-      tiktokSocket.emit(ListenToStreamEventKey, username);
-    });
+    amIHost &&
+      sources.forEach(({ platform, username }) => {
+        tiktokSocket.emit(ListenToStreamEventKey, username);
+      });
 
     tiktokSocket.on('chat', (message) => {
       console.log('bd chat', message);
