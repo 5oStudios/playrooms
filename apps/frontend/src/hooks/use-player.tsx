@@ -47,7 +47,7 @@ export function usePlayer() {
     match.presences.forEach((oldPlayer) => {
       dispatch(
         addPlayer({
-          id: oldPlayer.user_id,
+          user_id: oldPlayer.user_id,
           username: oldPlayer.username,
           score: 0,
           state: PlayerState.READY,
@@ -56,7 +56,7 @@ export function usePlayer() {
     });
     dispatch(
       addPlayer({
-        id: match.self.user_id,
+        user_id: match.self.user_id,
         username: match.self.username,
         score: 0,
         state: PlayerState.READY,
@@ -75,7 +75,10 @@ export function usePlayer() {
     event: 'match_started',
     callback: () => {
       dispatch(
-        setPlayerState({ id: match?.self.user_id, state: PlayerState.PLAYING })
+        setPlayerState({
+          user_id: match?.self.user_id,
+          state: PlayerState.PLAYING,
+        })
       );
     },
   });
@@ -83,7 +86,7 @@ export function usePlayer() {
   subscribe({
     event: PLAYER_COMMANDS.SYNC_SCORE,
     callback: (playerScore: {
-      id: string;
+      user_id: string;
       points: number;
       action: PlayerScoreAction;
     }) => {
@@ -111,7 +114,7 @@ export function usePlayer() {
       if (hostState === HostState.ELECTED) {
         dispatch(
           addPlayer({
-            id: player.user_id,
+            user_id: player.user_id,
             username: player.username,
             score: 0,
             state: PlayerState.READY,
@@ -149,7 +152,7 @@ interface IPlayerScoreMessageDTO {
   action: PlayerScoreAction;
 }
 export class PlayerScoreMessageDTO {
-  id: string;
+  user_id: string;
   username: string;
   points: number;
   action: PlayerScoreAction;
@@ -160,7 +163,7 @@ export class PlayerScoreMessageDTO {
 
   public toUint8Array(): Uint8Array {
     return objectToUint8Array({
-      id: this.id,
+      id: this.user_id,
       username: this.username,
       points: this.points,
       action: this.action,
@@ -168,7 +171,9 @@ export class PlayerScoreMessageDTO {
   }
 }
 
-export class PlayerPresenceMessageDTO {
+export class PlayerPresenceMessageDTO
+  implements Pick<Presence, 'username' | 'user_id'>
+{
   user_id: string;
   username: string;
 

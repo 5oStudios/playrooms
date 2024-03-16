@@ -1,10 +1,6 @@
 'use client';
 import { JoinMatchProps } from '../../hooks/use-match';
-import {
-  QuestionAnswerEventKey,
-  TimeUpEventKey,
-  useQuestions,
-} from '../../hooks/use-questions';
+import { TimeUpEventKey, useQuestions } from '../../hooks/use-questions';
 import { MockedMCQQuestions } from '../../../mocks';
 import { useLeaderboard } from '../../hooks/use-leaderboard';
 import { Leaderboard } from './leaderboard';
@@ -16,7 +12,7 @@ import { Button } from '@nextui-org/react';
 import { useAppSelector } from '../../hooks/use-redux-typed';
 import { gameSocket } from '@core/game-client';
 import { PlayerScoreAction } from '../../store/features/playersSlice';
-import { Player } from '../../hooks/use-player';
+import { QuestionAnswerEventKeyFromChat } from '../../hooks/use-chat/use-chat-players';
 
 export enum SOCKET_OP_CODES {
   MATCH_STATE = 100,
@@ -49,8 +45,8 @@ export default function Match(matchProps: JoinMatchProps) {
   const matchState = useAppSelector((state) => state.match.currentMatchState);
   const { publish } = usePubSub();
   const session = useAppSelector((state) => state.session);
-  const myPlayer: Player = useAppSelector((state) =>
-    state.players.find((player) => player.id === session?.user_id)
+  const myPlayer = useAppSelector((state) =>
+    state.players.find((player) => player.user_id === session?.user_id)
   );
   const { isLeaderboardVisible } = useLeaderboard({
     showLeaderboardForTimeInMs: SHOW_LEADERBOARD_FOR_TIME_IN_MS,
@@ -114,10 +110,10 @@ export default function Match(matchProps: JoinMatchProps) {
               />
               <Answers
                 answers={currentQuestion.answers}
-                onClick={(answer) => {
-                  publish(QuestionAnswerEventKey, {
-                    playerId: myPlayer.id,
-                    answer,
+                onClick={(answerAbb) => {
+                  publish(QuestionAnswerEventKeyFromChat, {
+                    playerId: myPlayer.user_id,
+                    abbreviation: answerAbb,
                   });
                 }}
               />
@@ -150,7 +146,7 @@ export function CurrentPlayers() {
   return (
     <div>
       {players.map((player) => (
-        <div key={player.id}>
+        <div key={player.user_id}>
           {player.username} : {'👍'}
         </div>
       ))}

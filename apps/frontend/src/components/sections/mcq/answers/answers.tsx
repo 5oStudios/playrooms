@@ -7,7 +7,7 @@ export function Answers({
   onClick,
 }: Readonly<{
   answers: Answer[];
-  onClick: (answer: Answer) => void;
+  onClick: (answerAbb: string) => void;
 }>) {
   const [isOneAnswerSelected, setIsOneAnswerSelected] = React.useState(false);
 
@@ -23,8 +23,8 @@ export function Answers({
             <Answer
               key={index}
               answer={answer}
-              onClick={(answer) => {
-                onClick(answer);
+              onClick={(answerAbb) => {
+                onClick(answerAbb);
                 setIsOneAnswerSelected(true);
               }}
               index={index}

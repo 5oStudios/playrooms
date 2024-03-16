@@ -13,8 +13,9 @@ export function Leaderboard() {
   const playersClone = [...players];
   const disclosure = useDisclosure({ defaultOpen: true });
   const session = useAppSelector((state) => state.session);
-  const isMe = players.find((player) => player.id === session?.user_id);
+  const isMe = players.find((player) => player.user_id === session?.user_id);
   const matchState = useAppSelector((state) => state.match.currentMatchState);
+  console.log(players);
 
   return (
     <BaseModal {...disclosure} size={'4xl'}>
@@ -46,10 +47,10 @@ export function Leaderboard() {
             .sort((a, b) => b.score - a.score)
             .map((player, index) => (
               <div
-                key={player.id}
+                key={player.user_id}
                 className={cn(
                   `flex items-center justify-between px-4 py-3 bg-background/40 rounded-md w-full`,
-                  isMe && player.id === isMe.id && 'bg-blue-500',
+                  isMe && player.user_id === isMe.user_id && 'bg-blue-500',
                   index === 0 && 'bg-yellow-500',
                   index === 1 && 'bg-gray-500',
                   index === 2 && 'bg-rose-400'
@@ -58,7 +59,7 @@ export function Leaderboard() {
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-full bg-gray-700">
                     <Avatar
-                      src={player.avatar_url}
+                      src={player?.avatar_url}
                       alt={player.username}
                       className="w-8 h-8 rounded-full"
                     />

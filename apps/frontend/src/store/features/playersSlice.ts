@@ -12,7 +12,7 @@ export enum PlayerState {
 }
 
 interface Player {
-  id: string;
+  user_id: string;
   username: string;
   score: number;
   state: PlayerState;
@@ -27,11 +27,11 @@ const playersSlice = createSlice({
     setPlayerState(
       state,
       action: PayloadAction<{
-        id: string;
+        user_id: string;
         state: PlayerState;
       }>
     ) {
-      const player = state.find((p) => p.id === action.payload.id);
+      const player = state.find((p) => p.user_id === action.payload.user_id);
       console.log(
         'REDUX updating player state',
         player.username,
@@ -44,12 +44,12 @@ const playersSlice = createSlice({
     setPlayerScore(
       state,
       action: PayloadAction<{
-        id: string;
+        user_id: string;
         points: number;
         action: PlayerScoreAction;
       }>
     ) {
-      const player = state.find((p) => p.id === action.payload.id);
+      const player = state.find((p) => p.user_id === action.payload.user_id);
       console.log(
         'REDUX updating player score',
         player?.username,
@@ -60,10 +60,14 @@ const playersSlice = createSlice({
           action.payload.action === PlayerScoreAction.ADD
             ? player.score + action.payload.points
             : player.score - action.payload.points;
+      } else {
+        console.log('REDUX player not found', action.payload);
       }
     },
     addPlayer(state, action: PayloadAction<Player>) {
-      const isPlayerExist = state.find((p) => p.id === action.payload.id);
+      const isPlayerExist = state.find(
+        (p) => p.user_id === action.payload.user_id
+      );
       console.log('REDUX adding player', action.payload.username);
       if (!isPlayerExist) {
         state.push(action.payload);
@@ -71,7 +75,7 @@ const playersSlice = createSlice({
     },
     removePlayer(state, action: PayloadAction<string>) {
       console.log('REDUX removing player', action.payload);
-      return state.filter((p) => p.id !== action.payload);
+      return state.filter((p) => p.user_id !== action.payload);
     },
     clearPlayers() {
       console.log('REDUX clearing players');

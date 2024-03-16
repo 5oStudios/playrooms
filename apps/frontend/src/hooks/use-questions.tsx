@@ -9,10 +9,8 @@ import {
 import { usePubSub } from './use-pub-sub';
 import { useAppSelector } from './use-redux-typed';
 import { PlayerScoreAction } from '../store/features/playersSlice';
-import { Answer } from '../components/sections/mcq/answers/answer';
 import { QuestionAnswerEventKeyFromChat } from './use-chat/use-chat-players';
 import { MatchState } from '../store/features/matchSlice';
-import { IQuestion } from '../components/sections/mcq/questions/MCQQuestions';
 import { CHAT_ANSWER_EVENTS } from './use-chat/use-chat';
 
 export const QuestionsFinishedEventKey = 'questions_finished';
@@ -27,6 +25,19 @@ export const patterns = {
   C: /^c$/i,
   D: /^d$/i,
 };
+
+export interface IQuestion {
+  id: string;
+  question: string;
+  answers: IAnswer[];
+  correctAnswer: string;
+  allowedTimeInMS: number;
+}
+
+export interface IAnswer {
+  option: string;
+  isCorrect: boolean;
+}
 
 export function useQuestions({
   questions,
@@ -79,20 +90,30 @@ export function useQuestions({
     callback: nextQuestion,
   });
 
-  subscribe({
-    event: QuestionAnswerEventKey,
-    callback: ({ playerId, answer }: { playerId: string; answer: Answer }) => {
-      console.log('QuestionAnswerEventKey', playerId, answer);
-      syncPlayerScore({
-        playerId,
-        points: answer.isCorrect ? 1 : 0,
-        answer,
-        action: answer.isCorrect
-          ? PlayerScoreAction.ADD
-          : PlayerScoreAction.SUBTRACT,
-      });
-    },
-  });
+  // subscribe({
+  //   event: QuestionAnswerEventKey,
+  //   callback: ({
+  //     playerId,
+  //                answerAbb,
+  //   }: {
+  //     playerId: string;
+  //     answer: Answer;
+  //   }) => {
+  //     console.log('QuestionAnswerEventKey', playerId, answerAbb);
+  //
+  //     if (matchState !== MatchState.STARTED) return;
+  //     if (playersAnswered.includes(playerId)) return;
+  //     setPlayersAnswered([...playersAnswered, playerId]);
+  //
+  //     syncPlayerScore({
+  //       playerId,
+  //       points: answer.isCorrect ? 1 : 0,
+  //       action: answer.isCorrect
+  //         ? PlayerScoreAction.ADD
+  //         : PlayerScoreAction.SUBTRACT,
+  //     });
+  //   },
+  // });
 
   subscribe({
     event: QuestionAnswerEventKeyFromChat,
@@ -105,6 +126,10 @@ export function useQuestions({
       abbreviation: string;
       msgId: string;
     }) => {
+      if (matchState !== MatchState.STARTED) return;
+      if (playersAnswered.includes(playerId)) return;
+      setPlayersAnswered([...playersAnswered, playerId]);
+
       const answerIndex = abbreviationToIndex(abbreviation);
       console.log('QuestionAnswerEventKeyFromChat', playerId, answerIndex);
 
@@ -119,47 +144,40 @@ export function useQuestions({
         return;
       }
 
-      publish(CHAT_ANSWER_EVENTS.PROCESSING, {
-        msgId,
-      });
-
-      const isCorrect = answer.isCorrect;
+      msgId &&
+        publish(CHAT_ANSWER_EVENTS.PROCESSING, {
+          msgId,
+        });
 
       syncPlayerScore({
         playerId,
-        points: isCorrect ? 1 : 0,
-        answer,
-        action: isCorrect ? PlayerScoreAction.ADD : PlayerScoreAction.SUBTRACT,
+        points: answer.isCorrect ? 1 : 0,
+        action: answer.isCorrect
+          ? PlayerScoreAction.ADD
+          : PlayerScoreAction.SUBTRACT,
       });
 
-      publish(CHAT_ANSWER_EVENTS.FINISHED_PROCESSING, {
-        msgId,
-        isCorrect,
-      });
+      msgId &&
+        publish(CHAT_ANSWER_EVENTS.FINISHED_PROCESSING, {
+          msgId,
+          isCorrect: answer.isCorrect,
+        });
     },
   });
 
   const syncPlayerScore = ({
     playerId,
     points,
-    answer,
     action,
   }: {
     playerId: string;
     points: number;
-    answer: Answer;
     action: PlayerScoreAction;
   }) => {
-    if (matchState !== MatchState.STARTED) return;
-    if (playersAnswered.includes(playerId)) return;
-    setPlayersAnswered([...playersAnswered, playerId]);
-
     publish(PLAYER_COMMANDS.SYNC_SCORE, {
       id: playerId,
-      points: answer.isCorrect ? 1 : 0,
-      action: answer.isCorrect
-        ? PlayerScoreAction.ADD
-        : PlayerScoreAction.SUBTRACT,
+      points,
+      action,
     });
   };
 

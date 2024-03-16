@@ -1,16 +1,12 @@
 import React from 'react';
 import { Button } from '@nextui-org/react';
 import { cn } from '../../../../utils/cn';
-
-export interface Answer {
-  option: string;
-  isCorrect: boolean;
-}
+import { IAnswer } from '../../../../hooks/use-questions';
 
 export const Answer: React.FC<{
   index: number;
-  answer: Answer;
-  onClick: (answer: Answer) => void;
+  answer: IAnswer;
+  onClick: (answerAbb: 'A' | 'B' | 'C' | 'D') => void;
   disabled?: boolean;
 }> = ({ answer, onClick, index, disabled }) => {
   const [isSelected, setIsSelected] = React.useState(false);
@@ -29,10 +25,11 @@ export const Answer: React.FC<{
       abbreviation = 'D';
       break;
   }
-  const handleAnswer = (answer: Answer) => {
+  const handleAnswer = (answer: IAnswer) => {
     setIsSelected(true);
-    onClick(answer);
+    onClick(abbreviation as 'A' | 'B' | 'C' | 'D');
   };
+
   return (
     <div>
       <Button
@@ -74,12 +71,12 @@ export const Answer: React.FC<{
 //       {playersChooseThis.map((player, index) => {
 //         if (player.chosenAnswer.option !== answer.option) return null;
 //         const playerData = players.find(
-//           (currentPlayer) => currentPlayer.id === player.id
+//           (currentPlayer) => currentPlayer.id === player.user_id
 //         );
 //         if (!playerData) return null;
 //         return (
 //           <Image
-//             key={player.id}
+//             key={player.user_id}
 //             width={32}
 //             height={32}
 //             src={playerData.getProfile().photo}

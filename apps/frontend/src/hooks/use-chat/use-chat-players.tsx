@@ -21,7 +21,7 @@ export function useChatPlayers() {
       if (matchState === MatchState.READY) {
         console.log('match is ready');
         const isNewPlayer = players.every(
-          (player) => player.id !== message.user.id
+          (player) => player.user_id !== message.user.id
         );
         isNewPlayer &&
           publish(
