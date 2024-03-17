@@ -1,14 +1,10 @@
 import { usePubSub } from '../use-pub-sub';
-import { PlayerPresenceEvents, PlayerPresenceMessageDTO } from '../use-player';
+import { PLAYER_PRESENCE, PlayerPresenceMessageDTO } from '../use-player';
 import { useAppSelector } from '../use-redux-typed';
 import { MatchState } from '../../store/features/matchSlice';
 import { ChatMessage } from '../../store/features/externalChatSlice';
-import { patterns } from '../use-questions';
-
-export const QuestionAnswerEventKeyFromChat = 'question_answer_from_chat';
-
-export const ChatMessageFromExternalPlatform =
-  'chat_message_from_external_platform';
+import { patterns, QUESTION_EVENTS } from '../use-questions';
+import { CHAT_EVENTS } from './use-chat';
 
 export function useChatPlayers() {
   const { subscribe, publish } = usePubSub();
@@ -16,7 +12,7 @@ export function useChatPlayers() {
   const matchState = useAppSelector((state) => state.match.currentMatchState);
 
   subscribe({
-    event: ChatMessageFromExternalPlatform,
+    event: CHAT_EVENTS.RECEIVED_MESSAGE,
     callback: (message: ChatMessage) => {
       if (!message.user) return;
 
@@ -27,7 +23,7 @@ export function useChatPlayers() {
         );
         isNewPlayer &&
           publish(
-            PlayerPresenceEvents.JOINED,
+            PLAYER_PRESENCE.JOINED,
             new PlayerPresenceMessageDTO({
               user_id: message.user.id,
               username: message.user.username,
@@ -41,7 +37,7 @@ export function useChatPlayers() {
             message: message.message.comment,
             pattern: patterns[pattern],
             callback: (matchedPattern) => {
-              publish(QuestionAnswerEventKeyFromChat, {
+              publish(QUESTION_EVENTS.ANSWERED, {
                 playerId: message.user.id,
                 abbreviation: matchedPattern,
                 msgId: message.message.id,
@@ -68,7 +64,7 @@ const onPatternMatch = ({
   pattern: RegExp;
   callback: (message: string) => void;
 }) => {
-  if (message.match(pattern)) {
+  if (RegExp(pattern).exec(message)) {
     callback(message);
   }
 };

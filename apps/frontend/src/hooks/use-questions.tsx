@@ -9,10 +9,12 @@ import {
 import { usePubSub } from './use-pub-sub';
 import { useAppSelector } from './use-redux-typed';
 import { PlayerScoreAction } from '../store/features/playersSlice';
-import { QuestionAnswerEventKeyFromChat } from './use-chat/use-chat-players';
 import { MatchState } from '../store/features/matchSlice';
-import { CHAT_ANSWER_EVENTS } from './use-chat/use-chat';
+import { CHAT_ANSWER_EVENTS } from './chat/use-chat';
 
+export enum QUESTION_EVENTS {
+  ANSWERED = 'question_answered',
+}
 export const QuestionsFinishedEventKey = 'questions_finished';
 export const TimeUpEventKey = 'time_up';
 export const RemainingTimeForQuestionEventKey = (questionIndex: string) =>
@@ -90,33 +92,8 @@ export function useQuestions({
     callback: nextQuestion,
   });
 
-  // subscribe({
-  //   event: QuestionAnswerEventKey,
-  //   callback: ({
-  //     playerId,
-  //                answerAbb,
-  //   }: {
-  //     playerId: string;
-  //     answer: Answer;
-  //   }) => {
-  //     console.log('QuestionAnswerEventKey', playerId, answerAbb);
-  //
-  //     if (matchState !== MatchState.STARTED) return;
-  //     if (playersAnswered.includes(playerId)) return;
-  //     setPlayersAnswered([...playersAnswered, playerId]);
-  //
-  //     syncPlayerScore({
-  //       playerId,
-  //       points: answer.isCorrect ? 1 : 0,
-  //       action: answer.isCorrect
-  //         ? PlayerScoreAction.ADD
-  //         : PlayerScoreAction.SUBTRACT,
-  //     });
-  //   },
-  // });
-
   subscribe({
-    event: QuestionAnswerEventKeyFromChat,
+    event: QUESTION_EVENTS.ANSWERED,
     callback: ({
       playerId,
       abbreviation,
@@ -131,7 +108,7 @@ export function useQuestions({
       setPlayersAnswered([...playersAnswered, playerId]);
 
       const answerIndex = abbreviationToIndex(abbreviation);
-      console.log('QuestionAnswerEventKeyFromChat', playerId, answerIndex);
+      console.log('QUESTION_EVENTS.ANSWERED', playerId, answerIndex);
 
       if (playersAnswered.includes(playerId)) {
         console.log('player already answered', playersAnswered);
@@ -186,10 +163,10 @@ export function useQuestions({
   };
 }
 function abbreviationToIndex(abbreviation: string) {
-  if (abbreviation.match(patterns.A)) return 0;
-  if (abbreviation.match(patterns.B)) return 1;
-  if (abbreviation.match(patterns.C)) return 2;
-  if (abbreviation.match(patterns.D)) return 3;
+  if (RegExp(patterns.A).exec(abbreviation)) return 0;
+  if (RegExp(patterns.B).exec(abbreviation)) return 1;
+  if (RegExp(patterns.C).exec(abbreviation)) return 2;
+  if (RegExp(patterns.D).exec(abbreviation)) return 3;
 }
 
 function indexToAbbreviation(index: number) {

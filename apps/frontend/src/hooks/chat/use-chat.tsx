@@ -15,13 +15,16 @@ import {
   editMessageMeta,
 } from '../../store/features/externalChatSlice';
 import { store } from '../../store/store';
-import { ChatMessageFromExternalPlatform } from './use-chat-players';
 
 export enum CHAT_ANSWER_EVENTS {
   PROCESSING = 'processing_chat_answer',
   FINISHED_PROCESSING = 'finished_processing_chat_answer',
 }
 const randomPLayers = mockedTikTokChatMessages(30);
+
+export enum CHAT_EVENTS {
+  RECEIVED_MESSAGE = 'chat_receive_message',
+}
 
 const tiktokAdapter = (message: TikTokChatMessage): ChatMessage => {
   return {
@@ -62,7 +65,7 @@ export function useChat(
     tiktokSocket.on('chat', (message) => {
       console.log('bd chat', message);
       store.dispatch(addMessage(tiktokAdapter(message)));
-      publish(ChatMessageFromExternalPlatform, tiktokAdapter(message));
+      publish(CHAT_EVENTS.RECEIVED_MESSAGE, tiktokAdapter(message));
     });
   }, []); // Add isMatchStarted as a dependency
 

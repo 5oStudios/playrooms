@@ -20,9 +20,6 @@ import {
 import { gameSocket } from '@core/game-client';
 import { HostState } from './use-host';
 
-export const PlayerStateEventsKey = 'player_events';
-export const OtherPlayersScoreEventKey = 'other_players_score';
-
 export interface Player {
   id: string;
   username: string;
@@ -30,7 +27,7 @@ export interface Player {
   state: PlayerState;
 }
 
-export enum PlayerPresenceEvents {
+export enum PLAYER_PRESENCE {
   JOINED = 'match_presence_joined',
   LEFT = 'match_presence_left',
 }
@@ -109,7 +106,7 @@ export function usePlayer() {
   });
 
   subscribe({
-    event: PlayerPresenceEvents.JOINED,
+    event: PLAYER_PRESENCE.JOINED,
     callback: (player: PlayerPresenceMessageDTO) => {
       if (hostState === HostState.ELECTED) {
         dispatch(
@@ -125,7 +122,7 @@ export function usePlayer() {
   });
 
   subscribe({
-    event: PlayerPresenceEvents.LEFT,
+    event: PLAYER_PRESENCE.LEFT,
     callback: (player: Presence) => {
       dispatch(removePlayer(player.user_id));
     },

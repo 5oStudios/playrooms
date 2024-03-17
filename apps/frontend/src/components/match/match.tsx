@@ -1,6 +1,10 @@
 'use client';
 import { JoinMatchProps } from '../../hooks/use-match';
-import { TimeUpEventKey, useQuestions } from '../../hooks/use-questions';
+import {
+  QUESTION_EVENTS,
+  TimeUpEventKey,
+  useQuestions,
+} from '../../hooks/use-questions';
 import { MockedMCQQuestions } from '../../../mocks';
 import { useLeaderboard } from '../../hooks/use-leaderboard';
 import { Leaderboard } from './leaderboard';
@@ -12,7 +16,6 @@ import { Button } from '@nextui-org/react';
 import { useAppSelector } from '../../hooks/use-redux-typed';
 import { gameSocket } from '@core/game-client';
 import { PlayerScoreAction } from '../../store/features/playersSlice';
-import { QuestionAnswerEventKeyFromChat } from '../../hooks/use-chat/use-chat-players';
 
 export enum SOCKET_OP_CODES {
   MATCH_STATE = 100,
@@ -40,7 +43,7 @@ export enum PLAYER_COMMANDS {
 const STARTING_QUESTION_INDEX = 0;
 const SHOW_LEADERBOARD_FOR_TIME_IN_MS = 5000;
 
-export default function Match(matchProps: JoinMatchProps) {
+export default function Match(matchProps: Readonly<JoinMatchProps>) {
   const amIHost = useAppSelector((state) => state.match.amIHost);
   const matchState = useAppSelector((state) => state.match.currentMatchState);
   const { publish } = usePubSub();
@@ -91,9 +94,7 @@ export default function Match(matchProps: JoinMatchProps) {
           <CurrentPlayers />
         </div>
       ) : (
-        <>
-          <p>Waiting for host to start the match</p>
-        </>
+        <p>Waiting for host to start the match</p>
       );
 
     case MatchState.STARTED:
@@ -111,7 +112,7 @@ export default function Match(matchProps: JoinMatchProps) {
               <Answers
                 answers={currentQuestion.answers}
                 onClick={(answerAbb) => {
-                  publish(QuestionAnswerEventKeyFromChat, {
+                  publish(QUESTION_EVENTS.ANSWERED, {
                     playerId: myPlayer.user_id,
                     abbreviation: answerAbb,
                   });
@@ -122,11 +123,7 @@ export default function Match(matchProps: JoinMatchProps) {
         </div>
       );
     case MatchState.ENDED:
-      return (
-        <>
-          <Leaderboard />
-        </>
-      );
+      return <Leaderboard />;
     case MatchState.NOT_FOUND:
       return <>Match not found</>;
 

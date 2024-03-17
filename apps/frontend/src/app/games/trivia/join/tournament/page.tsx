@@ -20,9 +20,9 @@ import { useMatch } from '../../../../../hooks/use-match';
 import { useHost } from '../../../../../hooks/use-host';
 import { usePlayer } from '../../../../../hooks/use-player';
 import { useAppSelector } from '../../../../../hooks/use-redux-typed';
-import { useChatPlayers } from '../../../../../hooks/use-chat/use-chat-players';
+import { useChatPlayers } from '../../../../../hooks/chat/use-chat-players';
 import { usePresence } from '../../../../../hooks/use-presence';
-import { useChat } from '../../../../../hooks/use-chat/use-chat';
+import { useChat } from '../../../../../hooks/chat/use-chat';
 import {
   ChatAnswerState,
   ChatMessage,
@@ -31,7 +31,6 @@ import {
 export default function Page() {
   const searchParams = useSearchParams();
   const matchId = searchParams.get(matchIdSearchParamKey);
-  const socket = useAppSelector((state) => state.socket);
 
   useMatch({
     matchId,
@@ -49,7 +48,7 @@ export default function Page() {
   );
 }
 
-function ChatMessage(message: ChatMessage) {
+function ChatMessage(message: Readonly<ChatMessage>) {
   console.log('message.meta?.state', message.meta?.state);
   return (
     <div
@@ -89,7 +88,6 @@ const Chat = () => {
   useChatPlayers();
 
   const autoScrollRef = useRef(null);
-  // const messages = [];
 
   useEffect(() => {
     if (autoScrollRef.current) {
