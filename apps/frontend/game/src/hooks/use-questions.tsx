@@ -37,7 +37,7 @@ export interface IQuestion {
 }
 
 export interface IAnswer {
-  option: string;
+  label: string;
   isCorrect: boolean;
 }
 

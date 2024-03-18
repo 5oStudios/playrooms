@@ -1,3 +1,3 @@
-export const APPWRITE_URL = "https://refine.appwrite.org/v1";
-export const APPWRITE_PROJECT = "61c4368b4e349";
-export const APPWRITE_TOKEN_KEY = "appwrite-jwt";
+export const APPWRITE_URL = 'http://localhost:8888/v1';
+export const APPWRITE_PROJECT = '65f80f471a9db12ea15a';
+export const APPWRITE_TOKEN_KEY = 'appwrite-jwt';

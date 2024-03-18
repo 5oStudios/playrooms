@@ -1,11 +1,10 @@
-"use client";
-
-import { account, appwriteClient } from "@providers/data-provider";
-import { AppwriteException } from "@refinedev/appwrite";
-import { AuthBindings } from "@refinedev/core";
-import { APPWRITE_TOKEN_KEY } from "@utility/constants";
-import Cookies from "js-cookie";
-import { v4 as uuidv4 } from "uuid";
+'use client';
+import { account, appwriteClient } from '@providers/data-provider';
+import { AppwriteException } from '@refinedev/appwrite';
+import { AuthBindings } from '@refinedev/core';
+import { APPWRITE_TOKEN_KEY } from '@utility/constants';
+import Cookies from 'js-cookie';
+import { v4 as uuidv4 } from 'uuid';
 
 export const authProvider: AuthBindings = {
   login: async ({ email, password }) => {
@@ -16,13 +15,13 @@ export const authProvider: AuthBindings = {
       if (jwt) {
         Cookies.set(APPWRITE_TOKEN_KEY, jwt, {
           expires: 30, // 30 days
-          path: "/",
+          path: '/',
         });
       }
 
       return {
         success: true,
-        redirectTo: "/",
+        redirectTo: '/',
       };
     } catch (error) {
       const { type, message, code } = error as AppwriteException;
@@ -37,18 +36,18 @@ export const authProvider: AuthBindings = {
   },
   logout: async () => {
     try {
-      await account.deleteSession("current");
+      await account.deleteSession('current');
     } catch (error: any) {
       return {
         success: false,
         error,
       };
     }
-    Cookies.remove(APPWRITE_TOKEN_KEY, { path: "/" });
-    appwriteClient.setJWT("");
+    Cookies.remove(APPWRITE_TOKEN_KEY, { path: '/' });
+    appwriteClient.setJWT('');
     return {
       success: true,
-      redirectTo: "/login",
+      redirectTo: '/login',
     };
   },
   register: async ({ email, password }) => {
@@ -56,7 +55,7 @@ export const authProvider: AuthBindings = {
       await account.create(uuidv4(), email, password);
       return {
         success: true,
-        redirectTo: "/login",
+        redirectTo: '/login',
       };
     } catch (error) {
       const { type, message, code } = error as AppwriteException;
@@ -92,18 +91,18 @@ export const authProvider: AuthBindings = {
         authenticated: false,
         error: error,
         logout: true,
-        redirectTo: "/login",
+        redirectTo: '/login',
       };
     }
 
     return {
       authenticated: false,
       error: {
-        message: "Check failed",
-        name: "Session not found",
+        message: 'Check failed',
+        name: 'Session not found',
       },
       logout: true,
-      redirectTo: "/login",
+      redirectTo: '/login',
     };
   },
   getPermissions: async () => null,

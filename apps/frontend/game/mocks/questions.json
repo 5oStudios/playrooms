@@ -4,19 +4,19 @@
     "question": "What is the capital of France?",
     "answers": [
       {
-        "option": "London",
+        "label": "London",
         "isCorrect": false
       },
       {
-        "option": "Berlin",
+        "label": "Berlin",
         "isCorrect": false
       },
       {
-        "option": "Paris",
+        "label": "Paris",
         "isCorrect": true
       },
       {
-        "option": "Rome",
+        "label": "Rome",
         "isCorrect": false
       }
     ],
@@ -29,19 +29,19 @@
     "question": "Who is the author of 'To Kill a Mockingbird'?",
     "answers": [
       {
-        "option": "Harper Lee",
+        "label": "Harper Lee",
         "isCorrect": true
       },
       {
-        "option": "Mark Twain",
+        "label": "Mark Twain",
         "isCorrect": false
       },
       {
-        "option": "J.K. Rowling",
+        "label": "J.K. Rowling",
         "isCorrect": false
       },
       {
-        "option": "Charles Dickens",
+        "label": "Charles Dickens",
         "isCorrect": false
       }
     ],
@@ -54,19 +54,19 @@
     "question": "What is the chemical symbol for water?",
     "answers": [
       {
-        "option": "W",
+        "label": "W",
         "isCorrect": false
       },
       {
-        "option": "H2O",
+        "label": "H2O",
         "isCorrect": true
       },
       {
-        "option": "HO",
+        "label": "HO",
         "isCorrect": false
       },
       {
-        "option": "H2O2",
+        "label": "H2O2",
         "isCorrect": false
       }
     ],
@@ -79,19 +79,19 @@
     "question": "Who painted the Mona Lisa?",
     "answers": [
       {
-        "option": "Vincent van Gogh",
+        "label": "Vincent van Gogh",
         "isCorrect": false
       },
       {
-        "option": "Leonardo da Vinci",
+        "label": "Leonardo da Vinci",
         "isCorrect": true
       },
       {
-        "option": "Pablo Picasso",
+        "label": "Pablo Picasso",
         "isCorrect": false
       },
       {
-        "option": "Claude Monet",
+        "label": "Claude Monet",
         "isCorrect": false
       }
     ],
@@ -104,19 +104,19 @@
     "question": "What is the largest planet in our solar system?",
     "answers": [
       {
-        "option": "Mars",
+        "label": "Mars",
         "isCorrect": false
       },
       {
-        "option": "Jupiter",
+        "label": "Jupiter",
         "isCorrect": true
       },
       {
-        "option": "Saturn",
+        "label": "Saturn",
         "isCorrect": false
       },
       {
-        "option": "Earth",
+        "label": "Earth",
         "isCorrect": false
       }
     ],
@@ -129,19 +129,19 @@
     "question": "Who wrote 'The Great Gatsby'?",
     "answers": [
       {
-        "option": "F. Scott Fitzgerald",
+        "label": "F. Scott Fitzgerald",
         "isCorrect": true
       },
       {
-        "option": "Ernest Hemingway",
+        "label": "Ernest Hemingway",
         "isCorrect": false
       },
       {
-        "option": "William Faulkner",
+        "label": "William Faulkner",
         "isCorrect": false
       },
       {
-        "option": "John Steinbeck",
+        "label": "John Steinbeck",
         "isCorrect": false
       }
     ],
@@ -154,19 +154,19 @@
     "question": "What is the capital of Japan?",
     "answers": [
       {
-        "option": "Beijing",
+        "label": "Beijing",
         "isCorrect": false
       },
       {
-        "option": "Tokyo",
+        "label": "Tokyo",
         "isCorrect": true
       },
       {
-        "option": "Seoul",
+        "label": "Seoul",
         "isCorrect": false
       },
       {
-        "option": "Bangkok",
+        "label": "Bangkok",
         "isCorrect": false
       }
     ],
@@ -179,19 +179,19 @@
     "question": "Who discovered penicillin?",
     "answers": [
       {
-        "option": "Alexander Fleming",
+        "label": "Alexander Fleming",
         "isCorrect": true
       },
       {
-        "option": "Marie Curie",
+        "label": "Marie Curie",
         "isCorrect": false
       },
       {
-        "option": "Louis Pasteur",
+        "label": "Louis Pasteur",
         "isCorrect": false
       },
       {
-        "option": "Albert Einstein",
+        "label": "Albert Einstein",
         "isCorrect": false
       }
     ],
@@ -204,19 +204,19 @@
     "question": "What is the capital of Australia?",
     "answers": [
       {
-        "option": "Sydney",
+        "label": "Sydney",
         "isCorrect": false
       },
       {
-        "option": "Melbourne",
+        "label": "Melbourne",
         "isCorrect": false
       },
       {
-        "option": "Canberra",
+        "label": "Canberra",
         "isCorrect": true
       },
       {
-        "option": "Perth",
+        "label": "Perth",
         "isCorrect": false
       }
     ],
@@ -229,19 +229,19 @@
     "question": "Who was the first person to step on the moon?",
     "answers": [
       {
-        "option": "Buzz Aldrin",
+        "label": "Buzz Aldrin",
         "isCorrect": false
       },
       {
-        "option": "Yuri Gagarin",
+        "label": "Yuri Gagarin",
         "isCorrect": false
       },
       {
-        "option": "Neil Armstrong",
+        "label": "Neil Armstrong",
         "isCorrect": true
       },
       {
-        "option": "Alan Shepard",
+        "label": "Alan Shepard",
         "isCorrect": false
       }
     ],

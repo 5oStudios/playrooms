@@ -1,18 +1,22 @@
-"use client";
-
-import { Create, useForm } from "@refinedev/antd";
-import { Form, Input } from "antd";
-import React from "react";
+'use client';
+import { Create, useForm } from '@refinedev/antd';
+import { Form, Input } from 'antd';
+import React from 'react';
 
 export default function CategoryCreate() {
-  const { formProps, saveButtonProps } = useForm({});
+  const { formProps, saveButtonProps } = useForm({
+    resource: '65f8244710c16e4e4322',
+    meta: {
+      label: 'Categories',
+    },
+  });
 
   return (
     <Create saveButtonProps={saveButtonProps}>
       <Form {...formProps} layout="vertical">
         <Form.Item
-          label={"Title"}
-          name={["title"]}
+          label={'Title'}
+          name={['title']}
           rules={[
             {
               required: true,

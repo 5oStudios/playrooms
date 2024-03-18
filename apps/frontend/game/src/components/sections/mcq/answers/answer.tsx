@@ -53,7 +53,7 @@ export const Answer: React.FC<{
         <span className="text-2xl font-bold left-4 absolute top-1.5 text-center bg-gradient-to-r from-emerald-500 to-sky-500 text-transparent bg-clip-text">
           {abbreviation}
         </span>
-        <span className="text-lg font-semibold">{answer.option}</span>
+        <span className="text-lg font-semibold">{answer.label}</span>
 
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-sky-500 to-transparent w-px" />
       </Button>

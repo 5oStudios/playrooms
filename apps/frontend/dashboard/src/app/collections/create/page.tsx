@@ -1,22 +1,24 @@
-"use client";
-
-import { Create, useForm, useSelect } from "@refinedev/antd";
-import { Form, Input, Select } from "antd";
-import React from "react";
+'use client';
+import { Create, useForm, useSelect } from '@refinedev/antd';
+import { Form, Input, Select } from 'antd';
+import React from 'react';
 
 export default function BlogPostCreate() {
   const { formProps, saveButtonProps } = useForm({});
 
   const { selectProps: categorySelectProps } = useSelect({
-    resource: "categories",
+    resource: '65f8244710c16e4e4322',
+    meta: {
+      label: 'Categories',
+    },
   });
 
   return (
     <Create saveButtonProps={saveButtonProps}>
       <Form {...formProps} layout="vertical">
         <Form.Item
-          label={"Title"}
-          name={["title"]}
+          label={'Title'}
+          name={['title']}
           rules={[
             {
               required: true,
@@ -26,7 +28,7 @@ export default function BlogPostCreate() {
           <Input />
         </Form.Item>
         <Form.Item
-          label={"Content"}
+          label={'Content'}
           name="content"
           rules={[
             {
@@ -37,8 +39,8 @@ export default function BlogPostCreate() {
           <Input.TextArea rows={5} />
         </Form.Item>
         <Form.Item
-          label={"Category"}
-          name={["category", "id"]}
+          label={'Category'}
+          name={['category', 'id']}
           rules={[
             {
               required: true,
@@ -48,9 +50,9 @@ export default function BlogPostCreate() {
           <Select {...categorySelectProps} />
         </Form.Item>
         <Form.Item
-          label={"Status"}
-          name={["status"]}
-          initialValue={"draft"}
+          label={'Status'}
+          name={['status']}
+          initialValue={'draft'}
           rules={[
             {
               required: true,
@@ -58,11 +60,11 @@ export default function BlogPostCreate() {
           ]}
         >
           <Select
-            defaultValue={"draft"}
+            defaultValue={'draft'}
             options={[
-              { value: "draft", label: "Draft" },
-              { value: "published", label: "Published" },
-              { value: "rejected", label: "Rejected" },
+              { value: 'draft', label: 'Draft' },
+              { value: 'published', label: 'Published' },
+              { value: 'rejected', label: 'Rejected' },
             ]}
             style={{ width: 120 }}
           />

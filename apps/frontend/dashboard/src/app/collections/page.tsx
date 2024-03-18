@@ -1,5 +1,4 @@
-"use client";
-
+'use client';
 import {
   DateField,
   DeleteButton,
@@ -8,18 +7,25 @@ import {
   MarkdownField,
   ShowButton,
   useTable,
-} from "@refinedev/antd";
-import { BaseRecord, useMany } from "@refinedev/core";
-import { Space, Table } from "antd";
-import React from "react";
+} from '@refinedev/antd';
+import { BaseRecord, useMany } from '@refinedev/core';
+import { Space, Table } from 'antd';
+import React from 'react';
 
 export default function BlogPostList() {
   const { tableProps } = useTable({
+    resource: '65f81db87bbfa98395be',
+    meta: {
+      label: 'Categories',
+    },
     syncWithLocation: true,
   });
 
   const { data: categoryData, isLoading: categoryIsLoading } = useMany({
-    resource: "categories",
+    resource: '65f81db87bbfa98395be',
+    meta: {
+      label: 'Categories',
+    },
     ids:
       tableProps?.dataSource
         ?.map((item) => item?.category?.id)
@@ -32,19 +38,19 @@ export default function BlogPostList() {
   return (
     <List>
       <Table {...tableProps} rowKey="id">
-        <Table.Column dataIndex="id" title={"ID"} />
-        <Table.Column dataIndex="title" title={"Title"} />
+        <Table.Column dataIndex="id" title={'ID'} />
+        <Table.Column dataIndex="title" title={'Title'} />
         <Table.Column
           dataIndex="content"
-          title={"Content"}
+          title={'Content'}
           render={(value: any) => {
-            if (!value) return "-";
-            return <MarkdownField value={value.slice(0, 80) + "..."} />;
+            if (!value) return '-';
+            return <MarkdownField value={value.slice(0, 80) + '...'} />;
           }}
         />
         <Table.Column
-          dataIndex={"category"}
-          title={"Category"}
+          dataIndex={'category'}
+          title={'Category'}
           render={(value) =>
             categoryIsLoading ? (
               <>Loading...</>
@@ -53,14 +59,14 @@ export default function BlogPostList() {
             )
           }
         />
-        <Table.Column dataIndex="status" title={"Status"} />
+        <Table.Column dataIndex="status" title={'Status'} />
         <Table.Column
-          dataIndex={["createdAt"]}
-          title={"Created at"}
+          dataIndex={['createdAt']}
+          title={'Created at'}
           render={(value: any) => <DateField value={value} />}
         />
         <Table.Column
-          title={"Actions"}
+          title={'Actions'}
           dataIndex="actions"
           render={(_, record: BaseRecord) => (
             <Space>

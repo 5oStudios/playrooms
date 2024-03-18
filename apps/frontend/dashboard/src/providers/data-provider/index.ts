@@ -1,18 +1,17 @@
-"use client";
-
+'use client';
 import {
   Account,
   Appwrite,
   dataProvider as appwriteDataProvider,
   liveProvider as appwriteLiveProvider,
   Storage,
-} from "@refinedev/appwrite";
+} from '@refinedev/appwrite';
 import {
   APPWRITE_PROJECT,
   APPWRITE_TOKEN_KEY,
   APPWRITE_URL,
-} from "@utility/constants";
-import Cookies from "js-cookie";
+} from '@utility/constants';
+import Cookies from 'js-cookie';
 
 const appwriteClient = new Appwrite();
 
@@ -30,9 +29,9 @@ const storage = new Storage(appwriteClient);
 export { appwriteClient, account, storage };
 
 export const dataProvider = appwriteDataProvider(appwriteClient, {
-  databaseId: "database",
+  databaseId: '65f80f8f1b85241e23a9',
 });
 
 export const liveProvider = appwriteLiveProvider(appwriteClient, {
-  databaseId: "database",
+  databaseId: 'database',
 });
