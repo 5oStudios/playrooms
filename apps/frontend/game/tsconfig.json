@@ -23,12 +23,12 @@
     "**/*.tsx",
     "**/*.js",
     "**/*.jsx",
-    "../../../apps/frontend/.next/types/**/*.ts",
-    "../../../dist/apps/frontend/.next/types/**/*.ts",
+    "../../../apps/frontend/game/.next/types/**/*.ts",
+    "../../../dist/apps/frontend/game/.next/types/**/*.ts",
     "next-env.d.ts",
     ".next/types/**/*.ts",
-    "../../../dist/apps/frontend/.next/.next/types/**/*.ts",
-    "../../../dist/apps/frontend/next/.next/types/**/*.ts"
+    "../../../dist/apps/frontend/game/.next/.next/types/**/*.ts",
+    "../../../dist/apps/frontend/game/next/.next/types/**/*.ts"
   ],
   "exclude": ["node_modules", "jest.config.ts", "**/*.spec.ts", "**/*.test.ts"]
 }

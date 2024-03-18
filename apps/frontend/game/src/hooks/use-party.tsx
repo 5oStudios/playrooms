@@ -2,10 +2,6 @@
 import React, { useEffect } from 'react';
 import { MatchmakerTicket, PartyMatchmakerTicket } from '@heroiclabs/nakama-js';
 import { useAppDispatch, useAppSelector } from './use-redux-typed';
-import {
-  NODE_ENV,
-  NODE_ENV_STATE,
-} from '../../../../libs/game-client/src/lib/config';
 import { MatchmakerMatched } from '@heroiclabs/nakama-js/socket';
 import { useRouter } from 'next/navigation';
 import { gameSocket } from '@core/game-client';
@@ -16,6 +12,10 @@ import {
   PartyState,
 } from '../components/lobby/lobby-actions/joinLobby';
 import { SocketState } from '../store/features/socketSlice';
+import {
+  NODE_ENV,
+  NODE_ENV_STATE,
+} from '../../../../../libs/game-client/src/lib/config';
 
 export default function useParty({
   partyId,

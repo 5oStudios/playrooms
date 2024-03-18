@@ -8,5 +8,5 @@
     }
   },
   "tags": [],
-  "implicitDependencies": ["frontend-game"]
+  "implicitDependencies": ["game"]
 }

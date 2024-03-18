@@ -1,5 +1,5 @@
 {
-  "name": "frontend-game",
+  "name": "game",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/frontend/game",
   "projectType": "application",
