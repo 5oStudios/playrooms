@@ -1,11 +1,37 @@
-"use client";
-
-import { Header } from "@components/header";
-import { ThemedLayoutV2 } from "@refinedev/antd";
-import React from "react";
+'use client';
+import { Header } from '@components/header';
+import { ThemedLayoutV2 } from '@refinedev/antd';
+import React from 'react';
+import Link from 'next/link';
+import { Typography } from 'antd';
+import { SiNintendogamecube } from 'react-icons/si';
 
 export const ThemedLayout = ({ children }: React.PropsWithChildren) => {
   return (
-    <ThemedLayoutV2 Header={() => <Header sticky />}>{children}</ThemedLayoutV2>
+    <ThemedLayoutV2
+      Title={() => (
+        <Link
+          style={{
+            display: 'flex',
+            gap: '8px',
+          }}
+          href={'/'}
+        >
+          <SiNintendogamecube size={24} />
+          <Typography
+            style={{
+              fontSize: '1rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+            }}
+          >
+            Kingo Dashboard
+          </Typography>
+        </Link>
+      )}
+      Header={() => <Header sticky />}
+    >
+      {children}
+    </ThemedLayoutV2>
   );
 };
