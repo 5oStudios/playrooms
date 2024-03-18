@@ -1,0 +1,35 @@
+[
+  {
+    "id": "1",
+    "label": "What is the capital of France?",
+    "answers": [
+      {
+        "label": "London",
+        "isCorrect": false
+      },
+      {
+        "label": "Berlin",
+        "isCorrect": false
+      },
+      {
+        "label": "Paris",
+        "isCorrect": true
+      },
+      {
+        "label": "Rome",
+        "isCorrect": false
+      }
+    ],
+    "correctAnswer": "Paris",
+    "difficultyLevel": "easy",
+    "allowedTimeInMS": 5000,
+    "category": "Geography",
+    "tags": ["capital cities", "Europe", "France"],
+    "createdBy": "username123",
+    "creationDate": "2024-03-18",
+    "usageCount": 1023,
+    "timesAnsweredCorrectly": 789,
+    "timesAnsweredIncorrectly": 234,
+    "averageResponseTimeInMS": 3500
+  }
+]

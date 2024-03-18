@@ -1,8 +1,8 @@
-import { AuthBindings } from "@refinedev/core";
-import { APPWRITE_TOKEN_KEY } from "@utility/constants";
-import { cookies } from "next/headers";
+import { AuthBindings } from '@refinedev/core';
+import { APPWRITE_TOKEN_KEY } from '@utility/constants';
+import { cookies } from 'next/headers';
 
-export const authProviderServer: Pick<AuthBindings, "check"> = {
+export const authProviderServer: Pick<AuthBindings, 'check'> = {
   check: async () => {
     const cookieStore = cookies();
     const auth = cookieStore.get(APPWRITE_TOKEN_KEY);
@@ -16,7 +16,7 @@ export const authProviderServer: Pick<AuthBindings, "check"> = {
     return {
       authenticated: false,
       logout: true,
-      redirectTo: "/login",
+      redirectTo: '/login',
     };
   },
 };

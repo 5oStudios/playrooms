@@ -10,21 +10,22 @@ import {
 } from '@refinedev/antd';
 import { BaseRecord, useMany } from '@refinedev/core';
 import { Space, Table } from 'antd';
-import React from 'react';
+import React, { useState } from 'react';
 
 export default function BlogPostList() {
   const { tableProps, tableQueryResult } = useTable({
-    resource: '65f81db87bbfa98395be',
+    resource: '65f866e73151b891a190',
     meta: {
-      label: 'Categories',
+      label: 'Questions',
     },
     syncWithLocation: true,
   });
+  const [ownerId, setOwnerId] = useState('');
 
   const { data: categoryData, isLoading: categoryIsLoading } = useMany({
-    resource: '65f81db87bbfa98395be',
+    resource: '65f866e73151b891a19V0',
     meta: {
-      label: 'Categories',
+      label: 'Questions',
     },
     ids:
       tableProps?.dataSource

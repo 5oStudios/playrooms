@@ -45,14 +45,11 @@ export default function RootLayout({
                     notificationProvider={useNotificationProvider}
                     resources={[
                       {
-                        name: 'collections',
-                        list: '/collections',
-                        create: '/collections/create',
-                        edit: '/collections/edit/:id',
-                        show: '/collections/show/:id',
-                        meta: {
-                          canDelete: true,
-                        },
+                        name: '65f866e73151b891a190',
+                        list: '/questions',
+                        create: '/questions/create',
+                        edit: '/questions/edit/:id',
+                        show: '/questions/show/:id',
                       },
                       {
                         name: '65f8244710c16e4e4322',
@@ -65,12 +62,22 @@ export default function RootLayout({
                           label: 'Categories',
                         },
                       },
+                      {
+                        name: 'collections',
+                        list: '/collections',
+                        create: '/collections/create',
+                        edit: '/collections/edit/:id',
+                        show: '/collections/show/:id',
+                        meta: {
+                          canDelete: true,
+                        },
+                      },
                     ]}
                     options={{
                       syncWithLocation: true,
                       warnWhenUnsavedChanges: true,
                       useNewQueryKeys: true,
-                      projectId: 'jBlEcC-2gH5NN-AhkCw4',
+                      projectId: '65f8663d510e15258578',
                       liveMode: 'auto',
                     }}
                   >

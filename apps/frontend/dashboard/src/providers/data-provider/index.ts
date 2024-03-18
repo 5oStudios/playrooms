@@ -2,7 +2,6 @@
 import {
   Account,
   Appwrite,
-  dataProvider as appwriteDataProvider,
   liveProvider as appwriteLiveProvider,
   Storage,
 } from '@refinedev/appwrite';
@@ -12,6 +11,7 @@ import {
   APPWRITE_URL,
 } from '@utility/constants';
 import Cookies from 'js-cookie';
+import { customDataProvider } from '@dataProvider';
 
 const appwriteClient = new Appwrite();
 
@@ -28,8 +28,8 @@ const storage = new Storage(appwriteClient);
 
 export { appwriteClient, account, storage };
 
-export const dataProvider = appwriteDataProvider(appwriteClient, {
-  databaseId: '65f80f8f1b85241e23a9',
+export const dataProvider = customDataProvider(appwriteClient, {
+  databaseId: '65f866dd5fb44d97c7fd',
 });
 
 export const liveProvider = appwriteLiveProvider(appwriteClient, {
