@@ -1,32 +1,30 @@
 'use client';
-import { Create, useForm, useSelect } from '@refinedev/antd';
+import { Create, useForm } from '@refinedev/antd';
 import { Form, Input } from 'antd';
-import React, { useEffect, useState } from 'react';
-import { account } from '@providers/data-provider';
-import { HttpError } from '@refinedev/core';
+import React, { useState } from 'react';
+import { HttpError, useGetIdentity } from '@refinedev/core';
 import { Models, Permission, Role } from '@refinedev/appwrite';
+import { IUser } from '@components/header';
 
 export default function BlogPostCreate() {
   const [identity, setIdentity] =
     useState<Models.Account<Models.Preferences> | null>(null);
-  useEffect(() => {
-    (async () => {
-      await account.get().then((user) => setIdentity(user));
-    })();
-  }, []);
+
+  const { data: user } = useGetIdentity<IUser>();
+  const permissions = user && {
+    readPermissions: [Permission.read(Role.user(user.$id))],
+    writePermissions: [Permission.write(Role.user(user.$id))],
+  };
   const { saveButtonProps, formProps, form } = useForm<HttpError>({
-    meta: {
-      readPermissions: identity && [Permission.read(Role.user(identity.$id))],
-      writePermissions: identity && [Permission.write(Role.user(identity.$id))],
-    },
+    meta: permissions,
   });
 
-  const { selectProps: categorySelectProps } = useSelect({
-    resource: '65f866e73151b891a190',
-    meta: {
-      label: 'Questions',
-    },
-  });
+  // const { selectProps: categorySelectProps } = useSelect({
+  //   resource: '65f866e73151b891a190',
+  //   meta: {
+  //     label: 'Questions',
+  //   },
+  // });
 
   return (
     <Create saveButtonProps={saveButtonProps}>

@@ -1,76 +1,65 @@
-"use client";
+'use client';
+import { Edit, useForm } from '@refinedev/antd';
+import { Flex, Form, Input, Select } from 'antd';
+import React from 'react';
 
-import { Edit, useForm, useSelect } from "@refinedev/antd";
-import { Form, Input, Select } from "antd";
-import React from "react";
-
-export default function BlogPostEdit() {
-  const { formProps, saveButtonProps, queryResult } = useForm({});
-
-  const blogPostsData = queryResult?.data?.data;
-
-  const { selectProps: categorySelectProps } = useSelect({
-    resource: "categories",
-    defaultValue: blogPostsData?.category?.id,
+export default function CollectionsEdit() {
+  const { formProps, saveButtonProps, queryResult } = useForm({
+    action: 'edit',
   });
+  console.log('queryResult', queryResult);
+  console.log('formProps', formProps);
+
+  // const { selectProps } = useSelect({
+  //   resource: '65f8244710c16e4e4322',
+  //   meta: {
+  //     label: 'Categories',
+  //   },
+  // });
 
   return (
     <Edit saveButtonProps={saveButtonProps}>
       <Form {...formProps} layout="vertical">
         <Form.Item
-          label={"Title"}
-          name={["title"]}
-          rules={[
-            {
-              required: true,
-            },
-          ]}
+          label={'Label'}
+          name={['label']}
+          rules={[{ required: true }]}
         >
           <Input />
         </Form.Item>
-        <Form.Item
-          label={"Content"}
-          name="content"
-          rules={[
-            {
-              required: true,
-            },
-          ]}
-        >
-          <Input.TextArea rows={5} />
-        </Form.Item>
-        <Form.Item
-          label={"Category"}
-          name={["category", "id"]}
-          initialValue={formProps?.initialValues?.category?.id}
-          rules={[
-            {
-              required: true,
-            },
-          ]}
-        >
-          <Select {...categorySelectProps} />
-        </Form.Item>
-        <Form.Item
-          label={"Status"}
-          name={["status"]}
-          initialValue={"draft"}
-          rules={[
-            {
-              required: true,
-            },
-          ]}
-        >
-          <Select
-            defaultValue={"draft"}
-            options={[
-              { value: "draft", label: "Draft" },
-              { value: "published", label: "Published" },
-              { value: "rejected", label: "Rejected" },
-            ]}
-            style={{ width: 120 }}
-          />
-        </Form.Item>
+        {/*<Form.Item*/}
+        {/*  label={'Category'}*/}
+        {/*  name={['category']}*/}
+        {/*  rules={[{ required: true }]}*/}
+        {/*>*/}
+        {/*  <Input {...selectProps} />*/}
+        {/*</Form.Item>*/}
+        <Flex gap={16}>
+          <Form.Item
+            label={'Collection Type'}
+            name={['collectionType']}
+            initialValue={'PUBLIC'}
+          >
+            <Select
+              defaultValue={'PUBLIC'}
+              options={[
+                { label: 'Public', value: 'PUBLIC' },
+                { label: 'Private', value: 'PRIVATE' },
+              ]}
+              style={{ width: 120 }}
+            />
+          </Form.Item>
+          <Form.Item label={'Status'} name={['status']} initialValue={'ACTIVE'}>
+            <Select
+              defaultValue={'ACTIVE'}
+              options={[
+                { label: 'Active', value: 'ACTIVE' },
+                { label: 'Disabled', value: 'DISABLED' },
+              ]}
+              style={{ width: 120 }}
+            />
+          </Form.Item>
+        </Flex>
       </Form>
     </Edit>
   );

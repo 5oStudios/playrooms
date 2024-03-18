@@ -29,8 +29,8 @@ export const customDataProvider = (
       const permissions = [
         // Permission.read(Role.any()),
         // Permission.write(Role.any()),
-        ...(meta?.readPermissions ?? Permission.read(Role.any())),
-        ...(meta?.writePermissions ?? Permission.write(Role.any())),
+        ...(meta?.readPermissions ?? [Permission.read(Role.any())]),
+        ...(meta?.writePermissions ?? [Permission.write(Role.any())]),
       ];
 
       const { $id, ...restData } = await database.createDocument(

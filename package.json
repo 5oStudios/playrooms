@@ -5,6 +5,7 @@
   "scripts": {},
   "private": true,
   "dependencies": {
+    "@ant-design/icons": "^4.8.2",
     "@ant-design/nextjs-registry": "^1.0.0",
     "@brianmcallister/react-auto-scroll": "^1.1.0",
     "@capacitor/core": "^5.0.3",

@@ -108,7 +108,6 @@ export const authProvider: AuthBindings = {
   getPermissions: async () => null,
   getIdentity: async () => {
     const user = await account.get();
-
     if (user) {
       return user;
     }

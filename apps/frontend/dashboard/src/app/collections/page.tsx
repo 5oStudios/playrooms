@@ -4,62 +4,63 @@ import {
   DeleteButton,
   EditButton,
   List,
-  MarkdownField,
   ShowButton,
   useTable,
 } from '@refinedev/antd';
-import { BaseRecord, useMany } from '@refinedev/core';
-import { Space, Table } from 'antd';
+import { BaseRecord } from '@refinedev/core';
+import { Space, Table, Tag } from 'antd';
 import React from 'react';
+import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 
 export default function BlogPostList() {
-  const { tableProps, tableQueryResult } = useTable({
-    resource: '65f81db87bbfa98395be',
-    meta: {
-      label: 'Categories',
-    },
-    syncWithLocation: true,
-  });
+  const { tableProps, tableQueryResult } = useTable();
 
-  const { data: categoryData, isLoading: categoryIsLoading } = useMany({
-    resource: '65f81db87bbfa98395be',
-    meta: {
-      label: 'Categories',
-    },
-    ids:
-      tableProps?.dataSource
-        ?.map((item) => item?.category?.id)
-        .filter(Boolean) ?? [],
-    queryOptions: {
-      enabled: !!tableProps?.dataSource,
-    },
-  });
+  // const { data: categoryData, isLoading: categoryIsLoading } = useMany({
+  //   resource: '65f81db87bbfa98395be',
+  //   meta: {
+  //     label: 'Categories',
+  //   },
+  //   ids:
+  //     tableProps?.dataSource
+  //       ?.map((item) => item?.category?.id)
+  //       .filter(Boolean) ?? [],
+  //   queryOptions: {
+  //     enabled: !!tableProps?.dataSource,
+  //   },
+  // });
 
   return (
     <List>
       <Table {...tableProps} rowKey="id">
-        <Table.Column dataIndex="id" title={'ID'} />
-        <Table.Column dataIndex="title" title={'Title'} />
+        <Table.Column dataIndex="label" title={'Label'} />
         <Table.Column
-          dataIndex="content"
-          title={'Content'}
-          render={(value: any) => {
-            if (!value) return '-';
-            return <MarkdownField value={value.slice(0, 80) + '...'} />;
-          }}
-        />
-        <Table.Column
-          dataIndex={'category'}
-          title={'Category'}
-          render={(value) =>
-            categoryIsLoading ? (
-              <>Loading...</>
+          dataIndex="collectionType"
+          render={(value: any) =>
+            value === 'PUBLIC' ? (
+              <Tag color="processing">Public</Tag>
             ) : (
-              categoryData?.data?.find((item) => item.id === value?.id)?.title
+              <Tag color="gold">Private</Tag>
+            )
+          }
+          title={'Collection Type'}
+        />
+
+        <Table.Column dataIndex="questionsCount" title={'Questions Count'} />
+        <Table.Column
+          dataIndex={['status']}
+          title={'Status'}
+          render={(value: any) =>
+            value === 'ACTIVE' ? (
+              <Tag icon={<CheckCircleOutlined />} color="success">
+                Active
+              </Tag>
+            ) : (
+              <Tag icon={<CloseCircleOutlined />} color="error">
+                Disabled
+              </Tag>
             )
           }
         />
-        <Table.Column dataIndex="status" title={'Status'} />
         <Table.Column
           dataIndex={['createdAt']}
           title={'Created at'}
