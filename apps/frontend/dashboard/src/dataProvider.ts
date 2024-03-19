@@ -64,10 +64,10 @@ export const customDataProvider = (
     },
     update: async ({ resource, id, variables, meta }) => {
       const permissions = [
-        Permission.read(Role.any()),
-        Permission.write(Role.any()),
-        ...(meta?.readPermissions ?? ''),
-        ...(meta?.writePermissions ?? ''),
+        // Permission.read(Role.any()),
+        // Permission.write(Role.any()),
+        ...(meta?.readPermissions ?? [Permission.read(Role.any())]),
+        ...(meta?.writePermissions ?? [Permission.write(Role.any())]),
       ];
       const { $id, ...restData } = await database.updateDocument(
         databaseId,
@@ -86,10 +86,10 @@ export const customDataProvider = (
     },
     createMany: async ({ resource, variables, meta }) => {
       const permissions = [
-        Permission.read(Role.any()),
-        Permission.write(Role.any()),
-        ...(meta?.readPermissions ?? ''),
-        ...(meta?.writePermissions ?? ''),
+        // Permission.read(Role.any()),
+        // Permission.write(Role.any()),
+        ...(meta?.readPermissions ?? [Permission.read(Role.any())]),
+        ...(meta?.writePermissions ?? [Permission.write(Role.any())]),
       ];
       const data = await Promise.all(
         variables.map((document) =>
@@ -146,10 +146,10 @@ export const customDataProvider = (
     },
     updateMany: async ({ resource, ids, variables, meta }) => {
       const permissions = [
-        Permission.read(Role.any()),
-        Permission.write(Role.any()),
-        ...(meta?.readPermissions ?? ''),
-        ...(meta?.writePermissions ?? ''),
+        // Permission.read(Role.any()),
+        // Permission.write(Role.any()),
+        ...(meta?.readPermissions ?? [Permission.read(Role.any())]),
+        ...(meta?.writePermissions ?? [Permission.write(Role.any())]),
       ];
       const data = await Promise.all(
         ids.map((id) =>
