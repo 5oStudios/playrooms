@@ -2,20 +2,20 @@
 import { Edit, useForm } from '@refinedev/antd';
 import { Flex, Form, Input, Select } from 'antd';
 import React from 'react';
+import {
+  CollectionStatus,
+  CollectionType,
+  useCollections,
+} from '@hooks/useCollections';
 
 export default function CollectionsEdit() {
+  const { onCollectionTypeChange, permissions } = useCollections();
   const { formProps, saveButtonProps, queryResult } = useForm({
     action: 'edit',
+    meta: {
+      permissions,
+    },
   });
-  console.log('queryResult', queryResult);
-  console.log('formProps', formProps);
-
-  // const { selectProps } = useSelect({
-  //   resource: '65f8244710c16e4e4322',
-  //   meta: {
-  //     label: 'Categories',
-  //   },
-  // });
 
   return (
     <Edit saveButtonProps={saveButtonProps}>
@@ -35,26 +35,21 @@ export default function CollectionsEdit() {
         {/*  <Input {...selectProps} />*/}
         {/*</Form.Item>*/}
         <Flex gap={16}>
-          <Form.Item
-            label={'Collection Type'}
-            name={['collectionType']}
-            initialValue={'PUBLIC'}
-          >
+          <Form.Item label={'Collection Type'} name={'collectionType'}>
             <Select
-              defaultValue={'PUBLIC'}
-              options={[
-                { label: 'Public', value: 'PUBLIC' },
-                { label: 'Private', value: 'PRIVATE' },
-              ]}
               style={{ width: 120 }}
+              onChange={onCollectionTypeChange}
+              options={[
+                { label: 'Public', value: CollectionType.PUBLIC },
+                { label: 'Private', value: CollectionType.PRIVATE },
+              ]}
             />
           </Form.Item>
-          <Form.Item label={'Status'} name={['status']} initialValue={'ACTIVE'}>
+          <Form.Item label={'Status'} name={'status'} initialValue={'ACTIVE'}>
             <Select
-              defaultValue={'ACTIVE'}
               options={[
-                { label: 'Active', value: 'ACTIVE' },
-                { label: 'Disabled', value: 'DISABLED' },
+                { label: 'Active', value: CollectionStatus.ACTIVE },
+                { label: 'Disabled', value: CollectionStatus.DISABLED },
               ]}
               style={{ width: 120 }}
             />

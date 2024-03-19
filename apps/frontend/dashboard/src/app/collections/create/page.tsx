@@ -1,31 +1,35 @@
 'use client';
+import React from 'react';
 import { Create, useForm } from '@refinedev/antd';
 import { Flex, Form, Input, Select } from 'antd';
-import React from 'react';
-import { Permission, Role } from '@refinedev/appwrite';
-import { HttpError, useGetIdentity } from '@refinedev/core';
-import { IUser } from '@components/header';
+import { HttpError } from '@refinedev/core';
+import {
+  CollectionStatus,
+  CollectionType,
+  useCollections,
+} from '@hooks/useCollections';
+
+type FormValues = {
+  label: string;
+  collectionType: CollectionType;
+  status: CollectionStatus;
+};
 
 export default function BlogPostCreate() {
-  const { data: user } = useGetIdentity<IUser>();
-  const permissions = user && {
-    readPermissions: [Permission.read(Role.user(user.$id))],
-    writePermissions: [Permission.write(Role.user(user.$id))],
-  };
-  const { saveButtonProps, formProps, form } = useForm<HttpError>({
+  const { permissions, onCollectionTypeChange } = useCollections();
+  const { saveButtonProps, formProps, form, onFinish } = useForm<
+    {
+      id: string;
+    } & FormValues,
+    HttpError,
+    FormValues
+  >({
     meta: permissions,
   });
 
-  // const { selectProps: categorySelectProps } = useSelect({
-  //   resource: '65f8244710c16e4e4322',
-  //   meta: {
-  //     label: 'Categories',
-  //   },
-  // });
-
   return (
     <Create saveButtonProps={saveButtonProps}>
-      <Form {...formProps} layout="vertical">
+      <Form {...formProps} layout="vertical" form={form}>
         <Form.Item
           label={'Label'}
           name={['label']}
@@ -41,23 +45,26 @@ export default function BlogPostCreate() {
           <Form.Item
             label={'Collection Type'}
             name={['collectionType']}
-            initialValue={'PUBLIC'}
+            initialValue={CollectionType.PUBLIC}
           >
             <Select
-              defaultValue={'PUBLIC'}
-              options={[
-                { label: 'Public', value: 'PUBLIC' },
-                { label: 'Private', value: 'PRIVATE' },
-              ]}
               style={{ width: 120 }}
+              onChange={onCollectionTypeChange}
+              options={[
+                { label: 'Public', value: CollectionType.PUBLIC },
+                { label: 'Private', value: CollectionType.PRIVATE },
+              ]}
             />
           </Form.Item>
-          <Form.Item label={'Status'} name={['status']} initialValue={'ACTIVE'}>
+          <Form.Item
+            label={'Status'}
+            name={['status']}
+            initialValue={CollectionStatus.ACTIVE}
+          >
             <Select
-              defaultValue={'ACTIVE'}
               options={[
-                { label: 'Active', value: 'ACTIVE' },
-                { label: 'Disabled', value: 'DISABLED' },
+                { label: 'Active', value: CollectionStatus.ACTIVE },
+                { label: 'Disabled', value: CollectionStatus.DISABLED },
               ]}
               style={{ width: 120 }}
             />
