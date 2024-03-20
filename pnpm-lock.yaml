@@ -108,8 +108,8 @@ dependencies:
     specifier: 14.1.0
     version: 14.1.0(@babel/core@7.23.9)(react-dom@18.2.0)(react@18.2.0)
   playroomkit:
-    specifier: ^0.0.67
-    version: 0.0.67(react-dom@18.2.0)(react@18.2.0)
+    specifier: ^0.0.70
+    version: 0.0.70(react-dom@18.2.0)(react@18.2.0)
   react:
     specifier: 18.2.0
     version: 18.2.0
@@ -17682,8 +17682,8 @@ packages:
     engines: {node: '>= 0.4.0'}
     dev: true
 
-  /playroomkit@0.0.67(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-y2ob+ytcx8/J3tO1w6EaKKwXv9V51JOt4cHa7fVxP8woxqQw24RSgmN7yTDnTjdBjgLrYVkprxgZw6sD7KwfHw==}
+  /playroomkit@0.0.70(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-H0vy7G1jeUZTRauKIngf6Z3djG47BuWO+z1odftDyOCdtaHHXKs6eMzhbIxLa3QX3d0CCvyzq7ypSEUNCjCJAg==}
     peerDependencies:
       react: '>=17.0.2 <= 18'
       react-dom: '>=17.0.2 <= 18'
