@@ -1,5 +1,5 @@
 import { ChatDto } from './chat/dto/chat.dto';
-import { TikTokLiveEvents } from '@core/tiktok-client';
+import { TikTokLiveEvents } from '@kingo/tiktok-client';
 
 export const tiktokEvents = [
   {

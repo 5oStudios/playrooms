@@ -4,7 +4,7 @@ import {
   ListenToStreamEventKey,
   TikTokChatMessage,
   tiktokSocket,
-} from '@core/tiktok-client';
+} from '@kingo/tiktok-client';
 import { useAppDispatch, useAppSelector } from '../use-redux-typed';
 import { faker } from '@faker-js/faker';
 import { MatchState } from '../../store/features/matchSlice';

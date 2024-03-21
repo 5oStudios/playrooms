@@ -4,7 +4,7 @@ import {
   gameClient,
   LOCAL_STORAGE_AUTH_KEY,
   LOCAL_STORAGE_REFRESH_KEY,
-} from '@core/game-client';
+} from '@kingo/game-client';
 import { Session } from '@heroiclabs/nakama-js';
 import { setSession } from '../store/features/sessionSlice';
 import { nanoid } from 'nanoid';

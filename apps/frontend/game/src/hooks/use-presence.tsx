@@ -1,4 +1,4 @@
-import { gameSocket } from '@core/game-client';
+import { gameSocket } from '@kingo/game-client';
 import { PLAYER_PRESENCE } from './use-player';
 import { usePubSub } from './use-pub-sub';
 import { toast } from 'sonner';

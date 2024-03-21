@@ -14,8 +14,8 @@ async function bootstrap() {
   app.setGlobalPrefix(globalPrefix);
   const port = process.env.PORT || 4444;
   const asyncApiOptions = new AsyncApiDocumentBuilder()
-    .setTitle('Playrooms Backend')
-    .setDescription('The Playrooms Backend API')
+    .setTitle('Kingo Backend')
+    .setDescription('The Kingo Backend API')
     .setVersion('1.0')
     .setDefaultContentType('application/json')
     .addServer('TikTok Live Connector', {

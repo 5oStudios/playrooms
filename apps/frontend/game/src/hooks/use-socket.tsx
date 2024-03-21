@@ -1,6 +1,6 @@
 // import { useAppDispatch, useAppSelector } from './use-redux-typed';
 // import { setSocket, SocketState } from '../store/features/socketSlice';
-// import { gameSocket } from '@core/game-client';
+// import { gameSocket } from '@kingo/game-client';
 // import { useEffect } from 'react';
 //
 // export const useSocket = () => {

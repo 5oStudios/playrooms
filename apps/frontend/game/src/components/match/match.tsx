@@ -14,7 +14,7 @@ import { usePubSub } from '../../hooks/use-pub-sub';
 import { MatchState } from '../../store/features/matchSlice';
 import { Button } from '@nextui-org/react';
 import { useAppSelector } from '../../hooks/use-redux-typed';
-import { gameSocket } from '@core/game-client';
+import { gameSocket } from '@kingo/game-client';
 import { PlayerScoreAction } from '../../store/features/playersSlice';
 
 export enum SOCKET_OP_CODES {

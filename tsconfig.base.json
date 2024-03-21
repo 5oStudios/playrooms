@@ -15,9 +15,9 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@core": ["libs/core/src/index.ts"],
-      "@core/game-client": ["libs/game-client/src/index.ts"],
-      "@core/tiktok-client": ["libs/tiktok-client/src/index.ts"],
+      "@kingo/core": ["libs/core/src/index.ts"],
+      "@kingo/game-client": ["libs/game-client/src/index.ts"],
+      "@kingo/tiktok-client": ["libs/tiktok-client/src/index.ts"],
       "@kingo/events": ["libs/events/src/index.ts"]
     }
   },

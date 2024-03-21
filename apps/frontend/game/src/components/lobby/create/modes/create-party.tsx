@@ -1,7 +1,7 @@
 import { usePathname, useRouter } from 'next/navigation';
 import { useAppDispatch } from '../../../../hooks/use-redux-typed';
 import { Controller, useForm } from 'react-hook-form';
-import { gameSocket } from '@core/game-client';
+import { gameSocket } from '@kingo/game-client';
 import { setParty } from '../../../../store/features/partySlice';
 import BaseModal from '../../../modals/base.modal';
 import {

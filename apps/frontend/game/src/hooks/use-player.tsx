@@ -17,7 +17,7 @@ import {
   setPlayerScore,
   setPlayerState,
 } from '../store/features/playersSlice';
-import { gameSocket } from '@core/game-client';
+import { gameSocket } from '@kingo/game-client';
 import { HostState } from './use-host';
 
 export interface Player {

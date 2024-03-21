@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Divider } from '@nextui-org/react';
 import useParty from '../../../hooks/use-party';
-import { gameSocket } from '@core/game-client';
+import { gameSocket } from '@kingo/game-client';
 import LobbyPartyMode from './lobby-party-mode';
 
 export enum LobbyMode {

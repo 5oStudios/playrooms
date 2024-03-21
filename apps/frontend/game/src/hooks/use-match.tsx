@@ -1,4 +1,4 @@
-import { gameSocket } from '@core/game-client';
+import { gameSocket } from '@kingo/game-client';
 import { QuestionsFinishedEventKey } from './use-questions';
 import { useAppDispatch, useAppSelector } from './use-redux-typed';
 import {

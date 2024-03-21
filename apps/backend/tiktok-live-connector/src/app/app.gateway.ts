@@ -9,7 +9,7 @@ import { AppService } from './app.service';
 import { Logger } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { tiktokEvents } from './events-handlers';
-import { ListenToStreamEventKey } from '@core/tiktok-client';
+import { ListenToStreamEventKey } from '@kingo/tiktok-client';
 
 @WebSocketGateway({ cors: true })
 export class AppGateway {

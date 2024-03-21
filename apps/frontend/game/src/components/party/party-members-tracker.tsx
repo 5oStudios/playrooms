@@ -1,7 +1,7 @@
 import { useAppDispatch, useAppSelector } from '../../hooks/use-redux-typed';
 import React, { useState } from 'react';
 import { Users } from '@heroiclabs/nakama-js';
-import { gameClient, gameSocket } from '@core/game-client';
+import { gameClient, gameSocket } from '@kingo/game-client';
 import { setParty } from '../../store/features/partySlice';
 import { toast } from 'sonner';
 import { Divider } from '@nextui-org/react';

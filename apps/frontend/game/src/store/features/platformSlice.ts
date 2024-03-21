@@ -14,11 +14,11 @@ const mockedGames = [
     chip: 'Nakama',
   },
   {
-    title: 'Playrooms',
+    title: 'Kingo',
     description: 'Play with a friend',
     image: 'https://via.placeholder.com/150',
     state: GameState.inactive,
-    chip: 'Playrooms',
+    chip: 'Kingo',
   },
 ];
 

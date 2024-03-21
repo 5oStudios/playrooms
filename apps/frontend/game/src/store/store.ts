@@ -6,7 +6,7 @@ import {
   gameSocket,
   LOCAL_STORAGE_AUTH_KEY,
   LOCAL_STORAGE_REFRESH_KEY,
-} from '@core/game-client';
+} from '@kingo/game-client';
 import platformSlice from './features/platformSlice';
 import partySlice from './features/partySlice';
 import matchSlice from './features/matchSlice';

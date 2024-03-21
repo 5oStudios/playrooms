@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../hooks/use-redux-typed';
 import { Button } from '@nextui-org/react';
-import { gameSocket } from '@core/game-client';
+import { gameSocket } from '@kingo/game-client';
 import { useRouter } from 'next/navigation';
 import { setParty } from '../../../store/features/partySlice';
 import { PartyMembersTracker } from '../../party/party-members-tracker';

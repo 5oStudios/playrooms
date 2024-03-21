@@ -4,7 +4,7 @@ import { MatchmakerTicket, PartyMatchmakerTicket } from '@heroiclabs/nakama-js';
 import { useAppDispatch, useAppSelector } from './use-redux-typed';
 import { MatchmakerMatched } from '@heroiclabs/nakama-js/socket';
 import { useRouter } from 'next/navigation';
-import { gameSocket } from '@core/game-client';
+import { gameSocket } from '@kingo/game-client';
 import { setMatchFoundData } from '../store/features/matchSlice';
 import {
   LobbyMode,

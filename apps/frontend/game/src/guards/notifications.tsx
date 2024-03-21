@@ -1,5 +1,5 @@
 import { toast } from 'sonner';
-import { gameSocket } from '@core/game-client';
+import { gameSocket } from '@kingo/game-client';
 
 export function Notifications() {
   gameSocket.onpartypresence = (presence) => {

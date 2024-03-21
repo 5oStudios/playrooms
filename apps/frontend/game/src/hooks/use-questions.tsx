@@ -1,6 +1,6 @@
 'use client';
 import { useCallback, useEffect, useState } from 'react';
-import { gameSocket } from '@core/game-client';
+import { gameSocket } from '@kingo/game-client';
 import {
   PLAYER_COMMANDS,
   SOCKET_OP_CODES,

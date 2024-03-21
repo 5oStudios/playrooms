@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { gameSocket } from '@core/game-client';
+import { gameSocket } from '@kingo/game-client';
 import { SOCKET_OP_CODES, SOCKET_SYNC } from '../components/match/match';
 import { useAppSelector } from './use-redux-typed';
 import { usePubSub } from './use-pub-sub';
