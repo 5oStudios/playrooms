@@ -18,13 +18,21 @@ export const subscribe: Subscribe = (event, callback) => {
     callback(data);
   };
 
-  emitter.on(event, callback);
+  console.log(`Subscribed to event '${event}'`);
 
-  return { data, unsubscribe: () => emitter.off(event, _callback) };
+  emitter.on(event, _callback);
+
+  const unsubscribe = () => {
+    emitter.off(event, _callback);
+    console.log(`Unsubscribed from event '${event}'`);
+  };
+
+  return { data, unsubscribe };
 };
 
 type Publish = (event: string, data?: unknown) => void;
 
 export const publish: Publish = (event, data) => {
   emitter.emit(event, data);
+  console.log(`Published '${event}' event with data: ${JSON.stringify(data)}`);
 };
