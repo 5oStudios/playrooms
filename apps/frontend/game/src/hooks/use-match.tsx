@@ -1,5 +1,4 @@
 import { gameSocket } from '@core/game-client';
-import { usePubSub } from './use-pub-sub';
 import { QuestionsFinishedEventKey } from './use-questions';
 import { useAppDispatch, useAppSelector } from './use-redux-typed';
 import {
@@ -14,6 +13,7 @@ import {
 } from '../components/match/match';
 import { HostState } from './use-host';
 import { useCallback, useEffect } from 'react';
+import { publish, subscribe } from '@kingo/events';
 
 export const MatchStateEventsKey = 'match_events';
 
@@ -23,7 +23,6 @@ export interface JoinMatchProps {
   token?: string;
 }
 export function useMatch({ matchId }: { matchId?: string }) {
-  const { publish, subscribe } = usePubSub();
   const match = useAppSelector((state) => state.match.currentMatch);
   const dispatch = useAppDispatch();
   const session = useAppSelector((state) => state.session);
@@ -74,7 +73,7 @@ export function useMatch({ matchId }: { matchId?: string }) {
           console.error('Error connecting to socket', error);
         });
     }
-  }, [dispatch, match, matchId, publish]);
+  }, [dispatch, match, matchId, session]);
 
   return {
     createMatch: async (name: string) => {
@@ -90,7 +89,6 @@ export function useMatch({ matchId }: { matchId?: string }) {
 }
 
 export const useMatchState = () => {
-  const { subscribe, publish } = usePubSub();
   const dispatch = useAppDispatch();
   const matchSate = useAppSelector((state) => state.match.currentMatchState);
   const amIHost = useAppSelector((state) => state.match.amIHost);
@@ -120,7 +118,7 @@ export const useMatchState = () => {
           newMatchState
         );
     },
-    [amIHost, didMatchEnd, dispatch, match?.match_id, publish]
+    [amIHost, didMatchEnd, dispatch, match?.match_id]
   );
 
   useEffect(() => {
@@ -134,29 +132,18 @@ export const useMatchState = () => {
     };
   }, [dispatch]);
 
-  subscribe({
-    event: HOST_COMMANDS.START_MATCH,
-    callback: () => {
-      if (isMatchReady) syncMatchState(MatchState.STARTED);
-      else console.log('Match is not ready');
-    },
+  subscribe(HOST_COMMANDS.START_MATCH, () => {
+    if (isMatchReady) syncMatchState(MatchState.STARTED);
+    else console.log('Match is not ready');
   });
-  subscribe({
-    event: 'match_created',
-    callback: () => syncMatchState(MatchState.LOADING),
+  subscribe('match_created', () => syncMatchState(MatchState.LOADING));
+  subscribe('match_joined', (isJoined: boolean) => {
+    isJoined
+      ? syncMatchState(MatchState.LOADING)
+      : syncMatchState(MatchState.NOT_FOUND);
   });
-  subscribe({
-    event: 'match_joined',
-    callback: (isJoined: boolean) => {
-      isJoined
-        ? syncMatchState(MatchState.LOADING)
-        : syncMatchState(MatchState.NOT_FOUND);
-    },
-  });
-  subscribe({
-    event: SOCKET_SYNC.MATCH_STATE,
-    callback: (newMatchState: MatchState) => syncMatchState(newMatchState),
-  });
+
+  subscribe(SOCKET_SYNC.MATCH_STATE, syncMatchState);
   // subscribe({
   //   event: PlayerStateEventsKey,
   //   callback: (playerState: PlayerState) => {
@@ -164,19 +151,16 @@ export const useMatchState = () => {
   //       syncMatchState(MatchState.PAUSED);
   //   },
   // });
-  subscribe({
+  subscribe(
     // Todo: if host left then this will not run
-    event: SOCKET_SYNC.HOST_STATE,
-    callback: (hostState: HostState) => {
+    SOCKET_SYNC.HOST_STATE,
+    (hostState: HostState) => {
       if (hostState === HostState.NOT_ELECTED && didMatchStart) {
         syncMatchState(MatchState.PAUSED);
       }
-    },
-  });
-  subscribe({
-    event: QuestionsFinishedEventKey,
-    callback: () => syncMatchState(MatchState.ENDED),
-  });
+    }
+  );
+  subscribe(QuestionsFinishedEventKey, () => syncMatchState(MatchState.ENDED));
 };
 
 export const createMatchEventKey = 'createMatch';

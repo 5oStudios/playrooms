@@ -17,7 +17,8 @@
     "paths": {
       "@core": ["libs/core/src/index.ts"],
       "@core/game-client": ["libs/game-client/src/index.ts"],
-      "@core/tiktok-client": ["libs/tiktok-client/src/index.ts"]
+      "@core/tiktok-client": ["libs/tiktok-client/src/index.ts"],
+      "@kingo/events": ["libs/events/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

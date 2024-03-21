@@ -1,7 +1,5 @@
 import { useCallback, useEffect } from 'react';
-import { EventEmitter } from 'eventemitter3';
-
-const emitter = new EventEmitter();
+import { emitter } from '@kingo/events';
 
 const useSub = ({
   event,
