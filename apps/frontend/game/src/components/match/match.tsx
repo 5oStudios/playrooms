@@ -1,5 +1,5 @@
 'use client';
-import { JoinMatchProps } from '../../hooks/use-match';
+import { JoinMatchProps } from '../../hooks/match/use-match';
 import {
   QUESTION_EVENTS,
   TimeUpEventKey,

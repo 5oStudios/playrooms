@@ -19,7 +19,7 @@ import {
 import React, { useEffect } from 'react';
 import { MockedQuestionsCollections } from '../../../../../mocks';
 import { ExternalPlatformsModal } from '../../../modals/external-platforms';
-import { useMatch } from '../../../../hooks/use-match';
+import { useMatch } from '../../../../hooks/match/use-match';
 import { setTournamentFormData } from '../../../../store/features/tournamentSlice';
 
 enum TournamentType {

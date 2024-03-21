@@ -16,7 +16,7 @@ import {
 import { IoChatbubbles } from 'react-icons/io5';
 import AutoScroll from '@brianmcallister/react-auto-scroll';
 import Match from '../../../../../components/match/match';
-import { useMatch } from '../../../../../hooks/use-match';
+import { useMatch } from '../../../../../hooks/match/use-match';
 import { useHost } from '../../../../../hooks/use-host';
 import { usePlayer } from '../../../../../hooks/use-player';
 import { useAppSelector } from '../../../../../hooks/use-redux-typed';
@@ -27,6 +27,7 @@ import {
   ChatAnswerState,
   ChatMessage,
 } from '../../../../../store/features/externalChatSlice';
+import { useMatchState } from '../../../../../hooks/match/use-match-state';
 
 export default function Page() {
   const searchParams = useSearchParams();
@@ -35,6 +36,7 @@ export default function Page() {
   useMatch({
     matchId,
   });
+  useMatchState();
   useHost();
   usePlayer();
   useChatPlayers();
