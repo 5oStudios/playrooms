@@ -46,10 +46,8 @@ const SHOW_LEADERBOARD_FOR_TIME_IN_MS = 5000;
 export default function Match(matchProps: Readonly<JoinMatchProps>) {
   const amIHost = useAppSelector((state) => state.match.amIHost);
   const matchState = useAppSelector((state) => state.match.currentMatchState);
-  const session = useAppSelector((state) => state.session);
-  const myPlayer = useAppSelector((state) =>
-    state.players.find((player) => player.user_id === session?.user_id)
-  );
+  const myPlayerId = useAppSelector((state) => state.session.user_id);
+
   const { isLeaderboardVisible } = useLeaderboard({
     showLeaderboardForTimeInMs: SHOW_LEADERBOARD_FOR_TIME_IN_MS,
   });
@@ -112,7 +110,7 @@ export default function Match(matchProps: Readonly<JoinMatchProps>) {
                 answers={currentQuestion.answers}
                 onClick={(answerAbb) => {
                   publish(QUESTION_EVENTS.ANSWERED, {
-                    playerId: myPlayer.user_id,
+                    playerId: myPlayerId,
                     abbreviation: answerAbb,
                   });
                 }}
