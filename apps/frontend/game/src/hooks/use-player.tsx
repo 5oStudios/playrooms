@@ -6,7 +6,6 @@ import {
   SOCKET_OP_CODES,
   SOCKET_SYNC,
 } from '../components/match/match';
-import { usePubSub } from './use-pub-sub';
 import { useAppDispatch, useAppSelector } from './use-redux-typed';
 import {
   addPlayer,
@@ -19,6 +18,7 @@ import {
 } from '../store/features/playersSlice';
 import { gameSocket } from '@kingo/game-client';
 import { HostState } from './use-host';
+import { subscribe } from '@kingo/events';
 
 export interface Player {
   id: string;
@@ -35,7 +35,6 @@ export enum PLAYER_PRESENCE {
 export function usePlayer() {
   const match = useAppSelector((state) => state.match.currentMatch);
   const dispatch = useAppDispatch();
-  const { publish, subscribe } = usePubSub();
   const hostState = useAppSelector((state) => state.match.hostState);
 
   useEffect(() => {
@@ -68,21 +67,18 @@ export function usePlayer() {
     };
   }, [dispatch]);
 
-  subscribe({
-    event: 'match_started',
-    callback: () => {
-      dispatch(
-        setPlayerState({
-          user_id: match?.self.user_id,
-          state: PlayerState.PLAYING,
-        })
-      );
-    },
+  subscribe('match_started', () => {
+    dispatch(
+      setPlayerState({
+        user_id: match?.self.user_id,
+        state: PlayerState.PLAYING,
+      })
+    );
   });
 
-  subscribe({
-    event: PLAYER_COMMANDS.SYNC_SCORE,
-    callback: (playerScore: {
+  subscribe(
+    PLAYER_COMMANDS.SYNC_SCORE,
+    (playerScore: {
       user_id: string;
       points: number;
       action: PlayerScoreAction;
@@ -93,39 +89,30 @@ export function usePlayer() {
         SOCKET_OP_CODES.PLAYERS_SCORE,
         JSON.stringify(playerScore)
       );
-    },
+    }
+  );
+
+  subscribe(SOCKET_SYNC.PLAYER_SCORE, (decodedData: string) => {
+    dispatch(
+      setPlayerScore(new PlayerScoreMessageDTO(JSON.parse(decodedData)))
+    );
   });
 
-  subscribe({
-    event: SOCKET_SYNC.PLAYER_SCORE,
-    callback: (decodedData: string) => {
+  subscribe(PLAYER_PRESENCE.JOINED, (player: PlayerPresenceMessageDTO) => {
+    if (hostState === HostState.ELECTED) {
       dispatch(
-        setPlayerScore(new PlayerScoreMessageDTO(JSON.parse(decodedData)))
+        addPlayer({
+          user_id: player.user_id,
+          username: player.username,
+          score: 0,
+          state: PlayerState.READY,
+        })
       );
-    },
+    }
   });
 
-  subscribe({
-    event: PLAYER_PRESENCE.JOINED,
-    callback: (player: PlayerPresenceMessageDTO) => {
-      if (hostState === HostState.ELECTED) {
-        dispatch(
-          addPlayer({
-            user_id: player.user_id,
-            username: player.username,
-            score: 0,
-            state: PlayerState.READY,
-          })
-        );
-      }
-    },
-  });
-
-  subscribe({
-    event: PLAYER_PRESENCE.LEFT,
-    callback: (player: Presence) => {
-      dispatch(removePlayer(player.user_id));
-    },
+  subscribe(PLAYER_PRESENCE.LEFT, (player: Presence) => {
+    dispatch(removePlayer(player.user_id));
   });
 }
 export function objectToUint8Array(obj: Record<string, unknown>): Uint8Array {

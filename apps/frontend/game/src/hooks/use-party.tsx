@@ -4,7 +4,7 @@ import { MatchmakerTicket, PartyMatchmakerTicket } from '@heroiclabs/nakama-js';
 import { useAppDispatch, useAppSelector } from './use-redux-typed';
 import { MatchmakerMatched } from '@heroiclabs/nakama-js/socket';
 import { useRouter } from 'next/navigation';
-import { gameSocket } from '@kingo/game-client';
+import { gameSocket, NODE_ENV, NODE_ENV_STATE } from '@kingo/game-client';
 import { setMatchFoundData } from '../store/features/matchSlice';
 import {
   LobbyMode,
@@ -12,10 +12,6 @@ import {
   PartyState,
 } from '../components/lobby/lobby-actions/joinLobby';
 import { SocketState } from '../store/features/socketSlice';
-import {
-  NODE_ENV,
-  NODE_ENV_STATE,
-} from '../../../../../libs/game-client/src/lib/config';
 
 export default function useParty({
   partyId,

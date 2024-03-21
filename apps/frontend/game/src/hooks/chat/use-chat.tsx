@@ -1,4 +1,3 @@
-import { usePubSub } from '../use-pub-sub';
 import { useEffect } from 'react';
 import {
   ListenToStreamEventKey,
@@ -15,6 +14,7 @@ import {
   editMessageMeta,
 } from '../../store/features/externalChatSlice';
 import { store } from '../../store/store';
+import { publish, subscribe } from '@kingo/events';
 
 export enum CHAT_ANSWER_EVENTS {
   PROCESSING = 'processing_chat_answer',
@@ -47,7 +47,6 @@ export function useChat(
     username?: string;
   }[]
 ) {
-  const { publish, subscribe } = usePubSub();
   const dispatch = useAppDispatch();
   const amIHost = useAppSelector((state) => state.match.amIHost);
 
@@ -69,20 +68,18 @@ export function useChat(
     });
   }, []); // Add isMatchStarted as a dependency
 
-  subscribe({
-    event: CHAT_ANSWER_EVENTS.PROCESSING,
-    callback: ({ msgId }: { msgId: string }) =>
-      dispatch(
-        editMessageMeta({
-          id: msgId,
-          meta: { state: ChatAnswerState.PROCESSING },
-        })
-      ),
-  });
+  subscribe(CHAT_ANSWER_EVENTS.PROCESSING, ({ msgId }: { msgId: string }) =>
+    dispatch(
+      editMessageMeta({
+        id: msgId,
+        meta: { state: ChatAnswerState.PROCESSING },
+      })
+    )
+  );
 
-  subscribe({
-    event: CHAT_ANSWER_EVENTS.FINISHED_PROCESSING,
-    callback: ({ msgId, isCorrect }: { msgId: string; isCorrect: boolean }) => {
+  subscribe(
+    CHAT_ANSWER_EVENTS.FINISHED_PROCESSING,
+    ({ msgId, isCorrect }: { msgId: string; isCorrect: boolean }) => {
       dispatch(
         editMessageMeta({
           id: msgId,
@@ -92,8 +89,8 @@ export function useChat(
           },
         })
       );
-    },
-  });
+    }
+  );
 }
 
 function mockedTikTokChatMessages(count: number) {

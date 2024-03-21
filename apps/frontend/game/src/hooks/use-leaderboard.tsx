@@ -3,8 +3,8 @@ import { useEffect, useState } from 'react';
 import { gameSocket } from '@kingo/game-client';
 import { SOCKET_OP_CODES, SOCKET_SYNC } from '../components/match/match';
 import { useAppSelector } from './use-redux-typed';
-import { usePubSub } from './use-pub-sub';
 import { TimeUpEventKey } from './use-questions';
+import { subscribe } from '@kingo/events';
 
 export enum LeaderboardState {
   SHOW = 'SHOW',
@@ -21,8 +21,6 @@ export function useLeaderboard({
   const [isLeaderboardVisible, setIsLeaderboardVisible] = useState(false);
   const [showLeaderboardForTime] = useState(showLeaderboardForTimeInMs);
 
-  const { subscribe } = usePubSub();
-
   // Cleanup
   useEffect(() => {
     return () => {
@@ -30,11 +28,9 @@ export function useLeaderboard({
     };
   }, []);
 
-  subscribe({
-    event: SOCKET_SYNC.LEADERBOARD,
-    callback: (decodedData: string) =>
-      setIsLeaderboardVisible(decodedData === LeaderboardState.SHOW),
-  });
+  subscribe(SOCKET_SYNC.LEADERBOARD, (decodedData: string) =>
+    setIsLeaderboardVisible(decodedData === LeaderboardState.SHOW)
+  );
 
   const previewLeaderboard = () => {
     if (amIHost) {
@@ -55,10 +51,7 @@ export function useLeaderboard({
     }
   };
 
-  subscribe({
-    event: TimeUpEventKey,
-    callback: previewLeaderboard,
-  });
+  subscribe(TimeUpEventKey, previewLeaderboard);
 
   return {
     isLeaderboardVisible,

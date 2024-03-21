@@ -6,11 +6,11 @@ import {
   SOCKET_OP_CODES,
   SOCKET_SYNC,
 } from '../components/match/match';
-import { usePubSub } from './use-pub-sub';
 import { useAppSelector } from './use-redux-typed';
 import { PlayerScoreAction } from '../store/features/playersSlice';
 import { MatchState } from '../store/features/matchSlice';
 import { CHAT_ANSWER_EVENTS } from './chat/use-chat';
+import { publish, subscribe } from '@kingo/events';
 
 export enum QUESTION_EVENTS {
   ANSWERED = 'question_answered',
@@ -55,7 +55,6 @@ export function useQuestions({
     startingQuestionIndex
   );
   const matchState = useAppSelector((state) => state.match.currentMatchState);
-  const { publish, subscribe } = usePubSub();
   const [playersAnswered, setPlayersAnswered] = useState<string[]>([]);
 
   const nextQuestion = useCallback(() => {
@@ -75,26 +74,20 @@ export function useQuestions({
     if (currentQuestionIndex === questions.length - 1) {
       publish(QuestionsFinishedEventKey, true);
     }
-  }, [currentQuestionIndex, publish, questions, questions.length]);
+  }, [currentQuestionIndex, questions, questions.length]);
 
-  subscribe({
-    event: SOCKET_SYNC.QUESTION_INDEX,
-    callback: (decodedData: string) => {
-      const questionIndex = parseInt(decodedData);
-      setCurrentQuestion(questions[questionIndex]);
-      setCurrentQuestionIndex(questionIndex);
-      setPlayersAnswered([]);
-    },
+  subscribe(SOCKET_SYNC.QUESTION_INDEX, (decodedData: string) => {
+    const questionIndex = parseInt(decodedData);
+    setCurrentQuestion(questions[questionIndex]);
+    setCurrentQuestionIndex(questionIndex);
+    setPlayersAnswered([]);
   });
 
-  subscribe({
-    event: TimeUpEventKey,
-    callback: nextQuestion,
-  });
+  subscribe(TimeUpEventKey, nextQuestion);
 
-  subscribe({
-    event: QUESTION_EVENTS.ANSWERED,
-    callback: ({
+  subscribe(
+    QUESTION_EVENTS.ANSWERED,
+    ({
       playerId,
       abbreviation,
       msgId,
@@ -139,8 +132,8 @@ export function useQuestions({
           msgId,
           isCorrect: answer.isCorrect,
         });
-    },
-  });
+    }
+  );
 
   const syncPlayerScore = ({
     playerId,

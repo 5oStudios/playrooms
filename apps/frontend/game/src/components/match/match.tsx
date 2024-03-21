@@ -10,12 +10,12 @@ import { useLeaderboard } from '../../hooks/use-leaderboard';
 import { Leaderboard } from './leaderboard';
 import { Question } from '../sections/mcq/questions/question';
 import { Answers } from '../sections/mcq/answers/answers';
-import { usePubSub } from '../../hooks/use-pub-sub';
 import { MatchState } from '../../store/features/matchSlice';
 import { Button } from '@nextui-org/react';
 import { useAppSelector } from '../../hooks/use-redux-typed';
 import { gameSocket } from '@kingo/game-client';
 import { PlayerScoreAction } from '../../store/features/playersSlice';
+import { publish } from '@kingo/events';
 
 export enum SOCKET_OP_CODES {
   MATCH_STATE = 100,
@@ -46,7 +46,6 @@ const SHOW_LEADERBOARD_FOR_TIME_IN_MS = 5000;
 export default function Match(matchProps: Readonly<JoinMatchProps>) {
   const amIHost = useAppSelector((state) => state.match.amIHost);
   const matchState = useAppSelector((state) => state.match.currentMatchState);
-  const { publish } = usePubSub();
   const session = useAppSelector((state) => state.session);
   const myPlayer = useAppSelector((state) =>
     state.players.find((player) => player.user_id === session?.user_id)

@@ -1,11 +1,9 @@
 import { gameSocket } from '@kingo/game-client';
 import { PLAYER_PRESENCE } from './use-player';
-import { usePubSub } from './use-pub-sub';
 import { toast } from 'sonner';
+import { publish } from '@kingo/events';
 
 export const usePresence = () => {
-  const { publish, subscribe } = usePubSub();
-
   gameSocket.onmatchpresence = (matchPresence) => {
     matchPresence.joins &&
       matchPresence.joins.forEach((player) => {
