@@ -1,5 +1,9 @@
 'use client';
-import { JoinMatchProps } from '../../hooks/match/use-match';
+import {
+  JoinMatchProps,
+  SOCKET_OP_CODES,
+  SOCKET_SYNC,
+} from '../../hooks/match';
 import {
   QUESTION_EVENTS,
   TimeUpEventKey,
@@ -16,21 +20,6 @@ import { useAppSelector } from '../../hooks/use-redux-typed';
 import { gameSocket } from '@kingo/game-client';
 import { PlayerScoreAction } from '../../store/features/playersSlice';
 import { publish } from '@kingo/events';
-
-export enum SOCKET_OP_CODES {
-  MATCH_STATE = 100,
-  HOST_STATE = 101,
-  PLAYERS_SCORE = 103,
-  QUESTION_INDEX = 104,
-  LEADERBOARD = 106,
-}
-export enum SOCKET_SYNC {
-  MATCH_STATE = 'match_state',
-  HOST_STATE = 'host_state',
-  PLAYER_SCORE = 'player_score',
-  QUESTION_INDEX = 'question_index',
-  LEADERBOARD = 'leaderboard',
-}
 
 export enum HOST_COMMANDS {
   START_MATCH = 'host_requested_start',

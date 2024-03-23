@@ -1,16 +1,12 @@
 'use client';
 import { useCallback, useEffect, useState } from 'react';
-import { gameSocket } from '@kingo/game-client';
-import {
-  PLAYER_COMMANDS,
-  SOCKET_OP_CODES,
-  SOCKET_SYNC,
-} from '../components/match/match';
+import { PLAYER_COMMANDS } from '../components/match/match';
 import { useAppSelector } from './use-redux-typed';
 import { PlayerScoreAction } from '../store/features/playersSlice';
 import { MatchState } from '../store/features/matchSlice';
 import { CHAT_ANSWER_EVENTS } from './chat/use-chat';
 import { publish, subscribe } from '@kingo/events';
+import { SOCKET_OP_CODES, SOCKET_SYNC, useMatchSocket } from './match';
 
 export enum QUESTION_EVENTS {
   ANSWERED = 'question_answered',
@@ -49,26 +45,24 @@ export function useQuestions({
   startingQuestionIndex: number;
 }>) {
   const amIHost = useAppSelector((state) => state.match.amIHost);
-  const match = useAppSelector((state) => state.match.currentMatch);
   const [currentQuestion, setCurrentQuestion] = useState(questions[0]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(
     startingQuestionIndex
   );
   const matchState = useAppSelector((state) => state.match.currentMatchState);
   const [playersAnswered, setPlayersAnswered] = useState<string[]>([]);
-
-  const nextQuestion = useCallback(() => {
+  const { sendMatchState } = useMatchSocket();
+  const nextQuestion = useCallback(async () => {
     if (!amIHost) return;
     setCurrentQuestion(questions[currentQuestionIndex + 1]);
     setCurrentQuestionIndex(currentQuestionIndex + 1);
     setPlayersAnswered([]);
 
-    gameSocket.sendMatchState(
-      match?.match_id,
+    sendMatchState(
       SOCKET_OP_CODES.QUESTION_INDEX,
       (currentQuestionIndex + 1).toString()
     );
-  }, [amIHost, currentQuestionIndex, match?.match_id, questions]);
+  }, [amIHost, currentQuestionIndex, questions, sendMatchState]);
 
   useEffect(() => {
     if (currentQuestionIndex === questions.length - 1) {

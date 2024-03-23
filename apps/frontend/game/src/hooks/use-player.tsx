@@ -1,11 +1,7 @@
 'use client';
 import { useEffect } from 'react';
 import { Presence } from '@heroiclabs/nakama-js';
-import {
-  PLAYER_COMMANDS,
-  SOCKET_OP_CODES,
-  SOCKET_SYNC,
-} from '../components/match/match';
+import { PLAYER_COMMANDS } from '../components/match/match';
 import { useAppDispatch, useAppSelector } from './use-redux-typed';
 import {
   addPlayer,
@@ -16,9 +12,9 @@ import {
   setPlayerScore,
   setPlayerState,
 } from '../store/features/playersSlice';
-import { gameSocket } from '@kingo/game-client';
 import { HostState } from './use-host';
 import { subscribe } from '@kingo/events';
+import { SOCKET_OP_CODES, SOCKET_SYNC, useMatchSocket } from './match';
 
 export interface Player {
   id: string;
@@ -36,6 +32,7 @@ export function usePlayer() {
   const match = useAppSelector((state) => state.match.currentMatch);
   const dispatch = useAppDispatch();
   const hostState = useAppSelector((state) => state.match.hostState);
+  const { sendMatchState } = useMatchSocket();
 
   useEffect(() => {
     if (!match) return;
@@ -84,8 +81,7 @@ export function usePlayer() {
       action: PlayerScoreAction;
     }) => {
       dispatch(setPlayerScore(playerScore));
-      gameSocket.sendMatchState(
-        match?.match_id,
+      sendMatchState(
         SOCKET_OP_CODES.PLAYERS_SCORE,
         JSON.stringify(playerScore)
       );

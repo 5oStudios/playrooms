@@ -1,10 +1,9 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { gameSocket } from '@kingo/game-client';
-import { SOCKET_OP_CODES, SOCKET_SYNC } from '../components/match/match';
 import { useAppSelector } from './use-redux-typed';
-import { TimeUpEventKey } from './use-questions';
 import { subscribe } from '@kingo/events';
+import { TimeUpEventKey } from './use-questions';
+import { SOCKET_OP_CODES, SOCKET_SYNC, useMatchSocket } from './match';
 
 export enum LeaderboardState {
   SHOW = 'SHOW',
@@ -16,7 +15,7 @@ export function useLeaderboard({
   showLeaderboardForTimeInMs?: number;
 }) {
   const amIHost = useAppSelector((state) => state.match.amIHost);
-  const match = useAppSelector((state) => state.match.currentMatch);
+  const { sendMatchState } = useMatchSocket();
 
   const [isLeaderboardVisible, setIsLeaderboardVisible] = useState(false);
   const [showLeaderboardForTime] = useState(showLeaderboardForTimeInMs);
@@ -35,18 +34,10 @@ export function useLeaderboard({
   const previewLeaderboard = () => {
     if (amIHost) {
       setIsLeaderboardVisible(true);
-      gameSocket.sendMatchState(
-        match.match_id,
-        SOCKET_OP_CODES.LEADERBOARD,
-        LeaderboardState.SHOW
-      );
+      sendMatchState(SOCKET_OP_CODES.LEADERBOARD, LeaderboardState.SHOW);
       setTimeout(() => {
         setIsLeaderboardVisible(false);
-        gameSocket.sendMatchState(
-          match.match_id,
-          SOCKET_OP_CODES.LEADERBOARD,
-          LeaderboardState.HIDE
-        );
+        sendMatchState(SOCKET_OP_CODES.LEADERBOARD, LeaderboardState.HIDE);
       }, showLeaderboardForTime);
     }
   };

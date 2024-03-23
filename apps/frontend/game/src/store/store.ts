@@ -9,7 +9,7 @@ import {
 } from '@kingo/game-client';
 import platformSlice from './features/platformSlice';
 import partySlice from './features/partySlice';
-import matchSlice from './features/matchSlice';
+import matchSlice, { MatchState } from './features/matchSlice';
 import { storage } from '../utils/storage';
 import playersSlice from './features/playersSlice';
 import socketSlice, { setSocket, SocketState } from './features/socketSlice';
@@ -35,6 +35,8 @@ export const store = configureStore({
     }),
   devTools: process.env.NODE_ENV !== 'production',
 });
+export const isMatchStarted =
+  store.getState().match.currentMatchState === MatchState.STARTED;
 
 store.subscribe(() => {
   const session = store.getState().session;

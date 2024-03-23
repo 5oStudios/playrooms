@@ -1,27 +1,28 @@
 import { useCallback, useEffect } from 'react';
 import { publish, subscribe } from '@kingo/events';
-import { gameSocket } from '@kingo/game-client';
 import { useAppDispatch, useAppSelector } from '../use-redux-typed';
 import {
   MatchState,
   setCurrentMatchState,
 } from '../../store/features/matchSlice';
 import { HostState } from '../use-host';
+import { QuestionsFinishedEventKey } from '../use-questions';
 import {
-  HOST_COMMANDS,
   SOCKET_OP_CODES,
   SOCKET_SYNC,
-} from '../../components/match/match';
-import { QuestionsFinishedEventKey } from '../use-questions';
+  useMatchSocket,
+} from './use-match-socket';
+import { HOST_COMMANDS } from '../../components/match/match';
 
 export const useMatchState = () => {
   const dispatch = useAppDispatch();
   const matchSate = useAppSelector((state) => state.match.currentMatchState);
   const amIHost = useAppSelector((state) => state.match.amIHost);
   const hostState = useAppSelector((state) => state.match.hostState);
-  const match = useAppSelector((state) => state.match.currentMatch);
+  const { sendMatchState } = useMatchSocket();
 
   const didMatchStart = matchSate === MatchState.STARTED;
+  console.log('didMatchStart', didMatchStart);
   const didMatchEnd = matchSate === MatchState.ENDED;
   const isMatchReady = matchSate === MatchState.READY;
   const isMatchNotFount = matchSate === MatchState.NOT_FOUND;
@@ -37,14 +38,9 @@ export const useMatchState = () => {
         publish('match_started', true);
       }
       dispatch(setCurrentMatchState(newMatchState));
-      amIHost &&
-        gameSocket.sendMatchState(
-          match?.match_id,
-          SOCKET_OP_CODES.MATCH_STATE,
-          newMatchState
-        );
+      amIHost && sendMatchState(SOCKET_OP_CODES.MATCH_STATE, newMatchState);
     },
-    [amIHost, didMatchEnd, dispatch, match?.match_id]
+    [amIHost, didMatchEnd, dispatch, sendMatchState]
   );
 
   useEffect(() => {
