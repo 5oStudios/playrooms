@@ -15,6 +15,7 @@ import {
 import { HostState } from './use-host';
 import { subscribe } from '@kingo/events';
 import { SOCKET_OP_CODES, SOCKET_SYNC, useMatchSocket } from './match';
+import { MatchState } from '../store/features/matchSlice';
 
 export interface Player {
   id: string;
@@ -30,6 +31,9 @@ export enum PLAYER_PRESENCE {
 
 export function usePlayer() {
   const match = useAppSelector((state) => state.match.currentMatch);
+  const isMatchStarted = useAppSelector(
+    (state) => state.match.currentMatchState === MatchState.PLAYING
+  );
   const dispatch = useAppDispatch();
   const hostState = useAppSelector((state) => state.match.hostState);
   const { sendMatchState } = useMatchSocket();
@@ -63,6 +67,8 @@ export function usePlayer() {
       dispatch(clearPlayers());
     };
   }, [dispatch]);
+
+  if (!isMatchStarted) return;
 
   subscribe('match_started', () => {
     dispatch(

@@ -5,7 +5,7 @@ import { useAppSelector } from './use-redux-typed';
 import { PlayerScoreAction } from '../store/features/playersSlice';
 import { MatchState } from '../store/features/matchSlice';
 import { CHAT_ANSWER_EVENTS } from './chat/use-chat';
-import { publish, subscribe } from '@kingo/events';
+import { publish, subscribe, useSubscribeIf } from '@kingo/events';
 import { SOCKET_OP_CODES, SOCKET_SYNC, useMatchSocket } from './match';
 
 export enum QUESTION_EVENTS {
@@ -45,6 +45,9 @@ export function useQuestions({
   startingQuestionIndex: number;
 }>) {
   const amIHost = useAppSelector((state) => state.match.amIHost);
+  const isMatchStarted = useAppSelector(
+    (state) => state.match.currentMatchState === MatchState.PLAYING
+  );
   const [currentQuestion, setCurrentQuestion] = useState(questions[0]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(
     startingQuestionIndex
@@ -77,7 +80,9 @@ export function useQuestions({
     setPlayersAnswered([]);
   });
 
-  subscribe(TimeUpEventKey, nextQuestion);
+  useSubscribeIf(isMatchStarted, TimeUpEventKey, nextQuestion);
+
+  // if (!isMatchStarted) return { currentQuestion };
 
   subscribe(
     QUESTION_EVENTS.ANSWERED,
