@@ -13,8 +13,9 @@ import {
   setPlayerState,
 } from '../store/features/playersSlice';
 import { HostState } from './use-host';
-import { subscribe } from '@kingo/events';
+import { useSubscribe, useSubscribeIf } from '@kingo/events';
 import { SOCKET_OP_CODES, SOCKET_SYNC, useMatchSocket } from './match';
+import { MatchState } from '../store/features/matchSlice';
 
 export interface Player {
   id: string;
@@ -30,6 +31,7 @@ export enum PLAYER_PRESENCE {
 
 export function usePlayer() {
   const match = useAppSelector((state) => state.match.currentMatch);
+  const matchState = useAppSelector((state) => state.match.currentMatchState);
   const dispatch = useAppDispatch();
   const hostState = useAppSelector((state) => state.match.hostState);
   const { sendMatchState } = useMatchSocket();
@@ -64,7 +66,7 @@ export function usePlayer() {
     };
   }, [dispatch]);
 
-  subscribe('match_started', () => {
+  useSubscribe('match_started', () => {
     dispatch(
       setPlayerState({
         user_id: match?.self.user_id,
@@ -73,7 +75,7 @@ export function usePlayer() {
     );
   });
 
-  subscribe(
+  useSubscribe(
     PLAYER_COMMANDS.SYNC_SCORE,
     (playerScore: {
       user_id: string;
@@ -88,14 +90,20 @@ export function usePlayer() {
     }
   );
 
-  subscribe(SOCKET_SYNC.PLAYER_SCORE, (decodedData: string) => {
+  useSubscribe(SOCKET_SYNC.PLAYER_SCORE, (decodedData: string) => {
     dispatch(
       setPlayerScore(new PlayerScoreMessageDTO(JSON.parse(decodedData)))
     );
   });
+  const isMatchPlayable =
+    matchState === MatchState.STARTED ||
+    matchState === MatchState.READY ||
+    matchState === MatchState.LOADING;
 
-  subscribe(PLAYER_PRESENCE.JOINED, (player: PlayerPresenceMessageDTO) => {
-    if (hostState === HostState.ELECTED) {
+  useSubscribeIf(
+    isMatchPlayable && hostState === HostState.ELECTED,
+    PLAYER_PRESENCE.JOINED,
+    (player: PlayerPresenceMessageDTO) => {
       dispatch(
         addPlayer({
           user_id: player.user_id,
@@ -105,9 +113,9 @@ export function usePlayer() {
         })
       );
     }
-  });
+  );
 
-  subscribe(PLAYER_PRESENCE.LEFT, (player: Presence) => {
+  useSubscribeIf(isMatchPlayable, PLAYER_PRESENCE.LEFT, (player: Presence) => {
     dispatch(removePlayer(player.user_id));
   });
 }
