@@ -75,6 +75,7 @@ export function useQuestions({
     setCurrentQuestion(questions[questionIndex]);
     setCurrentQuestionIndex(questionIndex);
     setPlayersAnswered([]);
+    publish('next_question');
   });
 
   subscribe(TimeUpEventKey, nextQuestion);

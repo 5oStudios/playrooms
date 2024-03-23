@@ -21,13 +21,15 @@ export const useMatchSocket = () => {
     currentMatch: state.match.currentMatch,
     currentMatchState: state.match.currentMatchState,
   }));
-  const matchId = useRef(currentMatch?.match_id);
+  const matchId = useRef(null);
+  matchId.current = currentMatch?.match_id;
 
   const sendMatchState = useCallback(
     (opCode: SOCKET_OP_CODES, data: string | Uint8Array) => {
+      if (!matchId.current) return;
       gameSocket.sendMatchState(matchId.current, opCode, data);
     },
-    []
+    [matchId]
   );
 
   return {

@@ -83,4 +83,5 @@ export const useMatchState = () => {
     }
   );
   subscribe(QuestionsFinishedEventKey, () => syncMatchState(MatchState.ENDED));
+  subscribe('next_question', () => syncMatchState(MatchState.STARTED));
 };
