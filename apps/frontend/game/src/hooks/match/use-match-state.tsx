@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from 'react';
-import { publish, subscribe } from '@kingo/events';
+import { publish, useSubscribe, useSubscribeIf } from '@kingo/events';
 import { useAppDispatch, useAppSelector } from '../use-redux-typed';
 import {
   MatchState,
@@ -54,26 +54,26 @@ export const useMatchState = () => {
     };
   }, [dispatch]);
 
-  subscribe(HOST_COMMANDS.START_MATCH, () => {
+  useSubscribeIf(isMatchReady, HOST_COMMANDS.START_MATCH, () => {
     if (isMatchReady) syncMatchState(MatchState.STARTED);
     else console.log('Match is not ready');
   });
-  subscribe('match_created', () => syncMatchState(MatchState.LOADING));
-  subscribe('match_joined', (isJoined: boolean) => {
+  useSubscribe('match_created', () => syncMatchState(MatchState.LOADING));
+  useSubscribe('match_joined', (isJoined: boolean) => {
     isJoined
       ? syncMatchState(MatchState.LOADING)
       : syncMatchState(MatchState.NOT_FOUND);
   });
 
-  subscribe(SOCKET_SYNC.MATCH_STATE, syncMatchState);
-  // subscribe({
+  useSubscribe(SOCKET_SYNC.MATCH_STATE, syncMatchState);
+  // useSubscribe({
   //   event: PlayerStateEventsKey,
   //   callback: (playerState: PlayerState) => {
   //     if (playerState === PlayerState.NOT_READY && didMatchStart)
   //       syncMatchState(MatchState.PAUSED);
   //   },
   // });
-  subscribe(
+  useSubscribe(
     // Todo: if host left then this will not run
     SOCKET_SYNC.HOST_STATE,
     (hostState: HostState) => {
@@ -82,6 +82,8 @@ export const useMatchState = () => {
       }
     }
   );
-  subscribe(QuestionsFinishedEventKey, () => syncMatchState(MatchState.ENDED));
-  subscribe('next_question', () => syncMatchState(MatchState.STARTED));
+  useSubscribe(QuestionsFinishedEventKey, () =>
+    syncMatchState(MatchState.ENDED)
+  );
+  useSubscribe('next_question', () => syncMatchState(MatchState.STARTED));
 };

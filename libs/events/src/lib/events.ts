@@ -1,4 +1,5 @@
 import { EventEmitter } from 'eventemitter3';
+import { useEffect, useRef } from 'react';
 
 export const emitter = new EventEmitter();
 
@@ -35,4 +36,37 @@ type Publish = (event: string, data?: unknown) => void;
 export const publish: Publish = (event, data) => {
   emitter.emit(event, data);
   console.log(`Published '${event}' event with data: ${JSON.stringify(data)}`);
+};
+
+export const useSubscribe = (
+  event: string,
+  callback: (data: unknown) => void
+) => {
+  const isSubscribed = useRef(false);
+  useEffect(() => {
+    if (!isSubscribed.current) {
+      subscribe(event, callback);
+      isSubscribed.current = true;
+    }
+    return () => {
+      isSubscribed.current = false;
+    };
+  }, []);
+};
+export const useSubscribeIf = (
+  condition: boolean,
+  event: string,
+  callback: (data: unknown) => void
+) => {
+  const isSubscribed = useRef(false);
+  useEffect(() => {
+    if (!condition) return;
+    if (!isSubscribed.current) {
+      subscribe(event, callback);
+      isSubscribed.current = true;
+    }
+    return () => {
+      isSubscribed.current = false;
+    };
+  }, [condition]);
 };
