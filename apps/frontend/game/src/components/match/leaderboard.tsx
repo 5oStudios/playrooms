@@ -1,24 +1,19 @@
 import BaseModal from '../modals/base.modal';
-import {
-  Avatar,
-  cn,
-  ModalContent,
-  ModalHeader,
-  useDisclosure,
-} from '@nextui-org/react';
+import { Avatar, cn, ModalContent, ModalHeader } from '@nextui-org/react';
 import { useAppSelector } from '../../hooks/use-redux-typed';
 import { useLeaderboard } from '../../hooks/use-leaderboard';
 
 const SHOW_LEADERBOARD_FOR_TIME_IN_MS = 5000;
+
 export function Leaderboard() {
   const players = useAppSelector((state) => state.players);
   const playersClone = [...players];
-  const disclosure = useDisclosure({ defaultOpen: false });
   const session = useAppSelector((state) => state.session);
   const isMe = players.find((player) => player.user_id === session?.user_id);
-  const { isLeaderboardVisible } = useLeaderboard({
+  useLeaderboard({
     showLeaderboardForTimeInMs: SHOW_LEADERBOARD_FOR_TIME_IN_MS,
   });
+
   return (
     <BaseModal isOpen={true} size={'4xl'}>
       <ModalContent className={'w-full'}>

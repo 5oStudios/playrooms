@@ -13,7 +13,6 @@ import {
   useMatchSocket,
 } from './use-match-socket';
 import { HOST_COMMANDS } from '../../components/match/match';
-import { LEADERBOARD_COMMANDS } from '../use-leaderboard';
 
 export const useMatchState = () => {
   const dispatch = useAppDispatch();
@@ -57,6 +56,7 @@ export const useMatchState = () => {
     if (isMatchReady) syncMatchState(MatchState.PLAYING);
     else console.log('Match is not ready');
   });
+
   subscribe('match_created', () => syncMatchState(MatchState.LOADING));
   subscribe('match_joined', (isJoined: boolean) => {
     isJoined
@@ -72,19 +72,22 @@ export const useMatchState = () => {
   //       syncMatchState(MatchState.PAUSED);
   //   },
   // });
-  subscribe(
-    // Todo: if host left then this will not run
-    SOCKET_SYNC.HOST_STATE,
-    (hostState: HostState) => {
-      if (hostState === HostState.NOT_ELECTED && didMatchStart) {
-        syncMatchState(MatchState.PAUSED);
-      }
-    }
-  );
+  // subscribe(
+  //   // Todo: if host left then this will not run
+  //   SOCKET_SYNC.HOST_STATE,
+  //   (hostState: HostState) => {
+  //     if (hostState === HostState.NOT_ELECTED && didMatchStart) {
+  //       syncMatchState(MatchState.PAUSED);
+  //     }
+  //   }
+  // );
   subscribe(QuestionsFinishedEventKey, () => syncMatchState(MatchState.ENDED));
 
-  subscribe(LEADERBOARD_COMMANDS.SHOW, () => syncMatchState(MatchState.PAUSED));
-  subscribe(LEADERBOARD_COMMANDS.HIDE, () =>
+  subscribe(HOST_COMMANDS.SHOW_LEADERBOARD, () =>
+    syncMatchState(MatchState.PAUSED)
+  );
+
+  subscribe(HOST_COMMANDS.HIDE_LEADERBOARD, () =>
     syncMatchState(MatchState.PLAYING)
   );
 };

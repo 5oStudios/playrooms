@@ -1,52 +1,37 @@
 'use client';
-import { useEffect, useState } from 'react';
 import { useAppSelector } from './use-redux-typed';
 import { publish, subscribe } from '@kingo/events';
 import { TimeUpEventKey } from './use-questions';
 import { SOCKET_OP_CODES, SOCKET_SYNC, useMatchSocket } from './match';
+import { HOST_COMMANDS } from '../components/match/match';
 
-export enum LeaderboardState {
-  VISIBLE = 'VISIBLE',
-  HIDDEN = 'HIDDEN',
-}
-export enum LEADERBOARD_COMMANDS {
-  SHOW = 'show_leaderboard',
-  HIDE = 'hide_leaderboard',
-}
 export function useLeaderboard({
   showLeaderboardForTimeInMs = 5000,
 }: {
   showLeaderboardForTimeInMs?: number;
 }) {
   const amIHost = useAppSelector((state) => state.match.amIHost);
+  const amIPlayer = useAppSelector((state) => !state.match.amIHost);
   const { sendMatchState } = useMatchSocket();
-  const [isLeaderboardVisible, setIsLeaderboardVisible] = useState(false);
-  const [showLeaderboardForTime] = useState(showLeaderboardForTimeInMs);
-  // Cleanup
-  useEffect(() => {
-    return () => {
-      setIsLeaderboardVisible(false);
-    };
-  }, []);
-  subscribe(SOCKET_SYNC.LEADERBOARD, (decodedData: string) => {
-    setIsLeaderboardVisible(decodedData === LeaderboardState.VISIBLE);
-  });
 
   subscribe(TimeUpEventKey, () => {
-    setIsLeaderboardVisible(true);
-    publish(LEADERBOARD_COMMANDS.SHOW);
-    amIHost &&
-      sendMatchState(SOCKET_OP_CODES.LEADERBOARD, LeaderboardState.VISIBLE);
+    syncLeaderboard(HOST_COMMANDS.SHOW_LEADERBOARD);
 
-    setTimeout(() => {
-      setIsLeaderboardVisible(false);
-      publish(LEADERBOARD_COMMANDS.HIDE);
-      amIHost &&
-        sendMatchState(SOCKET_OP_CODES.LEADERBOARD, LeaderboardState.HIDDEN);
-    }, showLeaderboardForTime);
+    setTimeout(
+      () => syncLeaderboard(HOST_COMMANDS.HIDE_LEADERBOARD),
+      showLeaderboardForTimeInMs
+    );
   });
 
-  return {
-    isLeaderboardVisible,
-  };
+  amIPlayer &&
+    subscribe(SOCKET_SYNC.LEADERBOARD, (decodedData) => {
+      decodedData === HOST_COMMANDS.SHOW_LEADERBOARD
+        ? publish(HOST_COMMANDS.SHOW_LEADERBOARD)
+        : publish(HOST_COMMANDS.HIDE_LEADERBOARD);
+    });
+
+  function syncLeaderboard(command: HOST_COMMANDS) {
+    publish(command);
+    amIHost && sendMatchState(SOCKET_OP_CODES.LEADERBOARD, command);
+  }
 }

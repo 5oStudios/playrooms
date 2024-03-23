@@ -22,6 +22,8 @@ import { publish } from '@kingo/events';
 
 export enum HOST_COMMANDS {
   START_MATCH = 'host_requested_start',
+  SHOW_LEADERBOARD = 'show_leaderboard',
+  HIDE_LEADERBOARD = 'hide_leaderboard',
 }
 
 export enum PLAYER_COMMANDS {
