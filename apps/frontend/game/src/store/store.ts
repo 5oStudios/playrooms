@@ -36,7 +36,7 @@ export const store = configureStore({
   devTools: process.env.NODE_ENV !== 'production',
 });
 export const isMatchStarted =
-  store.getState().match.currentMatchState === MatchState.STARTED;
+  store.getState().match.currentMatchState === MatchState.PLAYING;
 
 store.subscribe(() => {
   const session = store.getState().session;

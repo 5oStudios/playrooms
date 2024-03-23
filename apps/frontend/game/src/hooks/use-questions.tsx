@@ -90,7 +90,7 @@ export function useQuestions({
       abbreviation: string;
       msgId: string;
     }) => {
-      if (matchState !== MatchState.STARTED) return;
+      if (matchState !== MatchState.PLAYING) return;
       if (playersAnswered.includes(playerId)) return;
       setPlayersAnswered([...playersAnswered, playerId]);
 

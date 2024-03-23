@@ -28,7 +28,7 @@ export function useChatPlayers() {
         );
     }
 
-    if (matchState === MatchState.STARTED) {
+    if (matchState === MatchState.PLAYING) {
       Object.keys(patterns).forEach((pattern) => {
         onPatternMatch({
           message: message.message.comment,

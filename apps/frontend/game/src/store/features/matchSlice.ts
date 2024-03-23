@@ -6,7 +6,7 @@ import { HostState } from '../../hooks/use-host';
 export enum MatchState {
   LOADING = 'LOADING',
   READY = 'READY',
-  STARTED = 'STARTED',
+  PLAYING = 'PLAYING',
   PAUSED = 'PAUSED',
   ENDED = 'ENDED',
   NOT_FOUND = 'NOT_FOUND',

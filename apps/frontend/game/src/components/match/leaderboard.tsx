@@ -7,18 +7,20 @@ import {
   useDisclosure,
 } from '@nextui-org/react';
 import { useAppSelector } from '../../hooks/use-redux-typed';
+import { useLeaderboard } from '../../hooks/use-leaderboard';
 
+const SHOW_LEADERBOARD_FOR_TIME_IN_MS = 5000;
 export function Leaderboard() {
   const players = useAppSelector((state) => state.players);
   const playersClone = [...players];
-  const disclosure = useDisclosure({ defaultOpen: true });
+  const disclosure = useDisclosure({ defaultOpen: false });
   const session = useAppSelector((state) => state.session);
   const isMe = players.find((player) => player.user_id === session?.user_id);
-  const matchState = useAppSelector((state) => state.match.currentMatchState);
-  console.log(players);
-
+  const { isLeaderboardVisible } = useLeaderboard({
+    showLeaderboardForTimeInMs: SHOW_LEADERBOARD_FOR_TIME_IN_MS,
+  });
   return (
-    <BaseModal {...disclosure} size={'4xl'}>
+    <BaseModal isOpen={true} size={'4xl'}>
       <ModalContent className={'w-full'}>
         <ModalHeader>
           <h1 className="text-3xl font-semibold px-4 py-6">

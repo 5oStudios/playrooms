@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from 'react';
-import { publish, subscribe } from '@kingo/events';
+import { subscribe } from '@kingo/events';
 import { useAppDispatch, useAppSelector } from '../use-redux-typed';
 import {
   MatchState,
@@ -13,6 +13,7 @@ import {
   useMatchSocket,
 } from './use-match-socket';
 import { HOST_COMMANDS } from '../../components/match/match';
+import { LEADERBOARD_COMMANDS } from '../use-leaderboard';
 
 export const useMatchState = () => {
   const dispatch = useAppDispatch();
@@ -21,31 +22,29 @@ export const useMatchState = () => {
   const hostState = useAppSelector((state) => state.match.hostState);
   const { sendMatchState } = useMatchSocket();
 
-  const didMatchStart = matchSate === MatchState.STARTED;
+  const didMatchStart = matchSate === MatchState.PLAYING;
   console.log('didMatchStart', didMatchStart);
   const didMatchEnd = matchSate === MatchState.ENDED;
   const isMatchReady = matchSate === MatchState.READY;
   const isMatchNotFount = matchSate === MatchState.NOT_FOUND;
+  const isMatchPaused = matchSate === MatchState.PAUSED;
   // const isPlayerReady = playerState === PlayerState.READY;
   const isHostElected = hostState === HostState.ELECTED;
 
   const syncMatchState = useCallback(
     (newMatchState: MatchState) => {
       if (didMatchEnd) return;
-      if (newMatchState === MatchState.STARTED) {
-        console.log('Match started');
-        console.log('amIHost', amIHost);
-        publish('match_started', true);
-      }
       dispatch(setCurrentMatchState(newMatchState));
       amIHost && sendMatchState(SOCKET_OP_CODES.MATCH_STATE, newMatchState);
     },
-    [amIHost, didMatchEnd, dispatch, sendMatchState]
+    [amIHost, dispatch, sendMatchState, didMatchEnd]
   );
 
   useEffect(() => {
-    if (isHostElected && !didMatchStart) syncMatchState(MatchState.READY);
-  }, [isHostElected, didMatchStart, syncMatchState]);
+    if (isHostElected && !didMatchStart && !isMatchPaused) {
+      syncMatchState(MatchState.READY);
+    }
+  }, [isHostElected, didMatchStart, syncMatchState, isMatchPaused]);
 
   // Cleanup
   useEffect(() => {
@@ -55,7 +54,7 @@ export const useMatchState = () => {
   }, [dispatch]);
 
   subscribe(HOST_COMMANDS.START_MATCH, () => {
-    if (isMatchReady) syncMatchState(MatchState.STARTED);
+    if (isMatchReady) syncMatchState(MatchState.PLAYING);
     else console.log('Match is not ready');
   });
   subscribe('match_created', () => syncMatchState(MatchState.LOADING));
@@ -83,4 +82,9 @@ export const useMatchState = () => {
     }
   );
   subscribe(QuestionsFinishedEventKey, () => syncMatchState(MatchState.ENDED));
+
+  subscribe(LEADERBOARD_COMMANDS.SHOW, () => syncMatchState(MatchState.PAUSED));
+  subscribe(LEADERBOARD_COMMANDS.HIDE, () =>
+    syncMatchState(MatchState.PLAYING)
+  );
 };

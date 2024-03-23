@@ -10,7 +10,6 @@ import {
   useQuestions,
 } from '../../hooks/use-questions';
 import { MockedMCQQuestions } from '../../../mocks';
-import { useLeaderboard } from '../../hooks/use-leaderboard';
 import { Leaderboard } from './leaderboard';
 import { Question } from '../sections/mcq/questions/question';
 import { Answers } from '../sections/mcq/answers/answers';
@@ -30,16 +29,12 @@ export enum PLAYER_COMMANDS {
 }
 
 const STARTING_QUESTION_INDEX = 0;
-const SHOW_LEADERBOARD_FOR_TIME_IN_MS = 5000;
 
 export default function Match(matchProps: Readonly<JoinMatchProps>) {
   const amIHost = useAppSelector((state) => state.match.amIHost);
   const matchState = useAppSelector((state) => state.match.currentMatchState);
   const myPlayerId = useAppSelector((state) => state.session.user_id);
 
-  const { isLeaderboardVisible } = useLeaderboard({
-    showLeaderboardForTimeInMs: SHOW_LEADERBOARD_FOR_TIME_IN_MS,
-  });
   const { currentQuestion } = useQuestions({
     questions: MockedMCQQuestions,
     startingQuestionIndex: STARTING_QUESTION_INDEX,
@@ -65,6 +60,7 @@ export default function Match(matchProps: Readonly<JoinMatchProps>) {
         break;
     }
   };
+  console.log('Match State:', matchState);
 
   switch (matchState) {
     case MatchState.LOADING:
@@ -82,32 +78,28 @@ export default function Match(matchProps: Readonly<JoinMatchProps>) {
       ) : (
         <p>Waiting for host to start the match</p>
       );
-
-    case MatchState.STARTED:
+    case MatchState.PLAYING:
       return (
         <div className="flex justify-center items-center">
-          {isLeaderboardVisible ? (
-            <Leaderboard />
-          ) : (
-            <div className="flex flex-col gap-2">
-              <Question
-                questionText={currentQuestion.question}
-                allowedTimeInMS={currentQuestion.allowedTimeInMS}
-                onTimeUp={() => publish(TimeUpEventKey, true)}
-              />
-              <Answers
-                answers={currentQuestion.answers}
-                onClick={(answerAbb) => {
-                  publish(QUESTION_EVENTS.ANSWERED, {
-                    playerId: myPlayerId,
-                    abbreviation: answerAbb,
-                  });
-                }}
-              />
-            </div>
-          )}
+          <div className="flex flex-col gap-2">
+            <Question
+              questionText={currentQuestion.question}
+              allowedTimeInMS={currentQuestion.allowedTimeInMS}
+              onTimeUp={() => publish(TimeUpEventKey, true)}
+            />
+            <Answers
+              answers={currentQuestion.answers}
+              onClick={(answerAbb) => {
+                publish(QUESTION_EVENTS.ANSWERED, {
+                  playerId: myPlayerId,
+                  abbreviation: answerAbb,
+                });
+              }}
+            />
+          </div>
         </div>
       );
+    case MatchState.PAUSED:
     case MatchState.ENDED:
       return <Leaderboard />;
     case MatchState.NOT_FOUND:

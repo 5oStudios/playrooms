@@ -51,7 +51,7 @@ export function useChat(
   const amIHost = useAppSelector((state) => state.match.amIHost);
 
   const isMatchStarted = useAppSelector(
-    (state) => state.match.currentMatchState === MatchState.STARTED
+    (state) => state.match.currentMatchState === MatchState.PLAYING
   );
 
   useEffect(() => {
