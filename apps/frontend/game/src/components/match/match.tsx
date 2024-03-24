@@ -93,7 +93,7 @@ export default function Match(matchProps: Readonly<JoinMatchProps>) {
               <Question
                 questionText={currentQuestion.question}
                 allowedTimeInMS={currentQuestion.allowedTimeInMS}
-                onTimeUp={() => publish(TimeUpEventKey, true)}
+                onTimeUp={() => publish(TimeUpEventKey)}
               />
               <Answers
                 answers={currentQuestion.answers}

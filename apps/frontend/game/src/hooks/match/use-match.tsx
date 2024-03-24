@@ -4,8 +4,6 @@ import { setCurrentMatch } from '../../store/features/matchSlice';
 import { useEffect } from 'react';
 import { publish } from '@kingo/events';
 
-export const MatchStateEventsKey = 'match_events';
-
 export interface JoinMatchProps {
   matchId?: string;
   ticket?: string;
@@ -61,6 +59,16 @@ export function useMatch({ matchId }: { matchId?: string }) {
         });
     }
   }, [dispatch, match, matchId, session]);
+
+  useEffect(() => {
+    return () => {
+      if (match) {
+        gameSocket
+          .leaveMatch(match.match_id)
+          .then(() => dispatch(setCurrentMatch(null)));
+      }
+    };
+  }, []);
 
   return {
     createMatch: async (name: string) => {

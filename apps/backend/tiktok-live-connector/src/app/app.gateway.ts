@@ -30,13 +30,6 @@ export class AppGateway {
     @ConnectedSocket() client: Socket
   ) {
     const connection = await this.appService.tiktokLiveConnection(username);
-    tiktokEvents.forEach(({ key, handler }) => {
-      connection.on(key, (data) => {
-        client.emit(key, handler(data));
-        this.logger.log(`received event: ${key} from streamer: ${username}`);
-      });
-    });
-
     client.on('connect', () => {
       this.logger.log(`connected to streamer: ${username}`);
     });
@@ -44,6 +37,18 @@ export class AppGateway {
     client.on('disconnect', () => {
       connection.disconnect();
       this.logger.log(`disconnected from streamer: ${username}`);
+    });
+
+    tiktokEvents.forEach(({ key, handler }) => {
+      connection.on(key, (data) => {
+        client.emit(key, handler(data));
+        this.logger.log(`received event: ${key} from streamer: ${username}`);
+      });
+    });
+
+    client.on('error', (error) => {
+      this.logger.error(`error from streamer: ${username}`, error);
+      client.emit('error', error);
     });
   }
 }

@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from 'react';
-import { publish, subscribe } from '@kingo/events';
+import { publish, useSubscribe, useSubscribeIf } from '@kingo/events';
 import { useAppDispatch, useAppSelector } from '../use-redux-typed';
 import {
   MatchState,
@@ -13,12 +13,19 @@ import {
   useMatchSocket,
 } from './use-match-socket';
 import { HOST_COMMANDS } from '../../components/match/match';
+import { PlayerState } from '../../store/features/playersSlice';
 
 export const useMatchState = () => {
   const dispatch = useAppDispatch();
   const matchSate = useAppSelector((state) => state.match.currentMatchState);
   const amIHost = useAppSelector((state) => state.match.amIHost);
   const hostState = useAppSelector((state) => state.match.hostState);
+  const amIPlaying = useAppSelector((state) => {
+    const myPlayer = state.players.find(
+      (player) => player.user_id === state.session.user_id
+    );
+    return myPlayer?.state === PlayerState.READY;
+  });
   const { sendMatchState } = useMatchSocket();
 
   const didMatchStart = matchSate === MatchState.STARTED;
@@ -35,7 +42,7 @@ export const useMatchState = () => {
       if (newMatchState === MatchState.STARTED) {
         console.log('Match started');
         console.log('amIHost', amIHost);
-        publish('match_started', true);
+        publish('match_started');
       }
       dispatch(setCurrentMatchState(newMatchState));
       amIHost && sendMatchState(SOCKET_OP_CODES.MATCH_STATE, newMatchState);
@@ -54,26 +61,26 @@ export const useMatchState = () => {
     };
   }, [dispatch]);
 
-  subscribe(HOST_COMMANDS.START_MATCH, () => {
+  useSubscribeIf(isMatchReady, HOST_COMMANDS.START_MATCH, () => {
     if (isMatchReady) syncMatchState(MatchState.STARTED);
     else console.log('Match is not ready');
   });
-  subscribe('match_created', () => syncMatchState(MatchState.LOADING));
-  subscribe('match_joined', (isJoined: boolean) => {
+  useSubscribe('match_created', () => syncMatchState(MatchState.LOADING));
+  useSubscribe('match_joined', (isJoined: boolean) => {
     isJoined
       ? syncMatchState(MatchState.LOADING)
       : syncMatchState(MatchState.NOT_FOUND);
   });
 
-  subscribe(SOCKET_SYNC.MATCH_STATE, syncMatchState);
-  // subscribe({
+  useSubscribe(SOCKET_SYNC.MATCH_STATE, syncMatchState);
+  // useSubscribe({
   //   event: PlayerStateEventsKey,
   //   callback: (playerState: PlayerState) => {
   //     if (playerState === PlayerState.NOT_READY && didMatchStart)
   //       syncMatchState(MatchState.PAUSED);
   //   },
   // });
-  subscribe(
+  useSubscribe(
     // Todo: if host left then this will not run
     SOCKET_SYNC.HOST_STATE,
     (hostState: HostState) => {
@@ -82,5 +89,12 @@ export const useMatchState = () => {
       }
     }
   );
-  subscribe(QuestionsFinishedEventKey, () => syncMatchState(MatchState.ENDED));
+  useSubscribeIf(amIHost, QuestionsFinishedEventKey, () =>
+    syncMatchState(MatchState.ENDED)
+  );
+  // // Todo: this should be for non-playing users
+  // useSubscribeIf(true, 'is_still_playing', () => {
+  //   console.log('Game is running');
+  //   syncMatchState(MatchState.STARTED);
+  // });
 };

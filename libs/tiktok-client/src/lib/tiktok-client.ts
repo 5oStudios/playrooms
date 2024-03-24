@@ -1,4 +1,5 @@
 import { io, Socket } from 'socket.io-client';
+import { toast } from 'sonner';
 // import { store } from '../../../../apps/frontend/src/store/store';
 // import { addMessage } from '../../../../apps/frontend/src/store/features/externalChatSlice';
 
@@ -29,7 +30,7 @@ tiktokSocket.on('disconnect', () => {
   console.log('disconnected from tiktok live connector server');
 });
 
-tiktokSocket.on('chat', (message) => {
-  console.log('good chat', message);
-  // store.dispatch(addMessage(message));
+tiktokSocket.on('error', (error) => {
+  console.log('tiktok error', error);
+  toast.error('TikTok live connector error', error);
 });
