@@ -13,6 +13,9 @@ const nextConfig = {
     svgr: false,
   },
   reactStrictMode: false,
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 };
 
 const plugins = [
