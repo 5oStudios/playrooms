@@ -23,4 +23,6 @@ COPY ../../ .
 
 EXPOSE 3000
 
+RUN pnpx nx run game:start
+
 CMD ["pnpx", "nx", "run", "game:start"]
