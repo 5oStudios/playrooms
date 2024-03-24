@@ -12,17 +12,30 @@ RUN corepack enable
 WORKDIR /app
 
 # Copy package.json and lock file
-COPY ../../pnpm-lock.yaml ./pnpm-lock.yaml
-COPY ../../package.json ./package.json
+COPY ../../../pnpm-lock.yaml ./pnpm-lock.yaml
+COPY ../../../package.json ./package.json
 
 # Install dependencies using pnpm with caching
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --ignore-scripts
 
-# Copy the entire application
-COPY ../../ .
+RUN pnpm install --frozen-lockfile --ignore-scripts
+
+FROM node:lts-slim AS builder
+
+COPY --from=installer /app/node_modules /app/node_modules
+
+WORKDIR /app
+
+COPY ../../../ .
+
+RUN npx nx run game:build
+
+FROM node:lts-slim AS production
+
+WORKDIR /app
+
+COPY --from=builder /app/apps/frontend/game/.next /app
 
 EXPOSE 3000
 
-RUN pnpx nx run game:build
-
-CMD ["pnpx", "nx", "run", "game:start"]
+CMD ["npx", "next", "start"]
