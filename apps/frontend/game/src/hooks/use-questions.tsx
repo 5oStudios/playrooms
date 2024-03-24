@@ -115,6 +115,7 @@ export function useQuestions({
         publish(CHAT_ANSWER_EVENTS.PROCESSING, {
           msgId,
         });
+      console.log('msgId', msgId);
 
       syncPlayerScore({
         playerId,

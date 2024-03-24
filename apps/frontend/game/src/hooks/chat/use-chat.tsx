@@ -8,11 +8,9 @@ import { useAppDispatch, useAppSelector } from '../use-redux-typed';
 import { faker } from '@faker-js/faker';
 import {
   addMessage,
-  ChatAnswerState,
   ChatMessage,
-  editMessageMeta,
 } from '../../store/features/externalChatSlice';
-import { publish, useSubscribe } from '@kingo/events';
+import { publish } from '@kingo/events';
 
 export enum CHAT_ANSWER_EVENTS {
   PROCESSING = 'processing_chat_answer',
@@ -63,36 +61,13 @@ export function useChat(
     });
     didSubscribeToLiveStream.current = true;
   }, [amIHost, dispatch, sources, didSubscribeToLiveStream]);
+
   useEffect(() => {
     return () => {
       tiktokSocket.off('chat');
       tiktokSocket.disconnect();
     };
   }, []);
-
-  useSubscribe(CHAT_ANSWER_EVENTS.PROCESSING, ({ msgId }: { msgId: string }) =>
-    dispatch(
-      editMessageMeta({
-        id: msgId,
-        meta: { state: ChatAnswerState.PROCESSING },
-      })
-    )
-  );
-
-  useSubscribe(
-    CHAT_ANSWER_EVENTS.FINISHED_PROCESSING,
-    ({ msgId, isCorrect }: { msgId: string; isCorrect: boolean }) => {
-      dispatch(
-        editMessageMeta({
-          id: msgId,
-          meta: {
-            state: ChatAnswerState.FINISHED_PROCESSING,
-            isCorrectAnswer: isCorrect,
-          },
-        })
-      );
-    }
-  );
 }
 
 function mockedTikTokChatMessages(count: number) {
