@@ -30,7 +30,7 @@ COPY ../../../tsconfig.base.json ./tsconfig.base.json
 COPY ../../../pnpm-lock.yaml ./pnpm-lock.yaml
 COPY ../../../package.json ./package.json
 
-RUN pnpx nx run tiktok-live-connector:build
+RUN npx nx run tiktok-live-connector:build
 
 
 FROM node:lts-slim AS production
