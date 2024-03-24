@@ -8,9 +8,6 @@ ENV PATH="$PNPM_HOME:$PATH"
 # Enable corepack
 RUN corepack enable
 
-# Set working directory
-WORKDIR /app
-
 # Copy package.json and lock file
 COPY ../../../pnpm-lock.yaml ./pnpm-lock.yaml
 COPY ../../../package.json ./package.json
@@ -20,9 +17,7 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
 FROM node:lts-slim AS builder
 
-COPY --from=installer /app/node_modules /app/node_modules
-
-WORKDIR /app
+COPY --from=installer ./node_modules ./node_modules
 
 COPY ../../../ .
 
@@ -30,10 +25,9 @@ RUN npx next build apps/frontend/game
 
 FROM node:lts-slim AS production
 
-WORKDIR /app
 
-COPY --from=builder /app/apps/frontend/game/.next /app
-COPY --from=builder /app/node_modules /app/node_modules
+COPY --from=builder ./apps/frontend/game/.next ./.next
+COPY --from=builder ./node_modules ./node_modules
 
 EXPOSE 3000
 
