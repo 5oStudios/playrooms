@@ -1,11 +1,11 @@
 'use client';
-import { useCallback, useEffect, useState } from 'react';
+import { useRef } from 'react';
 import { PLAYER_COMMANDS } from '../components/match/match';
 import { useAppSelector } from './use-redux-typed';
 import { PlayerScoreAction } from '../store/features/playersSlice';
 import { MatchState } from '../store/features/matchSlice';
 import { CHAT_ANSWER_EVENTS } from './chat/use-chat';
-import { publish, subscribe } from '@kingo/events';
+import { publish, useSubscribeIf, useSubscribeOnceIf } from '@kingo/events';
 import { SOCKET_OP_CODES, SOCKET_SYNC, useMatchSocket } from './match';
 
 export enum QUESTION_EVENTS {
@@ -44,43 +44,49 @@ export function useQuestions({
   questions: IQuestion[];
   startingQuestionIndex: number;
 }>) {
+  const memoizedQuestions = useRef(questions);
   const amIHost = useAppSelector((state) => state.match.amIHost);
-  const [currentQuestion, setCurrentQuestion] = useState(questions[0]);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(
-    startingQuestionIndex
-  );
+  const currentQuestionIndex = useRef<number>(startingQuestionIndex);
   const matchState = useAppSelector((state) => state.match.currentMatchState);
-  const [playersAnswered, setPlayersAnswered] = useState<string[]>([]);
   const { sendMatchState } = useMatchSocket();
-  const nextQuestion = useCallback(async () => {
-    if (!amIHost) return;
-    setCurrentQuestion(questions[currentQuestionIndex + 1]);
-    setCurrentQuestionIndex(currentQuestionIndex + 1);
-    setPlayersAnswered([]);
+  const didMyPlayerAnswer = useRef(false);
+  const syncQuestionIndex = (newQuestionIndex: number) => {
+    currentQuestionIndex.current = newQuestionIndex;
 
-    sendMatchState(
-      SOCKET_OP_CODES.QUESTION_INDEX,
-      (currentQuestionIndex + 1).toString()
-    );
-  }, [amIHost, currentQuestionIndex, questions, sendMatchState]);
+    // amIHost && publish('is_still_playing', newQuestionIndex.toString());
+    amIHost &&
+      sendMatchState(
+        SOCKET_OP_CODES.QUESTION_INDEX,
+        newQuestionIndex.toString()
+      );
+  };
 
-  useEffect(() => {
-    if (currentQuestionIndex === questions.length - 1) {
-      publish(QuestionsFinishedEventKey, true);
+  console.log({ currentQuestionIndex });
+
+  useSubscribeIf(
+    matchState === MatchState.READY && !amIHost,
+    SOCKET_SYNC.QUESTION_INDEX,
+    (decodedData: string) => {
+      const newQuestionIndex = parseInt(decodedData);
+      syncQuestionIndex(newQuestionIndex);
     }
-  }, [currentQuestionIndex, questions, questions.length]);
+  );
 
-  subscribe(SOCKET_SYNC.QUESTION_INDEX, (decodedData: string) => {
-    const questionIndex = parseInt(decodedData);
-    setCurrentQuestion(questions[questionIndex]);
-    setCurrentQuestionIndex(questionIndex);
-    setPlayersAnswered([]);
-    publish('next_question');
+  useSubscribeIf(amIHost, TimeUpEventKey, () => {
+    if (currentQuestionIndex.current === memoizedQuestions.current.length - 1) {
+      publish(QuestionsFinishedEventKey);
+    } else {
+      syncQuestionIndex(currentQuestionIndex.current + 1);
+      publish('next_question');
+    }
   });
 
-  subscribe(TimeUpEventKey, nextQuestion);
+  useSubscribeOnceIf(amIHost, 'match_started', () => {
+    syncQuestionIndex(startingQuestionIndex);
+  });
 
-  subscribe(
+  useSubscribeIf(
+    matchState === MatchState.STARTED,
     QUESTION_EVENTS.ANSWERED,
     ({
       playerId,
@@ -91,17 +97,13 @@ export function useQuestions({
       abbreviation: string;
       msgId: string;
     }) => {
-      if (matchState !== MatchState.STARTED) return;
-      if (playersAnswered.includes(playerId)) return;
-      setPlayersAnswered([...playersAnswered, playerId]);
+      didMyPlayerAnswer.current = true;
 
       const answerIndex = abbreviationToIndex(abbreviation);
       console.log('QUESTION_EVENTS.ANSWERED', playerId, answerIndex);
 
-      if (playersAnswered.includes(playerId)) {
-        console.log('player already answered', playersAnswered);
-        return;
-      }
+      const currentQuestion =
+        memoizedQuestions.current[currentQuestionIndex.current];
       const answer = currentQuestion.answers[answerIndex];
 
       if (!answer) {
@@ -127,6 +129,8 @@ export function useQuestions({
           msgId,
           isCorrect: answer.isCorrect,
         });
+
+      didMyPlayerAnswer.current = false;
     }
   );
 
@@ -147,7 +151,7 @@ export function useQuestions({
   };
 
   return {
-    currentQuestion,
+    currentQuestion: memoizedQuestions.current[currentQuestionIndex.current],
   };
 }
 function abbreviationToIndex(abbreviation: string) {

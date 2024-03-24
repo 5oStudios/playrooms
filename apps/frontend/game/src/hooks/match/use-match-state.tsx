@@ -13,12 +13,19 @@ import {
   useMatchSocket,
 } from './use-match-socket';
 import { HOST_COMMANDS } from '../../components/match/match';
+import { PlayerState } from '../../store/features/playersSlice';
 
 export const useMatchState = () => {
   const dispatch = useAppDispatch();
   const matchSate = useAppSelector((state) => state.match.currentMatchState);
   const amIHost = useAppSelector((state) => state.match.amIHost);
   const hostState = useAppSelector((state) => state.match.hostState);
+  const amIPlaying = useAppSelector((state) => {
+    const myPlayer = state.players.find(
+      (player) => player.user_id === state.session.user_id
+    );
+    return myPlayer?.state === PlayerState.READY;
+  });
   const { sendMatchState } = useMatchSocket();
 
   const didMatchStart = matchSate === MatchState.STARTED;
@@ -35,7 +42,7 @@ export const useMatchState = () => {
       if (newMatchState === MatchState.STARTED) {
         console.log('Match started');
         console.log('amIHost', amIHost);
-        publish('match_started', true);
+        publish('match_started');
       }
       dispatch(setCurrentMatchState(newMatchState));
       amIHost && sendMatchState(SOCKET_OP_CODES.MATCH_STATE, newMatchState);
@@ -82,8 +89,12 @@ export const useMatchState = () => {
       }
     }
   );
-  useSubscribe(QuestionsFinishedEventKey, () =>
+  useSubscribeIf(amIHost, QuestionsFinishedEventKey, () =>
     syncMatchState(MatchState.ENDED)
   );
-  useSubscribe('next_question', () => syncMatchState(MatchState.STARTED));
+  // // Todo: this should be for non-playing users
+  // useSubscribeIf(true, 'is_still_playing', () => {
+  //   console.log('Game is running');
+  //   syncMatchState(MatchState.STARTED);
+  // });
 };

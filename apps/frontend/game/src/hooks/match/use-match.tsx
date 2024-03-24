@@ -60,6 +60,16 @@ export function useMatch({ matchId }: { matchId?: string }) {
     }
   }, [dispatch, match, matchId, session]);
 
+  useEffect(() => {
+    return () => {
+      if (match) {
+        gameSocket
+          .leaveMatch(match.match_id)
+          .then(() => dispatch(setCurrentMatch(null)));
+      }
+    };
+  }, []);
+
   return {
     createMatch: async (name: string) => {
       try {

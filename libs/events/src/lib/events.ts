@@ -23,12 +23,25 @@ export const subscribe: Subscribe = (event, callback) => {
 
   emitter.on(event, _callback);
 
+  // console.table({
+  //   event: emitter.eventNames(),
+  //   listeners: emitter.listenerCount(event),
+  // });
+
   const unsubscribe = () => {
     emitter.off(event, _callback);
     console.log(`Unsubscribed from event '${event}'`);
   };
 
   return { data, unsubscribe };
+};
+
+export const subscribeOnce = (
+  event: string,
+  callback: (data: unknown) => void
+) => {
+  emitter.once(event, callback);
+  return { unsubscribe: () => emitter.off(event, callback) };
 };
 
 type Publish = (event: string, data?: unknown) => void;
@@ -63,6 +76,24 @@ export const useSubscribeIf = (
     if (!condition) return;
     if (!isSubscribed.current) {
       subscribe(event, callback);
+      isSubscribed.current = true;
+    }
+    return () => {
+      isSubscribed.current = false;
+    };
+  }, [condition]);
+};
+
+export const useSubscribeOnceIf = (
+  condition: boolean,
+  event: string,
+  callback: (data: unknown) => void
+) => {
+  const isSubscribed = useRef(false);
+  useEffect(() => {
+    if (!condition) return;
+    if (!isSubscribed.current) {
+      subscribeOnce(event, callback);
       isSubscribed.current = true;
     }
     return () => {

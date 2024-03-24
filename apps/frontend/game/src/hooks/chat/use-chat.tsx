@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import {
   ListenToStreamEventKey,
   TikTokChatMessage,
@@ -6,7 +6,6 @@ import {
 } from '@kingo/tiktok-client';
 import { useAppDispatch, useAppSelector } from '../use-redux-typed';
 import { faker } from '@faker-js/faker';
-import { MatchState } from '../../store/features/matchSlice';
 import {
   addMessage,
   ChatAnswerState,
@@ -14,7 +13,7 @@ import {
   editMessageMeta,
 } from '../../store/features/externalChatSlice';
 import { store } from '../../store/store';
-import { publish, subscribe } from '@kingo/events';
+import { publish, useSubscribe } from '@kingo/events';
 
 export enum CHAT_ANSWER_EVENTS {
   PROCESSING = 'processing_chat_answer',
@@ -49,26 +48,24 @@ export function useChat(
 ) {
   const dispatch = useAppDispatch();
   const amIHost = useAppSelector((state) => state.match.amIHost);
-
-  const isMatchStarted = useAppSelector(
-    (state) => state.match.currentMatchState === MatchState.STARTED
-  );
+  const didSubscribeToLiveStream = useRef(false);
 
   useEffect(() => {
-    console.log('emitting');
-    amIHost &&
-      sources.forEach(({ platform, username }) => {
-        tiktokSocket.emit(ListenToStreamEventKey, username);
+    if (!didSubscribeToLiveStream.current) {
+      didSubscribeToLiveStream.current = true;
+      amIHost &&
+        sources.forEach(({ platform, username }) => {
+          tiktokSocket.emit(ListenToStreamEventKey, username);
+        });
+      tiktokSocket.on('chat', (message) => {
+        console.log('bd chat', message);
+        store.dispatch(addMessage(tiktokAdapter(message)));
+        publish(CHAT_EVENTS.RECEIVED_MESSAGE, tiktokAdapter(message));
       });
+    }
+  }, []);
 
-    tiktokSocket.on('chat', (message) => {
-      console.log('bd chat', message);
-      store.dispatch(addMessage(tiktokAdapter(message)));
-      publish(CHAT_EVENTS.RECEIVED_MESSAGE, tiktokAdapter(message));
-    });
-  }, []); // Add isMatchStarted as a dependency
-
-  subscribe(CHAT_ANSWER_EVENTS.PROCESSING, ({ msgId }: { msgId: string }) =>
+  useSubscribe(CHAT_ANSWER_EVENTS.PROCESSING, ({ msgId }: { msgId: string }) =>
     dispatch(
       editMessageMeta({
         id: msgId,
@@ -77,7 +74,7 @@ export function useChat(
     )
   );
 
-  subscribe(
+  useSubscribe(
     CHAT_ANSWER_EVENTS.FINISHED_PROCESSING,
     ({ msgId, isCorrect }: { msgId: string; isCorrect: boolean }) => {
       dispatch(

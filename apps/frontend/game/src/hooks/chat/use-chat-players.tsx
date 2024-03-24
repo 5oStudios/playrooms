@@ -4,13 +4,13 @@ import { MatchState } from '../../store/features/matchSlice';
 import { ChatMessage } from '../../store/features/externalChatSlice';
 import { patterns, QUESTION_EVENTS } from '../use-questions';
 import { CHAT_EVENTS } from './use-chat';
-import { publish, subscribe } from '@kingo/events';
+import { publish, useSubscribe } from '@kingo/events';
 
 export function useChatPlayers() {
   const players = useAppSelector((state) => state.players);
   const matchState = useAppSelector((state) => state.match.currentMatchState);
 
-  subscribe(CHAT_EVENTS.RECEIVED_MESSAGE, (message: ChatMessage) => {
+  useSubscribe(CHAT_EVENTS.RECEIVED_MESSAGE, (message: ChatMessage) => {
     if (!message.user) return;
 
     if (matchState === MatchState.READY) {
