@@ -20,9 +20,7 @@ export enum TikTokLiveEvents {
 }
 export const ListenToStreamEventKey = 'listenToStream';
 
-export const tiktokSocket: Socket = io(
-  'kingo-staging-tiktok.onrender.com:4444'
-);
+export const tiktokSocket: Socket = io('kingo-staging-tiktok.onrender.com');
 tiktokSocket.connect();
 tiktokSocket.on('connect', () => {
   console.log('connected to tiktok live connector server');
