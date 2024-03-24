@@ -38,7 +38,7 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@v5
         with:
-          file: apps/frontend/Dockerfile
+          file: apps/frontend/game/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/kingo-staging-frontend:latest
 
