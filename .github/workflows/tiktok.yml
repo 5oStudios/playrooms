@@ -12,7 +12,7 @@ jobs:
       - name: Notify Slack
         run: |
           curl -X POST -H 'Content-type: application/json' --data \
-          '{"channel": "#kingo", "username": "5oStudios", "text": "New Build Starts!, project: Game", "icon_emoji": ":5ostudios:"}' \
+          '{"channel": "#kingo", "username": "5oStudios", "text": "New Build Starts!, project: `tiktok-live-connector`", "icon_emoji": ":5ostudios:"}' \
             ${{ secrets.SLACK_WEBHOOK }}
 
       - name: Set up QEMU
@@ -45,7 +45,7 @@ jobs:
       - name: Notify Slack
         run: |
           curl -X POST -H 'Content-type: application/json' --data \
-          '{"channel": "#kingo", "username": "5oStudios", "text": "Build Success!, project: Game", "icon_emoji": ":5ostudios:"}' \
+          '{"channel": "#kingo", "username": "5oStudios", "text": "Build Success!, project: `tiktok-live-connector`", "icon_emoji": ":5ostudios:"}' \
             ${{ secrets.SLACK_WEBHOOK }}
 
       - name: Deploy to Staging
