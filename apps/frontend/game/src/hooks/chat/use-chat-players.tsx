@@ -12,27 +12,32 @@ export function useChatPlayers() {
   const amIHost = useAppSelector((state) => state.match.amIHost);
 
   useSubscribeIf(
-    amIHost,
+    amIHost && matchState === MatchState.READY,
     CHAT_EVENTS.RECEIVED_MESSAGE,
     (message: ChatMessage) => {
       if (!message.user) return;
 
-      if (matchState === MatchState.READY) {
-        console.log('match is ready');
-        const isNewPlayer = players.every(
-          (player) => player.user_id !== message.user.id
+      const isNewPlayer = players.every(
+        (player) => player.user_id !== message.user.id
+      );
+      isNewPlayer &&
+        publish(
+          PLAYER_PRESENCE.JOINED,
+          new PlayerPresenceMessageDTO({
+            user_id: message.user.id,
+            username: message.user.username,
+          })
         );
-        isNewPlayer &&
-          publish(
-            PLAYER_PRESENCE.JOINED,
-            new PlayerPresenceMessageDTO({
-              user_id: message.user.id,
-              username: message.user.username,
-            })
-          );
-      }
+    }
+  );
 
+  useSubscribeIf(
+    amIHost && matchState === MatchState.STARTED,
+    QUESTION_EVENTS.ANSWERED,
+    (message: ChatMessage) => {
       if (matchState === MatchState.STARTED) {
+        if (!message.user) return;
+
         Object.keys(patterns).forEach((pattern) => {
           onPatternMatch({
             message: message.message.comment,

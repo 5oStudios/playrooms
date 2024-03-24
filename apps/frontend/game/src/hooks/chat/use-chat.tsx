@@ -63,6 +63,12 @@ export function useChat(
     });
     didSubscribeToLiveStream.current = true;
   }, [amIHost, dispatch, sources, didSubscribeToLiveStream]);
+  useEffect(() => {
+    return () => {
+      tiktokSocket.off('chat');
+      tiktokSocket.disconnect();
+    };
+  }, []);
 
   useSubscribe(CHAT_ANSWER_EVENTS.PROCESSING, ({ msgId }: { msgId: string }) =>
     dispatch(
