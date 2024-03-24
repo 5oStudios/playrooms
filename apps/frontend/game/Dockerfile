@@ -1,5 +1,5 @@
 # Stage 1: Build the application
-FROM node:lts-slim AS builder
+FROM node:lts-slim AS installer
 
 # Set environment variables for pnpm
 ENV PNPM_HOME="/pnpm"
