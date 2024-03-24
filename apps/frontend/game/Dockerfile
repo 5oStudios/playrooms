@@ -26,7 +26,7 @@ WORKDIR /app
 
 COPY ../../../ .
 
-RUN npx next build
+RUN npx next build apps/frontend/game
 
 FROM node:lts-slim AS production
 
