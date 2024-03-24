@@ -18,8 +18,6 @@ COPY ../../../package.json ./package.json
 # Install dependencies using pnpm with caching
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --ignore-scripts
 
-RUN pnpm install --frozen-lockfile --ignore-scripts
-
 FROM node:lts-slim AS builder
 
 COPY --from=installer /app/node_modules /app/node_modules
