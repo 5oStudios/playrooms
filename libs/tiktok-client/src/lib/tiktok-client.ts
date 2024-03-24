@@ -22,6 +22,10 @@ export const ListenToStreamEventKey = 'listenToStream';
 
 export const tiktokSocket: Socket = io('kingo-staging-tiktok.onrender.com', {
   transports: ['websocket'],
+  secure: true,
+  reconnection: true,
+  reconnectionAttempts: 1,
+  reconnectionDelay: 1000,
 });
 tiktokSocket.connect();
 tiktokSocket.on('connect', () => {
