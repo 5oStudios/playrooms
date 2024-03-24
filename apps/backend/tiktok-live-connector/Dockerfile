@@ -23,11 +23,10 @@ FROM node:lts-slim AS builder
 COPY --from=installer /app/node_modules /app/node_modules
 
 # copy important files
-COPY ../../../apps ./apps
+COPY ../../../apps/backend/tiktok-live-connector ./apps/backend/tiktok-live-connector
 COPY ../../../libs ./libs
 COPY ../../../nx.json ./nx.json
 COPY ../../../tsconfig.base.json ./tsconfig.base.json
-COPY ../../../tsconfig.json ./tsconfig.json
 COPY ../../../pnpm-lock.yaml ./pnpm-lock.yaml
 COPY ../../../package.json ./package.json
 
