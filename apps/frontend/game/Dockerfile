@@ -23,4 +23,4 @@ COPY ../../ .
 
 EXPOSE 3000
 
-CMD ["pnpx", "nx", "run", "frontend:start"]
+CMD ["pnpx", "nx", "run", "game:start"]
