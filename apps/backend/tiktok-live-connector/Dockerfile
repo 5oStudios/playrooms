@@ -23,6 +23,6 @@ COPY ../../../ .
 
 EXPOSE 4444
 
-RUN pnpx nx run tiktok-live-connector:serve:production
+RUN pnpx nx run tiktok-live-connector:build
 
 CMD ["pnpx", "nx", "run", "tiktok-live-connector:serve:production"]
