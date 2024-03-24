@@ -1,5 +1,6 @@
 import { nextui } from '@nextui-org/theme';
 import colors from 'tailwindcss/colors';
+import { join } from 'path';
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -10,7 +11,13 @@ module.exports = {
 
     './src/**/*.{js,ts,jsx,tsx,mdx}',
     '../../../node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}',
-    'node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}',
+
+    join(__dirname, './pages/**/*.{js,ts,jsx,tsx}'),
+    join(__dirname, './src/**/*.{js,ts,jsx,tsx}'),
+    join(
+      __dirname,
+      '../../../node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}'
+    ),
   ],
   theme: {
     extend: {
