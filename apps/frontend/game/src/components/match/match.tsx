@@ -5,13 +5,14 @@ import { Button } from '@nextui-org/react';
 import { publish } from '@kingo/events';
 import { gameSocket } from '@kingo/game-client';
 
-import { MockedMCQQuestions } from '../../../mocks';
 import {
-  JoinMatchProps,
+  type JoinMatchProps,
   SOCKET_OP_CODES,
   SOCKET_SYNC,
-} from '../../hooks/match';
-import { useLeaderboard } from '../../hooks/use-leaderboard';
+  useLeaderboard,
+} from '@hooks';
+
+import { MockedMCQQuestions } from '../../../mocks';
 import {
   QUESTION_EVENTS,
   TimeUpEventKey,
@@ -20,8 +21,7 @@ import {
 import { useAppSelector } from '../../hooks/use-redux-typed';
 import { MatchState } from '../../store/features/matchSlice';
 import { PlayerScoreAction } from '../../store/features/playersSlice';
-import { Answers } from '../sections/mcq/answers/answers';
-import { Question } from '../sections/mcq/questions/question';
+import { Answers, Question } from '../sections';
 import { Leaderboard } from './leaderboard';
 
 export enum HOST_COMMANDS {
@@ -35,7 +35,7 @@ export enum PLAYER_COMMANDS {
 const STARTING_QUESTION_INDEX = 0;
 const SHOW_LEADERBOARD_FOR_TIME_IN_MS = 5000;
 
-export default function Match(matchProps: Readonly<JoinMatchProps>) {
+export function Match(matchProps: Readonly<JoinMatchProps>) {
   const amIHost = useAppSelector((state) => state.match.amIHost);
   const matchState = useAppSelector((state) => state.match.currentMatchState);
   const myPlayerId = useAppSelector((state) => state.session.user_id);

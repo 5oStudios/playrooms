@@ -1,33 +1,33 @@
 'use client';
+
+import React, { useEffect, useRef } from 'react';
+
 import AutoScroll from '@brianmcallister/react-auto-scroll';
 import {
-    Avatar,
-    Button,
-    Divider,
-    ModalContent,
-    ModalHeader,
-    ScrollShadow,
-    cn,
-    useDisclosure,
+  Avatar,
+  Button,
+  Divider,
+  ModalContent,
+  ModalHeader,
+  ScrollShadow,
+  cn,
+  useDisclosure,
 } from '@nextui-org/react';
+import { usePresence } from 'framer-motion';
 import { useSearchParams } from 'next/navigation';
-import React, { useEffect, useRef } from 'react';
 import { IoChatbubbles } from 'react-icons/io5';
-import { useChat } from '../../../../../hooks/chat/use-chat';
-import { useChatPlayers } from '../../../../../hooks/chat/use-chat-players';
-import { useMatch } from '../../../../../hooks/match/use-match';
-import { useMatchState } from '../../../../../hooks/match/use-match-state';
-import { useHost } from '../../../../../hooks/use-host';
-import { usePlayer } from '../../../../../hooks/use-player';
-import { usePresence } from '../../../../../hooks/use-presence';
-import { useAppSelector } from '../../../../../hooks/use-redux-typed';
+
+import { Drawer, Match, matchIdSearchParamKey } from '@components';
 import {
-    ChatAnswerState,
-    ChatMessage,
-} from '../../../../../store/features/externalChatSlice';
-import { matchIdSearchParamKey } from '../@components/lobby/create/modes/create-tournament';
-import Match from '../@components/match/match';
-import Drawer from '../@components/ui/drawer';
+  useAppSelector,
+  useChat,
+  useChatPlayers,
+  useHost,
+  useMatch,
+  useMatchState,
+  usePlayer,
+} from '@hooks';
+import { ChatAnswerState, type ChatMessage } from '@store';
 
 export default function Page() {
   const searchParams = useSearchParams();
@@ -61,7 +61,7 @@ function ChatMessage(message: Readonly<ChatMessage>) {
             message.meta.isCorrectAnswer === false)
           ? 'bg-yellow-500/50'
           : 'bg-background/40',
-        message.meta?.isCorrectAnswer && 'bg-green-500'
+        message.meta?.isCorrectAnswer && 'bg-green-500',
       )}
     >
       <Avatar

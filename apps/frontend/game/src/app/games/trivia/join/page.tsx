@@ -1,20 +1,20 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';
 
 import { BreadcrumbItem, Breadcrumbs, ModalContent } from '@nextui-org/react';
+import { useSearchParams } from 'next/navigation';
 
-import JoinLobby, {
+import {
+  BaseModal,
+  JoinLobby,
   LobbyMode,
+  PlayerInfo,
   lobbyModeSearchParamKey,
   partyIdSearchParamKey,
-} from '@components/lobby/lobby-actions/joinLobby';
-import BaseModal from '@components/modals/base.modal';
-import { PlayerInfo } from '@components/players/player-info';
-import { useAppSelector } from '@hooks/use-redux-typed';
-
-import { SocketState } from '../../../../store/features/socketSlice';
+} from '@components';
+import { useAppSelector } from '@hooks';
+import { SocketState } from '@store';
 
 export default function Page() {
   const [isOpen, setIsOpen] = useState(true);

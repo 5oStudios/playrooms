@@ -7,7 +7,7 @@ import {
 } from '@nextui-org/react';
 
 import { useAppSelector } from '../../hooks/use-redux-typed';
-import BaseModal from '../modals/base.modal';
+import BaseModal from '../modals/base-modal';
 
 export function Leaderboard() {
   const players = useAppSelector((state) => state.players);

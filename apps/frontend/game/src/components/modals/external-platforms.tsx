@@ -16,8 +16,7 @@ import {
   useFieldArray,
   useForm,
 } from 'react-hook-form';
-
-import BaseModal from './base.modal';
+import { BaseModal } from './base-modal';
 
 export const ExternalPlatformsModal = ({
   supportedPlatforms,

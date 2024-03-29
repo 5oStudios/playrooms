@@ -1,5 +1,3 @@
-import React from 'react';
-
 import {
   Button,
   Input,
@@ -14,7 +12,7 @@ import { gameSocket } from '@kingo/game-client';
 
 import { useAppDispatch } from '../../../../hooks/use-redux-typed';
 import { setParty } from '../../../../store/features/partySlice';
-import BaseModal from '../../../modals/base.modal';
+import BaseModal from '../../../modals/base-modal';
 import {
   LobbyMode,
   lobbyModeSearchParamKey,

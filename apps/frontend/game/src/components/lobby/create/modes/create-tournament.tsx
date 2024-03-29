@@ -18,12 +18,11 @@ import {
 import { usePathname, useRouter } from 'next/navigation';
 import { Controller, useForm } from 'react-hook-form';
 
-import { MockedQuestionsCollections } from '../../../../../mocks';
-import { useMatch } from '../../../../hooks/match/use-match';
-import { useAppDispatch } from '../../../../hooks/use-redux-typed';
-import { setTournamentFormData } from '../../../../store/features/tournamentSlice';
-import BaseModal from '../../../modals/base.modal';
-import { ExternalPlatformsModal } from '../../../modals/external-platforms';
+import { useAppDispatch, useMatch } from '@hooks';
+import { MockedQuestionsCollections } from '@mocks';
+import { setTournamentFormData } from '@store/features/tournamentSlice';
+
+import { BaseModal, ExternalPlatformsModal } from '../../../modals';
 
 enum TournamentType {
   Public = 'public',
@@ -101,10 +100,6 @@ export default function CreateTournamentStaticModal() {
   const { createMatch } = useMatch({});
 
   const handleCreateTournament = async (data: TournamentFormData) => {
-    // const { maxPlayers, partyType } = createTournamentData.getValues();
-    // gameSocket
-    //   .createParty(partyType === TournamentType.Public, Number(maxPlayers))
-
     dispatch(setTournamentFormData(data));
     createMatch(data.tournamentTitle).then((match) => {
       const newPath = path.replace('create', 'join');
@@ -122,20 +117,18 @@ export default function CreateTournamentStaticModal() {
         size={'lg'}
         isOpen={isOpen}
         closeButton={
-          <>
-            <div className={'flex self-start'}>
-              <Breadcrumbs variant={'solid'}>
-                <BreadcrumbItem href={'/games'}>Games</BreadcrumbItem>
-                <BreadcrumbItem href={'/games/trivia'}>Trivia</BreadcrumbItem>
-                <BreadcrumbItem href={'/games/trivia/create'}>
-                  Create
-                </BreadcrumbItem>
-                <BreadcrumbItem href={'/games/trivia/create/tournament'}>
-                  Tournament
-                </BreadcrumbItem>
-              </Breadcrumbs>
-            </div>
-          </>
+          <div className={'flex self-start'}>
+            <Breadcrumbs variant={'solid'}>
+              <BreadcrumbItem href={'/games'}>Games</BreadcrumbItem>
+              <BreadcrumbItem href={'/games/trivia'}>Trivia</BreadcrumbItem>
+              <BreadcrumbItem href={'/games/trivia/create'}>
+                Create
+              </BreadcrumbItem>
+              <BreadcrumbItem href={'/games/trivia/create/tournament'}>
+                Tournament
+              </BreadcrumbItem>
+            </Breadcrumbs>
+          </div>
         }
       >
         <form

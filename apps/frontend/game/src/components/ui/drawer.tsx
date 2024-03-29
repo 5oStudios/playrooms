@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Modal, ModalProps, cn } from '@nextui-org/react';
 
-const Drawer: React.FC<ModalProps> = ({ ...props }) => {
+export const Drawer: React.FC<ModalProps> = ({ ...props }) => {
   return (
     <Modal
       {...props}
@@ -44,5 +44,3 @@ const Drawer: React.FC<ModalProps> = ({ ...props }) => {
     </Modal>
   );
 };
-
-export default Drawer;

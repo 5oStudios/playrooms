@@ -1,7 +1,8 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
+
+import { useSearchParams } from 'next/navigation';
 
 import Match from '@components/match/match';
 import { useAppSelector } from '@hooks/use-redux-typed';

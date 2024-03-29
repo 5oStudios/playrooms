@@ -12,7 +12,7 @@ import { InviteToParty } from '../../party/invite-to-party.modal';
 import { PartyMembersTracker } from '../../party/party-members-tracker';
 import { PartyOpCodes, PartyState } from './joinLobby';
 
-export default function LobbyPartyMode({
+export function LobbyPartyMode({
   setPartyState,
   setQueueTicket,
 }: {
