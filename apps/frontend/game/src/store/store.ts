@@ -1,20 +1,22 @@
 import { configureStore } from '@reduxjs/toolkit';
-import sessionSlice from './features/sessionSlice';
-import userSlice, { setUser } from './features/userSlice';
+
 import {
-  gameClient,
-  gameSocket,
   LOCAL_STORAGE_AUTH_KEY,
   LOCAL_STORAGE_REFRESH_KEY,
+  gameClient,
+  gameSocket,
 } from '@kingo/game-client';
-import platformSlice from './features/platformSlice';
-import partySlice from './features/partySlice';
-import matchSlice, { MatchState } from './features/matchSlice';
+
 import { storage } from '../utils/storage';
-import playersSlice from './features/playersSlice';
-import socketSlice, { setSocket, SocketState } from './features/socketSlice';
 import externalChatSlice from './features/externalChatSlice';
+import matchSlice, { MatchState } from './features/matchSlice';
+import partySlice from './features/partySlice';
+import platformSlice from './features/platformSlice';
+import playersSlice from './features/playersSlice';
+import sessionSlice from './features/sessionSlice';
+import socketSlice, { SocketState, setSocket } from './features/socketSlice';
 import tournamentSlice from './features/tournamentSlice';
+import userSlice, { setUser } from './features/userSlice';
 
 export const store = configureStore({
   reducer: {

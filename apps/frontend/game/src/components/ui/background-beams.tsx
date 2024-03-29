@@ -1,6 +1,9 @@
 'use client';
+
 import React from 'react';
+
 import { motion } from 'framer-motion';
+
 import { cn } from '../../utils/cn';
 
 export function BackgroundBeamsDemo() {
@@ -87,7 +90,7 @@ export const BackgroundBeams = ({ className }: { className?: string }) => {
       <div
         className={cn(
           'absolute h-full w-full inset-0  [mask-size:40px] [mask-repeat:no-repeat] flex items-center justify-center',
-          className
+          className,
         )}
       >
         <svg

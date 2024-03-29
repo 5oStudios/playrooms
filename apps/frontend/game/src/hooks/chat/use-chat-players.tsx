@@ -1,14 +1,15 @@
-import { PLAYER_PRESENCE, PlayerPresenceMessageDTO } from '../use-player';
-import { useAppDispatch, useAppSelector } from '../use-redux-typed';
-import { MatchState } from '../../store/features/matchSlice';
+import { publish, useSubscribeIf } from '@kingo/events';
+
 import {
   ChatAnswerState,
   ChatMessage,
   editMessageMeta,
 } from '../../store/features/externalChatSlice';
-import { patterns, QUESTION_EVENTS } from '../use-questions';
+import { MatchState } from '../../store/features/matchSlice';
+import { PLAYER_PRESENCE, PlayerPresenceMessageDTO } from '../use-player';
+import { QUESTION_EVENTS, patterns } from '../use-questions';
+import { useAppDispatch, useAppSelector } from '../use-redux-typed';
 import { CHAT_ANSWER_EVENTS, CHAT_EVENTS } from './use-chat';
-import { publish, useSubscribeIf } from '@kingo/events';
 
 export function useChatPlayers() {
   const players = useAppSelector((state) => state.players);
@@ -23,7 +24,7 @@ export function useChatPlayers() {
       if (!message.user) return;
       if (matchState == MatchState.READY) {
         const isNewPlayer = players.every(
-          (player) => player.user_id !== message.user.id
+          (player) => player.user_id !== message.user.id,
         );
         isNewPlayer &&
           publish(
@@ -31,10 +32,10 @@ export function useChatPlayers() {
             new PlayerPresenceMessageDTO({
               user_id: message.user.id,
               username: message.user.username,
-            })
+            }),
           );
       }
-    }
+    },
   );
 
   useSubscribeIf(
@@ -57,12 +58,12 @@ export function useChatPlayers() {
             console.log(
               'player answered',
               message.user.username,
-              matchedPattern
+              matchedPattern,
             );
           },
         });
       });
-    }
+    },
   );
 
   useSubscribeIf(
@@ -73,8 +74,8 @@ export function useChatPlayers() {
         editMessageMeta({
           id: msgId,
           meta: { state: ChatAnswerState.PROCESSING },
-        })
-      )
+        }),
+      ),
   );
 
   useSubscribeIf(
@@ -89,9 +90,9 @@ export function useChatPlayers() {
             state: ChatAnswerState.FINISHED_PROCESSING,
             isCorrectAnswer: isCorrect,
           },
-        })
+        }),
       );
-    }
+    },
   );
 }
 

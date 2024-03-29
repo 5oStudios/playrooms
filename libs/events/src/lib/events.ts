@@ -1,11 +1,12 @@
-import { EventEmitter } from 'eventemitter3';
 import { useEffect, useRef } from 'react';
+
+import { EventEmitter } from 'eventemitter3';
 
 export const emitter = new EventEmitter();
 
 type Subscribe = (
   event: string,
-  callback: (data: unknown) => void
+  callback: (data: unknown) => void,
 ) => {
   data: unknown;
   unsubscribe: () => void;
@@ -38,7 +39,7 @@ export const subscribe: Subscribe = (event, callback) => {
 
 export const subscribeOnce = (
   event: string,
-  callback: (data: unknown) => void
+  callback: (data: unknown) => void,
 ) => {
   emitter.once(event, callback);
   return { unsubscribe: () => emitter.off(event, callback) };
@@ -53,7 +54,7 @@ export const publish: Publish = (event, data) => {
 
 export const useSubscribe = (
   event: string,
-  callback: (data: unknown) => void
+  callback: (data: unknown) => void,
 ) => {
   const isSubscribed = useRef(false);
   useEffect(() => {
@@ -69,7 +70,7 @@ export const useSubscribe = (
 export const useSubscribeIf = (
   condition: boolean,
   event: string,
-  callback: (data: unknown) => void
+  callback: (data: unknown) => void,
 ) => {
   const isSubscribed = useRef(false);
   useEffect(() => {
@@ -87,7 +88,7 @@ export const useSubscribeIf = (
 export const useSubscribeOnceIf = (
   condition: boolean,
   event: string,
-  callback: (data: unknown) => void
+  callback: (data: unknown) => void,
 ) => {
   const isSubscribed = useRef(false);
   useEffect(() => {

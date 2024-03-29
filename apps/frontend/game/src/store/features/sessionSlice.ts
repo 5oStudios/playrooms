@@ -1,6 +1,8 @@
 'use client';
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+
 import { Session } from '@heroiclabs/nakama-js';
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+
 // const generatedUsername = generateUsername('', 0, 8, '');
 // const generatedAvatarConfig = JSON.stringify(genConfig());
 // const currentDateInSeconds = Date.now() / 1000;

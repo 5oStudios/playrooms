@@ -1,25 +1,28 @@
 'use client';
+
+import { Button } from '@nextui-org/react';
+
+import { publish } from '@kingo/events';
+import { gameSocket } from '@kingo/game-client';
+
+import { MockedMCQQuestions } from '../../../mocks';
 import {
   JoinMatchProps,
   SOCKET_OP_CODES,
   SOCKET_SYNC,
 } from '../../hooks/match';
+import { useLeaderboard } from '../../hooks/use-leaderboard';
 import {
   QUESTION_EVENTS,
   TimeUpEventKey,
   useQuestions,
 } from '../../hooks/use-questions';
-import { MockedMCQQuestions } from '../../../mocks';
-import { useLeaderboard } from '../../hooks/use-leaderboard';
-import { Leaderboard } from './leaderboard';
-import { Question } from '../sections/mcq/questions/question';
-import { Answers } from '../sections/mcq/answers/answers';
-import { MatchState } from '../../store/features/matchSlice';
-import { Button } from '@nextui-org/react';
 import { useAppSelector } from '../../hooks/use-redux-typed';
-import { gameSocket } from '@kingo/game-client';
+import { MatchState } from '../../store/features/matchSlice';
 import { PlayerScoreAction } from '../../store/features/playersSlice';
-import { publish } from '@kingo/events';
+import { Answers } from '../sections/mcq/answers/answers';
+import { Question } from '../sections/mcq/questions/question';
+import { Leaderboard } from './leaderboard';
 
 export enum HOST_COMMANDS {
   START_MATCH = 'host_requested_start',

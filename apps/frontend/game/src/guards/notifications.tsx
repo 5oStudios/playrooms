@@ -1,4 +1,5 @@
 import { toast } from 'sonner';
+
 import { gameSocket } from '@kingo/game-client';
 
 export function Notifications() {

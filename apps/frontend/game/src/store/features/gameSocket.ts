@@ -1,5 +1,5 @@
-import { createSlice } from '@reduxjs/toolkit';
 import { Socket } from '@heroiclabs/nakama-js';
+import { createSlice } from '@reduxjs/toolkit';
 
 const initialState: Socket = null;
 

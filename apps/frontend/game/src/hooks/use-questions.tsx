@@ -1,12 +1,15 @@
 'use client';
+
 import { useRef } from 'react';
-import { PLAYER_COMMANDS } from '../components/match/match';
-import { useAppSelector } from './use-redux-typed';
-import { PlayerScoreAction } from '../store/features/playersSlice';
-import { MatchState } from '../store/features/matchSlice';
-import { CHAT_ANSWER_EVENTS } from './chat/use-chat';
+
 import { publish, useSubscribeIf, useSubscribeOnceIf } from '@kingo/events';
+
+import { PLAYER_COMMANDS } from '../components/match/match';
+import { MatchState } from '../store/features/matchSlice';
+import { PlayerScoreAction } from '../store/features/playersSlice';
+import { CHAT_ANSWER_EVENTS } from './chat/use-chat';
 import { SOCKET_OP_CODES, SOCKET_SYNC, useMatchSocket } from './match';
+import { useAppSelector } from './use-redux-typed';
 
 export enum QUESTION_EVENTS {
   ANSWERED = 'question_answered',
@@ -57,7 +60,7 @@ export function useQuestions({
     amIHost &&
       sendMatchState(
         SOCKET_OP_CODES.QUESTION_INDEX,
-        newQuestionIndex.toString()
+        newQuestionIndex.toString(),
       );
   };
 
@@ -69,7 +72,7 @@ export function useQuestions({
     (decodedData: string) => {
       const newQuestionIndex = parseInt(decodedData);
       syncQuestionIndex(newQuestionIndex);
-    }
+    },
   );
 
   useSubscribeIf(amIHost, TimeUpEventKey, () => {
@@ -132,7 +135,7 @@ export function useQuestions({
         });
 
       didMyPlayerAnswer.current = false;
-    }
+    },
   );
 
   const syncPlayerScore = ({

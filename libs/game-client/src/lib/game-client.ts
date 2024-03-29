@@ -1,4 +1,5 @@
 import { Client, Session, Socket } from '@heroiclabs/nakama-js';
+
 import {
   AUTO_REFRESH_SESSION,
   HOST,

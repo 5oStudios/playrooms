@@ -1,5 +1,5 @@
-import { Preferences, SetOptions } from '@capacitor/preferences';
 import { Capacitor } from '@capacitor/core';
+import { Preferences, SetOptions } from '@capacitor/preferences';
 
 const webLocalStorage = {
   setItem: (options: SetOptions) =>
@@ -38,7 +38,7 @@ export const storage = (() => {
     if (Capacitor.isNativePlatform()) {
       console.log(
         'Initializing local storage on platform: ',
-        Capacitor.getPlatform()
+        Capacitor.getPlatform(),
       );
       return nativeLocalStorage;
     } else {

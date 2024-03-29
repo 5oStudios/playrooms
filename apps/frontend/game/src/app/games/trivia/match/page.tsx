@@ -1,9 +1,12 @@
 'use client';
-import { Suspense } from 'react'; // Import Suspense
-import Match from '../../../../components/match/match';
+
+import { Suspense } from 'react';
+
 import { useSearchParams } from 'next/navigation';
-import { SocketState } from '../../../../store/features/socketSlice';
+
+import Match from '../../../../components/match/match';
 import { useAppSelector } from '../../../../hooks/use-redux-typed';
+import { SocketState } from '../../../../store/features/socketSlice';
 
 export default function Page() {
   return (

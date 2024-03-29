@@ -1,7 +1,8 @@
-import { useGetIdentity } from '@refinedev/core';
-import { IUser } from '@components/header';
 import { useState } from 'react';
+
+import { IUser } from '@components/header';
 import { Permission, Role } from '@refinedev/appwrite';
+import { useGetIdentity } from '@refinedev/core';
 
 export enum CollectionType {
   PUBLIC = 'PUBLIC',

@@ -1,14 +1,17 @@
 'use client';
-import BaseModal from '../../../../components/modals/base.modal';
-import { BreadcrumbItem, Breadcrumbs, ModalContent } from '@nextui-org/react';
-import { PlayerInfo } from '../../../../components/players/player-info';
+
 import React, { Suspense, useState } from 'react';
+
+import { BreadcrumbItem, Breadcrumbs, ModalContent } from '@nextui-org/react';
+import { useSearchParams } from 'next/navigation';
+
 import JoinLobby, {
   LobbyMode,
   lobbyModeSearchParamKey,
   partyIdSearchParamKey,
 } from '../../../../components/lobby/lobby-actions/joinLobby';
-import { useSearchParams } from 'next/navigation';
+import BaseModal from '../../../../components/modals/base.modal';
+import { PlayerInfo } from '../../../../components/players/player-info';
 import { useAppSelector } from '../../../../hooks/use-redux-typed';
 import { SocketState } from '../../../../store/features/socketSlice';
 

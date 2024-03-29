@@ -1,13 +1,15 @@
 'use client';
+
 import React from 'react';
-import { Create, useForm } from '@refinedev/antd';
-import { Flex, Form, Input, Select } from 'antd';
-import { HttpError } from '@refinedev/core';
+
 import {
   CollectionStatus,
   CollectionType,
   useCollections,
 } from '@hooks/useCollections';
+import { Create, useForm } from '@refinedev/antd';
+import { HttpError } from '@refinedev/core';
+import { Flex, Form, Input, Select } from 'antd';
 
 type FormValues = {
   label: string;

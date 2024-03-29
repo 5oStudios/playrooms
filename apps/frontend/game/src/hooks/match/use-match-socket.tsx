@@ -1,6 +1,8 @@
-import { useAppSelector } from '../use-redux-typed';
-import { gameSocket } from '@kingo/game-client';
 import { useCallback, useRef } from 'react';
+
+import { gameSocket } from '@kingo/game-client';
+
+import { useAppSelector } from '../use-redux-typed';
 
 export enum SOCKET_OP_CODES {
   MATCH_STATE = 100,
@@ -29,7 +31,7 @@ export const useMatchSocket = () => {
       if (!matchId.current) return;
       gameSocket.sendMatchState(matchId.current, opCode, data);
     },
-    [matchId]
+    [matchId],
   );
 
   return {

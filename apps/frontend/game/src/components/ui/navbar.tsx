@@ -1,12 +1,14 @@
 'use client';
+
 import React from 'react';
+
 import {
-  Navbar as NextUINavbar,
   NavbarBrand,
   NavbarContent,
+  Navbar as NextUINavbar,
 } from '@nextui-org/react';
-import { SiMonogame } from 'react-icons/si';
 import { useRouter } from 'next/navigation';
+import { SiMonogame } from 'react-icons/si';
 
 export default function Navbar() {
   const router = useRouter();

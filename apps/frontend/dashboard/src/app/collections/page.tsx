@@ -1,4 +1,8 @@
 'use client';
+
+import React from 'react';
+
+import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import {
   DateField,
   DeleteButton,
@@ -9,8 +13,6 @@ import {
 } from '@refinedev/antd';
 import { BaseRecord } from '@refinedev/core';
 import { Space, Table, Tag } from 'antd';
-import React from 'react';
-import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 
 export default function BlogPostList() {
   const { tableProps, tableQueryResult } = useTable();

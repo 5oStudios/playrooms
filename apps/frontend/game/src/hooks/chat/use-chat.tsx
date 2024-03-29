@@ -1,16 +1,19 @@
 import { useEffect, useRef } from 'react';
+
+import { faker } from '@faker-js/faker';
+
+import { publish } from '@kingo/events';
 import {
   ListenToStreamEventKey,
   TikTokChatMessage,
   tiktokSocket,
 } from '@kingo/tiktok-client';
-import { useAppDispatch, useAppSelector } from '../use-redux-typed';
-import { faker } from '@faker-js/faker';
+
 import {
-  addMessage,
   ChatMessage,
+  addMessage,
 } from '../../store/features/externalChatSlice';
-import { publish } from '@kingo/events';
+import { useAppDispatch, useAppSelector } from '../use-redux-typed';
 
 export enum CHAT_ANSWER_EVENTS {
   PROCESSING = 'processing_chat_answer',
@@ -41,7 +44,7 @@ export function useChat(
   sources: {
     platform?: 'tiktok' | 'youtube';
     username?: string;
-  }[]
+  }[],
 ) {
   const dispatch = useAppDispatch();
   const amIHost = useAppSelector((state) => state.match.amIHost);

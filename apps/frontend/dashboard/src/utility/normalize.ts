@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { UploadFile } from "antd";
+import { UploadFile } from 'antd';
 
 interface UploadResponse {
   url: string;

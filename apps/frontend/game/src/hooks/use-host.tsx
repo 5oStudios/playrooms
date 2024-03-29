@@ -1,9 +1,12 @@
 'use client';
+
 import { useCallback, useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from './use-redux-typed';
-import { setAmIHost, setHostState } from '../store/features/matchSlice';
+
 import { subscribe } from '@kingo/events';
+
+import { setAmIHost, setHostState } from '../store/features/matchSlice';
 import { SOCKET_OP_CODES, SOCKET_SYNC, useMatchSocket } from './match';
+import { useAppDispatch, useAppSelector } from './use-redux-typed';
 
 export enum HostState {
   ELECTED = 'ELECTED',
@@ -21,11 +24,11 @@ export function useHost() {
       dispatch(setAmIHost(amIHost));
       amIHost && sendMatchState(SOCKET_OP_CODES.HOST_STATE, hostState);
     },
-    [dispatch, sendMatchState]
+    [dispatch, sendMatchState],
   );
 
   subscribe(SOCKET_SYNC.HOST_STATE, (hostState: HostState) =>
-    syncHostState({ amIHost, hostState })
+    syncHostState({ amIHost, hostState }),
   );
 
   useEffect(() => {

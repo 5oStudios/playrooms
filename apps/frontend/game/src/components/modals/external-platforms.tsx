@@ -1,10 +1,5 @@
 import React, { useEffect } from 'react';
-import {
-  Controller,
-  useFieldArray,
-  useForm,
-  UseFormReturn,
-} from 'react-hook-form';
+
 import {
   Autocomplete,
   AutocompleteItem,
@@ -15,6 +10,13 @@ import {
   ModalContent,
   ModalHeader,
 } from '@nextui-org/react';
+import {
+  Controller,
+  UseFormReturn,
+  useFieldArray,
+  useForm,
+} from 'react-hook-form';
+
 import BaseModal from './base.modal';
 
 export const ExternalPlatformsModal = ({
@@ -62,7 +64,7 @@ export const ExternalPlatformsModal = ({
     {
       name: '_externalPlatforms',
       control: _externalPlatforms.control,
-    }
+    },
   );
   const [isDirty, setIsDirty] = React.useState(false);
   console.log('fields', fields);
@@ -117,11 +119,11 @@ export const ExternalPlatformsModal = ({
                     isRequired={true}
                     onSelectionChange={(value) => {
                       const selectedPlatform = supportedPlatforms.find(
-                        (platform) => platform.id === value
+                        (platform) => platform.id === value,
                       );
                       _externalPlatforms.setValue(
                         `_externalPlatforms.${index}.label`,
-                        selectedPlatform?.title
+                        selectedPlatform?.title,
                       );
                       field.onChange(value);
                     }}

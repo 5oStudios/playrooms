@@ -1,5 +1,6 @@
 import React from 'react';
-import { Checkbox, Chip, cn, User } from '@nextui-org/react';
+
+import { Checkbox, Chip, User, cn } from '@nextui-org/react';
 
 export const PlatformCheckbox = (platform: {
   id: string;
@@ -17,7 +18,7 @@ export const PlatformCheckbox = (platform: {
           'inline-flex min-w-full bg-content1 m-0',
           'hover:bg-content2 items-center justify-start',
           'cursor-pointer rounded-lg gap-2 p-4 border-2 border-transparent',
-          'data-[selected=true]:border-primary'
+          'data-[selected=true]:border-primary',
         ),
         label: 'w-full',
       }}

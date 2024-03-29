@@ -1,5 +1,6 @@
-import { SocketState } from '../store/features/socketSlice';
 import { useEffect, useState } from 'react';
+
+import { SocketState } from '../store/features/socketSlice';
 import { useAppSelector } from './use-redux-typed';
 
 export function useSafeSocket() {

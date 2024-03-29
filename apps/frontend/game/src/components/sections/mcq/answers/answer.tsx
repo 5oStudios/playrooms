@@ -1,7 +1,9 @@
 import React from 'react';
+
 import { Button } from '@nextui-org/react';
-import { cn } from '../../../../utils/cn';
+
 import { IAnswer } from '../../../../hooks/use-questions';
+import { cn } from '../../../../utils/cn';
 
 export const Answer: React.FC<{
   index: number;
@@ -45,7 +47,7 @@ export const Answer: React.FC<{
             ? 'bg-green-500'
             : !answer.isCorrect && isSelected && 'bg-rose-500',
           disabled && 'opacity-50 cursor-not-allowed',
-          isSelected && 'text-white opacity-100'
+          isSelected && 'text-white opacity-100',
         )}
         style={{ backdropFilter: 'blur(4px)' }}
         onClick={() => handleAnswer(answer)}

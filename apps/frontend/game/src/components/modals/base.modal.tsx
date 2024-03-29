@@ -1,5 +1,7 @@
 'use client';
+
 import React from 'react';
+
 import { Modal, ModalProps } from '@nextui-org/react';
 
 export default function BaseModal(props: ModalProps) {

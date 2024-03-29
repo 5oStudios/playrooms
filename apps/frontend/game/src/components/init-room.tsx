@@ -1,6 +1,7 @@
-import { toast } from 'sonner';
-import { myPlayer, onPlayerJoin, PlayerState, setState } from 'playroomkit';
 import { useEffect } from 'react';
+
+import { PlayerState, myPlayer, onPlayerJoin, setState } from 'playroomkit';
+import { toast } from 'sonner';
 
 export enum ROOM_STATE {
   LOADING = 'loading',
@@ -22,7 +23,7 @@ export function InitRoom() {
         },
       },
       () => setState(ROOM_STATE_KEY, ROOM_STATE.READY),
-      (error) => toast.error(error.message)
+      (error) => toast.error(error.message),
     );
   })();
 

@@ -1,6 +1,6 @@
 import { nextui } from '@nextui-org/theme';
-import colors from 'tailwindcss/colors';
 import { join } from 'path';
+import colors from 'tailwindcss/colors';
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -16,7 +16,7 @@ module.exports = {
     join(__dirname, './src/**/*.{js,ts,jsx,tsx}'),
     join(
       __dirname,
-      '../../../node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}'
+      '../../../node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}',
     ),
   ],
   theme: {

@@ -165,10 +165,10 @@ services:
     <<: *x-logging
     restart: unless-stopped
     labels:
-      - "traefik.enable=true"
-      - "traefik.constraint-label-stack=appwrite"
-      - "traefik.docker.network=appwrite"
-      - "traefik.http.services.appwrite_realtime.loadbalancer.server.port=80"
+      - 'traefik.enable=true'
+      - 'traefik.constraint-label-stack=appwrite'
+      - 'traefik.docker.network=appwrite'
+      - 'traefik.http.services.appwrite_realtime.loadbalancer.server.port=80'
       #ws
       - traefik.http.routers.appwrite_realtime_ws.entrypoints=appwrite_web
       - traefik.http.routers.appwrite_realtime_ws.rule=PathPrefix(`/v1/realtime`)

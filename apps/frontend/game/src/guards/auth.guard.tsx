@@ -1,17 +1,21 @@
 'use client';
+
 import { ReactNode, useEffect } from 'react';
+
+import { Session } from '@heroiclabs/nakama-js';
+import { nanoid } from 'nanoid';
+import { genConfig } from 'react-nice-avatar';
+import { generateUsername } from 'unique-username-generator';
+
 import {
-  gameClient,
   LOCAL_STORAGE_AUTH_KEY,
   LOCAL_STORAGE_REFRESH_KEY,
+  gameClient,
 } from '@kingo/game-client';
-import { Session } from '@heroiclabs/nakama-js';
-import { setSession } from '../store/features/sessionSlice';
-import { nanoid } from 'nanoid';
-import { generateUsername } from 'unique-username-generator';
-import { genConfig } from 'react-nice-avatar';
-import { storage } from '../utils/storage';
+
 import { useAppDispatch, useAppSelector } from '../hooks/use-redux-typed';
+import { setSession } from '../store/features/sessionSlice';
+import { storage } from '../utils/storage';
 
 const generatedUsername = generateUsername('', 0, 8, '');
 const generatedAvatarConfig = JSON.stringify(genConfig());

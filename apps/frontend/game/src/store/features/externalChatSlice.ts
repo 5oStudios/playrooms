@@ -34,10 +34,10 @@ const externalChatSlice = createSlice({
     },
     editMessageMeta(
       state,
-      action: { payload: { id: string; meta: Partial<ChatMessage['meta']> } }
+      action: { payload: { id: string; meta: Partial<ChatMessage['meta']> } },
     ) {
       const message = state.find(
-        (message) => message.message.id === action.payload.id
+        (message) => message.message.id === action.payload.id,
       );
       if (message) {
         message.meta = { ...message.meta, ...action.payload.meta };

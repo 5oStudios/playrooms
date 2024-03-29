@@ -1,6 +1,8 @@
 import React from 'react';
+
 import { Button, Divider } from '@nextui-org/react';
 import { useRouter } from 'next/navigation';
+
 import { LobbyMode, lobbyModeSearchParamKey } from '../lobby-actions/joinLobby';
 import CreatePartyModal from './modes/create-party';
 
@@ -14,7 +16,7 @@ export const CreateLobby = () => {
         onClick={() => {
           const newPath = window.location.pathname;
           router.push(
-            newPath + `?${lobbyModeSearchParamKey}=${LobbyMode['PARTY']}`
+            newPath + `?${lobbyModeSearchParamKey}=${LobbyMode['PARTY']}`,
           );
           setCreatePartyModal(true);
         }}
@@ -32,7 +34,8 @@ export const CreateLobby = () => {
           onClick={() => {
             const newPath = window.location.pathname + '/tournament';
             router.push(
-              newPath + `?${lobbyModeSearchParamKey}=${LobbyMode['TOURNAMENT']}`
+              newPath +
+                `?${lobbyModeSearchParamKey}=${LobbyMode['TOURNAMENT']}`,
             );
           }}
           className={'w-full'}

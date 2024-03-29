@@ -1,17 +1,21 @@
 'use client';
+
 import React, { useEffect } from 'react';
+
 import { MatchmakerTicket, PartyMatchmakerTicket } from '@heroiclabs/nakama-js';
-import { useAppDispatch, useAppSelector } from './use-redux-typed';
 import { MatchmakerMatched } from '@heroiclabs/nakama-js/socket';
 import { useRouter } from 'next/navigation';
-import { gameSocket, NODE_ENV, NODE_ENV_STATE } from '@kingo/game-client';
-import { setMatchFoundData } from '../store/features/matchSlice';
+
+import { NODE_ENV, NODE_ENV_STATE, gameSocket } from '@kingo/game-client';
+
 import {
   LobbyMode,
   PartyOpCodes,
   PartyState,
 } from '../components/lobby/lobby-actions/joinLobby';
+import { setMatchFoundData } from '../store/features/matchSlice';
 import { SocketState } from '../store/features/socketSlice';
+import { useAppDispatch, useAppSelector } from './use-redux-typed';
 
 export default function useParty({
   partyId,
@@ -28,7 +32,7 @@ export default function useParty({
   const dispatch = useAppDispatch();
   const party = useAppSelector((state) => state.party);
   const [countdown, setCountdown] = React.useState<number | null>(() =>
-    NODE_ENV === NODE_ENV_STATE.DEVELOPMENT ? 0 : 3
+    NODE_ENV === NODE_ENV_STATE.DEVELOPMENT ? 0 : 3,
   );
   const [matched, setMatched] = React.useState<MatchmakerMatched | null>(null);
   const router = useRouter();
@@ -47,7 +51,7 @@ export default function useParty({
         if (countdown === 0) {
           clearInterval(interval);
           router.push(
-            `/games/trivia/match?ticket=${matched.ticket}&token=${matched.token}`
+            `/games/trivia/match?ticket=${matched.ticket}&token=${matched.token}`,
           );
         }
         setCountdown((prev) => (prev !== 0 ? prev - 1 : 0));
@@ -94,7 +98,7 @@ export default function useParty({
         console.log(
           'removing party from queue',
           party.party_id,
-          queueTicket.ticket
+          queueTicket.ticket,
         );
         gameSocket
           .removeMatchmakerParty(party.party_id, queueTicket.ticket)
@@ -102,7 +106,7 @@ export default function useParty({
             gameSocket.sendPartyData(
               party.party_id,
               PartyOpCodes.QUEUE_STATE,
-              PartyState.NOT_IN_QUEUE
+              PartyState.NOT_IN_QUEUE,
             );
             setPartyState(PartyState.NOT_IN_QUEUE);
           });

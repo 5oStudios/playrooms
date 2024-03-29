@@ -1,9 +1,12 @@
 'use client';
+
 import { useEffect, useState } from 'react';
-import { useAppSelector } from './use-redux-typed';
+
 import { subscribe } from '@kingo/events';
-import { TimeUpEventKey } from './use-questions';
+
 import { SOCKET_OP_CODES, SOCKET_SYNC, useMatchSocket } from './match';
+import { TimeUpEventKey } from './use-questions';
+import { useAppSelector } from './use-redux-typed';
 
 export enum LeaderboardState {
   SHOW = 'SHOW',
@@ -28,7 +31,7 @@ export function useLeaderboard({
   }, []);
 
   subscribe(SOCKET_SYNC.LEADERBOARD, (decodedData: string) =>
-    setIsLeaderboardVisible(decodedData === LeaderboardState.SHOW)
+    setIsLeaderboardVisible(decodedData === LeaderboardState.SHOW),
   );
 
   const previewLeaderboard = () => {

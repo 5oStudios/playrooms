@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { CountdownCircleTimer } from 'react-countdown-circle-timer';
 
 const renderTime = (dimension, time) => {
@@ -39,7 +40,7 @@ export function CountDown({
         <span style={{ color }}>
           {renderTime(
             'seconds',
-            ((milSecond - Math.floor(elapsedTime * 1000)) / 1000).toFixed(1)
+            ((milSecond - Math.floor(elapsedTime * 1000)) / 1000).toFixed(1),
           )}
         </span>
       )}

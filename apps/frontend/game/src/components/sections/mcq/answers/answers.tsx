@@ -1,7 +1,9 @@
-import { Card, CardBody } from '@nextui-org/react';
-import { Answer } from './answer';
 import React from 'react';
+
+import { Card, CardBody } from '@nextui-org/react';
+
 import { IAnswer } from '../../../../hooks/use-questions';
+import { Answer } from './answer';
 
 export function Answers({
   answers,

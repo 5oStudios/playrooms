@@ -1,5 +1,5 @@
-import { createSlice } from '@reduxjs/toolkit';
 import { Party } from '@heroiclabs/nakama-js';
+import { createSlice } from '@reduxjs/toolkit';
 
 const initialState: Party | null = null;
 

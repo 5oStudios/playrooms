@@ -1,17 +1,20 @@
-import { useAppDispatch, useAppSelector } from '../../hooks/use-redux-typed';
 import React, { useState } from 'react';
+
 import { Users } from '@heroiclabs/nakama-js';
-import { gameClient, gameSocket } from '@kingo/game-client';
-import { setParty } from '../../store/features/partySlice';
-import { toast } from 'sonner';
 import { Divider } from '@nextui-org/react';
-import { NoSSRAvatar } from '../players/player-info';
 import { genConfig } from 'react-nice-avatar';
+import { toast } from 'sonner';
+
+import { gameClient, gameSocket } from '@kingo/game-client';
+
+import { useAppDispatch, useAppSelector } from '../../hooks/use-redux-typed';
+import { setParty } from '../../store/features/partySlice';
+import { NoSSRAvatar } from '../players/player-info';
 
 export const PartyMembersTracker = () => {
   const session = useAppSelector((state) => state.session);
   const [localPartyMembers, setLocalPartyMembers] = useState<Users['users']>(
-    []
+    [],
   );
   const dispatch = useAppDispatch();
   console.log('localPartyMembers', localPartyMembers);
@@ -22,7 +25,7 @@ export const PartyMembersTracker = () => {
     gameClient
       .getUsers(
         session,
-        party.presences.map((presence) => presence.user_id)
+        party.presences.map((presence) => presence.user_id),
       )
       .then(({ users }) => {
         setLocalPartyMembers((prevMembers) => [...prevMembers, ...users]);
@@ -43,7 +46,7 @@ export const PartyMembersTracker = () => {
         toast.error(`${user.username} left the party`);
       });
       const newPartyMembersAccount = localPartyMembers.filter(
-        (member) => !presence.leaves.find((user) => user.user_id === member.id)
+        (member) => !presence.leaves.find((user) => user.user_id === member.id),
       );
       setLocalPartyMembers(newPartyMembersAccount);
     }

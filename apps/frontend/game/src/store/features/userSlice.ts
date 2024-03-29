@@ -1,5 +1,6 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { User } from '@heroiclabs/nakama-js';
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+
 // const auth = localStorage.getItem(LOCAL_STORAGE_AUTH_KEY);
 // const refresh = localStorage.getItem(LOCAL_STORAGE_REFRESH_KEY);
 //

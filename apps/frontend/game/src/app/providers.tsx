@@ -1,10 +1,13 @@
 'use client';
-import { NextUIProvider } from '@nextui-org/react';
+
 import React, { ReactNode } from 'react';
-import { Provider } from 'react-redux';
-import { store } from '../store/store';
-import { AuthGuard } from '../guards/auth.guard';
+
+import { NextUIProvider } from '@nextui-org/react';
 import { useRouter } from 'next/navigation';
+import { Provider } from 'react-redux';
+
+import { AuthGuard } from '../guards/auth.guard';
+import { store } from '../store/store';
 
 export function Providers({ children }: Readonly<{ children: ReactNode }>) {
   const router = useRouter();

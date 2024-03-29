@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
-import { useAppDispatch, useAppSelector } from '../../../hooks/use-redux-typed';
-import { Button } from '@nextui-org/react';
-import { gameSocket } from '@kingo/game-client';
-import { useRouter } from 'next/navigation';
-import { setParty } from '../../../store/features/partySlice';
-import { PartyMembersTracker } from '../../party/party-members-tracker';
-import { InviteToParty } from '../../party/invite-to-party.modal';
-import { PartyOpCodes, PartyState } from './joinLobby';
+
 import { MatchmakerTicket, PartyMatchmakerTicket } from '@heroiclabs/nakama-js';
+import { Button } from '@nextui-org/react';
+import { useRouter } from 'next/navigation';
+
+import { gameSocket } from '@kingo/game-client';
+
+import { useAppDispatch, useAppSelector } from '../../../hooks/use-redux-typed';
+import { setParty } from '../../../store/features/partySlice';
+import { InviteToParty } from '../../party/invite-to-party.modal';
+import { PartyMembersTracker } from '../../party/party-members-tracker';
+import { PartyOpCodes, PartyState } from './joinLobby';
 
 export default function LobbyPartyMode({
   setPartyState,
@@ -32,7 +35,7 @@ export default function LobbyPartyMode({
       gameSocket.sendPartyData(
         party.party_id,
         PartyOpCodes.QUEUE_STATE,
-        PartyState.IN_QUEUE
+        PartyState.IN_QUEUE,
       );
       setQueueTicket(ticket);
     });

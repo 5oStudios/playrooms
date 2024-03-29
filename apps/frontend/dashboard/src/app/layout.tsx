@@ -1,16 +1,17 @@
-import { Metadata } from 'next';
-import { cookies } from 'next/headers';
 import React, { Suspense } from 'react';
-import { Refine } from '@refinedev/core';
-import { DevtoolsProvider } from '@providers/devtools';
-import { RefineKbar, RefineKbarProvider } from '@refinedev/kbar';
-import { useNotificationProvider } from '@refinedev/antd';
-import routerProvider from '@refinedev/nextjs-router';
+
 import { AntdRegistry } from '@ant-design/nextjs-registry';
-import '@refinedev/antd/dist/reset.css';
+import { ColorModeContextProvider } from '@contexts/color-mode';
 import { authProvider } from '@providers/auth-provider';
 import { dataProvider, liveProvider } from '@providers/data-provider';
-import { ColorModeContextProvider } from '@contexts/color-mode';
+import { DevtoolsProvider } from '@providers/devtools';
+import { useNotificationProvider } from '@refinedev/antd';
+import '@refinedev/antd/dist/reset.css';
+import { Refine } from '@refinedev/core';
+import { RefineKbar, RefineKbarProvider } from '@refinedev/kbar';
+import routerProvider from '@refinedev/nextjs-router';
+import { Metadata } from 'next';
+import { cookies } from 'next/headers';
 import { BsFillCollectionFill } from 'react-icons/bs';
 import { TbCategory2, TbFolderQuestion } from 'react-icons/tb';
 

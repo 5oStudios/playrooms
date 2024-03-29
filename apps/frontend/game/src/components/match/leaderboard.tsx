@@ -1,12 +1,13 @@
-import BaseModal from '../modals/base.modal';
 import {
   Avatar,
-  cn,
   ModalContent,
   ModalHeader,
+  cn,
   useDisclosure,
 } from '@nextui-org/react';
+
 import { useAppSelector } from '../../hooks/use-redux-typed';
+import BaseModal from '../modals/base.modal';
 
 export function Leaderboard() {
   const players = useAppSelector((state) => state.players);
@@ -53,7 +54,7 @@ export function Leaderboard() {
                   isMe && player.user_id === isMe.user_id && 'bg-blue-500',
                   index === 0 && 'bg-yellow-500',
                   index === 1 && 'bg-gray-500',
-                  index === 2 && 'bg-rose-400'
+                  index === 2 && 'bg-rose-400',
                 )}
               >
                 <div className="flex items-center gap-2">

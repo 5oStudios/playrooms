@@ -1,8 +1,10 @@
-import dynamic from 'next/dynamic';
-import { useAppSelector } from '../../hooks/use-redux-typed';
-import { genConfig } from 'react-nice-avatar';
-import { Input } from '@nextui-org/react';
 import React from 'react';
+
+import { Input } from '@nextui-org/react';
+import dynamic from 'next/dynamic';
+import { genConfig } from 'react-nice-avatar';
+
+import { useAppSelector } from '../../hooks/use-redux-typed';
 
 export const NoSSRAvatar = dynamic(() => import('react-nice-avatar'), {
   ssr: false,

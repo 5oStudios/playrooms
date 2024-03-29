@@ -1,9 +1,11 @@
 'use client';
+
+import React from 'react';
+
 import { Header } from '@components/header';
 import { ThemedLayoutV2 } from '@refinedev/antd';
-import React from 'react';
-import Link from 'next/link';
 import { Typography } from 'antd';
+import Link from 'next/link';
 import { SiNintendogamecube } from 'react-icons/si';
 
 export const ThemedLayout = ({ children }: React.PropsWithChildren) => {

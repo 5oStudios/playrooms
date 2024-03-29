@@ -1,5 +1,7 @@
 import React from 'react';
+
 import { Card, CardBody } from '@nextui-org/react';
+
 import { CountDown } from './count-down';
 
 interface Props {

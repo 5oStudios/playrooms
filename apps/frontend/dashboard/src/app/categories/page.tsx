@@ -1,4 +1,7 @@
 'use client';
+
+import React from 'react';
+
 import {
   DeleteButton,
   EditButton,
@@ -8,7 +11,6 @@ import {
 } from '@refinedev/antd';
 import { BaseRecord } from '@refinedev/core';
 import { Space, Table } from 'antd';
-import React from 'react';
 
 export default function CategoryList() {
   const { tableProps } = useTable({

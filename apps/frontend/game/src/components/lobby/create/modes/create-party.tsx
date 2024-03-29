@@ -1,9 +1,5 @@
-import { usePathname, useRouter } from 'next/navigation';
-import { useAppDispatch } from '../../../../hooks/use-redux-typed';
-import { Controller, useForm } from 'react-hook-form';
-import { gameSocket } from '@kingo/game-client';
-import { setParty } from '../../../../store/features/partySlice';
-import BaseModal from '../../../modals/base.modal';
+import React from 'react';
+
 import {
   Button,
   Input,
@@ -11,7 +7,14 @@ import {
   Radio,
   RadioGroup,
 } from '@nextui-org/react';
-import React from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import { Controller, useForm } from 'react-hook-form';
+
+import { gameSocket } from '@kingo/game-client';
+
+import { useAppDispatch } from '../../../../hooks/use-redux-typed';
+import { setParty } from '../../../../store/features/partySlice';
+import BaseModal from '../../../modals/base.modal';
 import {
   LobbyMode,
   lobbyModeSearchParamKey,

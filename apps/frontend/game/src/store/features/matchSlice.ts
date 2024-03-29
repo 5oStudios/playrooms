@@ -1,6 +1,7 @@
-import { createSlice } from '@reduxjs/toolkit';
 import { Match } from '@heroiclabs/nakama-js';
 import { MatchmakerMatched } from '@heroiclabs/nakama-js/socket';
+import { createSlice } from '@reduxjs/toolkit';
+
 import { HostState } from '../../hooks/use-host';
 
 export enum MatchState {

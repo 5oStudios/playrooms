@@ -1,5 +1,6 @@
-import { io, Socket } from 'socket.io-client';
+import { Socket, io } from 'socket.io-client';
 import { toast } from 'sonner';
+
 // import { store } from '../../../../apps/frontend/src/store/store';
 // import { addMessage } from '../../../../apps/frontend/src/store/features/externalChatSlice';
 

@@ -1,8 +1,7 @@
 'use client';
-import { usePathname, useRouter } from 'next/navigation';
-import { useAppDispatch } from '../../../../hooks/use-redux-typed';
-import { Controller, useForm } from 'react-hook-form';
-import BaseModal from '../../../modals/base.modal';
+
+import React, { useEffect } from 'react';
+
 import {
   Autocomplete,
   AutocompleteItem,
@@ -16,11 +15,15 @@ import {
   ModalHeader,
   useDisclosure,
 } from '@nextui-org/react';
-import React, { useEffect } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import { Controller, useForm } from 'react-hook-form';
+
 import { MockedQuestionsCollections } from '../../../../../mocks';
-import { ExternalPlatformsModal } from '../../../modals/external-platforms';
 import { useMatch } from '../../../../hooks/match/use-match';
+import { useAppDispatch } from '../../../../hooks/use-redux-typed';
 import { setTournamentFormData } from '../../../../store/features/tournamentSlice';
+import BaseModal from '../../../modals/base.modal';
+import { ExternalPlatformsModal } from '../../../modals/external-platforms';
 
 enum TournamentType {
   Public = 'public',

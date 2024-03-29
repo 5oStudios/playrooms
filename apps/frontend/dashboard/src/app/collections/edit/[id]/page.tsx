@@ -1,12 +1,14 @@
 'use client';
-import { Edit, useForm } from '@refinedev/antd';
-import { Flex, Form, Input, Select } from 'antd';
+
 import React from 'react';
+
 import {
   CollectionStatus,
   CollectionType,
   useCollections,
 } from '@hooks/useCollections';
+import { Edit, useForm } from '@refinedev/antd';
+import { Flex, Form, Input, Select } from 'antd';
 
 export default function CollectionsEdit() {
   const { onCollectionTypeChange, permissions } = useCollections();

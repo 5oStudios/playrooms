@@ -1,19 +1,21 @@
 import { useCallback, useEffect } from 'react';
+
 import { publish, useSubscribe, useSubscribeIf } from '@kingo/events';
-import { useAppDispatch, useAppSelector } from '../use-redux-typed';
+
+import { HOST_COMMANDS } from '../../components/match/match';
 import {
   MatchState,
   setCurrentMatchState,
 } from '../../store/features/matchSlice';
+import { PlayerState } from '../../store/features/playersSlice';
 import { HostState } from '../use-host';
 import { QuestionsFinishedEventKey } from '../use-questions';
+import { useAppDispatch, useAppSelector } from '../use-redux-typed';
 import {
   SOCKET_OP_CODES,
   SOCKET_SYNC,
   useMatchSocket,
 } from './use-match-socket';
-import { HOST_COMMANDS } from '../../components/match/match';
-import { PlayerState } from '../../store/features/playersSlice';
 
 export const useMatchState = () => {
   const dispatch = useAppDispatch();
@@ -22,7 +24,7 @@ export const useMatchState = () => {
   const hostState = useAppSelector((state) => state.match.hostState);
   const amIPlaying = useAppSelector((state) => {
     const myPlayer = state.players.find(
-      (player) => player.user_id === state.session.user_id
+      (player) => player.user_id === state.session.user_id,
     );
     return myPlayer?.state === PlayerState.READY;
   });
@@ -47,7 +49,7 @@ export const useMatchState = () => {
       dispatch(setCurrentMatchState(newMatchState));
       amIHost && sendMatchState(SOCKET_OP_CODES.MATCH_STATE, newMatchState);
     },
-    [amIHost, didMatchEnd, dispatch, sendMatchState]
+    [amIHost, didMatchEnd, dispatch, sendMatchState],
   );
 
   useEffect(() => {
@@ -87,10 +89,10 @@ export const useMatchState = () => {
       if (hostState === HostState.NOT_ELECTED && didMatchStart) {
         syncMatchState(MatchState.PAUSED);
       }
-    }
+    },
   );
   useSubscribeIf(amIHost, QuestionsFinishedEventKey, () =>
-    syncMatchState(MatchState.ENDED)
+    syncMatchState(MatchState.ENDED),
   );
   // // Todo: this should be for non-playing users
   // useSubscribeIf(true, 'is_still_playing', () => {

@@ -1,7 +1,9 @@
-import { gameSocket } from '@kingo/game-client';
-import { PLAYER_PRESENCE } from './use-player';
 import { toast } from 'sonner';
+
 import { publish } from '@kingo/events';
+import { gameSocket } from '@kingo/game-client';
+
+import { PLAYER_PRESENCE } from './use-player';
 
 export const usePresence = () => {
   gameSocket.onmatchpresence = (matchPresence) => {

@@ -1,4 +1,7 @@
 'use client';
+
+import React from 'react';
+
 import {
   DateField,
   MarkdownField,
@@ -8,7 +11,6 @@ import {
 } from '@refinedev/antd';
 import { useOne, useShow } from '@refinedev/core';
 import { Typography } from 'antd';
-import React from 'react';
 
 const { Title } = Typography;
 export default function BlogPostShow() {

@@ -1,4 +1,5 @@
 'use client';
+
 import { account, appwriteClient } from '@providers/data-provider';
 import { AppwriteException } from '@refinedev/appwrite';
 import { AuthBindings } from '@refinedev/core';

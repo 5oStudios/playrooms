@@ -1,21 +1,25 @@
 'use client';
+
 import { useEffect } from 'react';
+
 import { Presence } from '@heroiclabs/nakama-js';
+
+import { useSubscribe, useSubscribeIf } from '@kingo/events';
+
 import { PLAYER_COMMANDS } from '../components/match/match';
-import { useAppDispatch, useAppSelector } from './use-redux-typed';
+import { MatchState } from '../store/features/matchSlice';
 import {
-  addPlayer,
-  clearPlayers,
   PlayerScoreAction,
   PlayerState,
+  addPlayer,
+  clearPlayers,
   removePlayer,
   setPlayerScore,
   setPlayerState,
 } from '../store/features/playersSlice';
-import { HostState } from './use-host';
-import { useSubscribe, useSubscribeIf } from '@kingo/events';
 import { SOCKET_OP_CODES, SOCKET_SYNC, useMatchSocket } from './match';
-import { MatchState } from '../store/features/matchSlice';
+import { HostState } from './use-host';
+import { useAppDispatch, useAppSelector } from './use-redux-typed';
 
 export interface Player {
   id: string;
@@ -46,7 +50,7 @@ export function usePlayer() {
           username: oldPlayer.username,
           score: 0,
           state: PlayerState.READY,
-        })
+        }),
       );
     });
     dispatch(
@@ -55,7 +59,7 @@ export function usePlayer() {
         username: match.self.username,
         score: 0,
         state: PlayerState.READY,
-      })
+      }),
     );
   }, [dispatch, match]);
 
@@ -71,7 +75,7 @@ export function usePlayer() {
       setPlayerState({
         user_id: match?.self.user_id,
         state: PlayerState.PLAYING,
-      })
+      }),
     );
   });
 
@@ -85,14 +89,14 @@ export function usePlayer() {
       dispatch(setPlayerScore(playerScore));
       sendMatchState(
         SOCKET_OP_CODES.PLAYERS_SCORE,
-        JSON.stringify(playerScore)
+        JSON.stringify(playerScore),
       );
-    }
+    },
   );
 
   useSubscribe(SOCKET_SYNC.PLAYER_SCORE, (decodedData: string) => {
     dispatch(
-      setPlayerScore(new PlayerScoreMessageDTO(JSON.parse(decodedData)))
+      setPlayerScore(new PlayerScoreMessageDTO(JSON.parse(decodedData))),
     );
   });
   const isMatchPlayable =
@@ -110,9 +114,9 @@ export function usePlayer() {
           username: player.username,
           score: 0,
           state: PlayerState.READY,
-        })
+        }),
       );
-    }
+    },
   );
 
   useSubscribeIf(isMatchPlayable, PLAYER_PRESENCE.LEFT, (player: Presence) => {
@@ -126,7 +130,7 @@ export function objectToUint8Array(obj: Record<string, unknown>): Uint8Array {
 }
 
 export function uint8ArrayToObject(
-  uint8Array: Uint8Array
+  uint8Array: Uint8Array,
 ): Record<string, unknown> {
   const decoder = new TextDecoder();
   const jsonString = decoder.decode(uint8Array);

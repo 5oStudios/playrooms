@@ -1,5 +1,6 @@
 import React from 'react';
-import { cn, Modal, ModalProps } from '@nextui-org/react';
+
+import { Modal, ModalProps, cn } from '@nextui-org/react';
 
 const Drawer: React.FC<ModalProps> = ({ ...props }) => {
   return (
@@ -36,7 +37,7 @@ const Drawer: React.FC<ModalProps> = ({ ...props }) => {
       }}
       className={cn(
         'rounded-md max-w-sm w-full h-screen max-h-screen',
-        props.className
+        props.className,
       )}
     >
       <>{props.children}</>

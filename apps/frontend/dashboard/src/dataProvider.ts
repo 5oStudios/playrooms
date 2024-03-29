@@ -1,16 +1,16 @@
-import { DataProvider } from '@refinedev/core';
 import {
   Appwrite,
   Databases,
-  dataProvider,
   ID,
   Permission,
   Role,
+  dataProvider,
 } from '@refinedev/appwrite';
+import { DataProvider } from '@refinedev/core';
 
 export const customDataProvider = (
   appwriteClient: Appwrite,
-  options: { databaseId: string } = { databaseId: 'default' }
+  options: { databaseId: string } = { databaseId: 'default' },
 ): Required<DataProvider> => {
   const { databaseId } = options;
 
@@ -20,7 +20,7 @@ export const customDataProvider = (
     appwriteClient,
     {
       databaseId,
-    }
+    },
   );
 
   return {
@@ -38,7 +38,7 @@ export const customDataProvider = (
         resource,
         meta?.documentId ?? ID.unique(),
         variables as unknown as object,
-        permissions
+        permissions,
       );
 
       return {
@@ -52,7 +52,7 @@ export const customDataProvider = (
       const { $id, ...restData } = await database.getDocument(
         databaseId,
         resource,
-        id.toString()
+        id.toString(),
       );
 
       return {
@@ -74,7 +74,7 @@ export const customDataProvider = (
         resource,
         id.toString(),
         variables as any,
-        permissions
+        permissions,
       );
 
       return {
@@ -98,9 +98,9 @@ export const customDataProvider = (
             resource,
             meta?.documentId ?? ID.unique(),
             document as unknown as any,
-            permissions
-          )
-        )
+            permissions,
+          ),
+        ),
       );
 
       return {
@@ -120,8 +120,8 @@ export const customDataProvider = (
     deleteMany: async ({ resource, ids }) => {
       await Promise.all(
         ids.map((id) =>
-          database.deleteDocument(databaseId, resource, id.toString())
-        )
+          database.deleteDocument(databaseId, resource, id.toString()),
+        ),
       );
 
       return {
@@ -133,8 +133,8 @@ export const customDataProvider = (
     getMany: async ({ resource, ids }) => {
       const data = await Promise.all(
         ids.map((id) =>
-          database.getDocument<any>(databaseId, resource, id.toString())
-        )
+          database.getDocument<any>(databaseId, resource, id.toString()),
+        ),
       );
 
       return {
@@ -158,9 +158,9 @@ export const customDataProvider = (
             resource,
             id.toString(),
             variables as unknown as object,
-            permissions
-          )
-        )
+            permissions,
+          ),
+        ),
       );
 
       return {
@@ -172,12 +172,12 @@ export const customDataProvider = (
     },
     getApiUrl: () => {
       throw Error(
-        "'getApiUrl' method is not implemented on refine-appwrite data provider."
+        "'getApiUrl' method is not implemented on refine-appwrite data provider.",
       );
     },
     custom: () => {
       throw Error(
-        "'custom' method is not implemented on refine-appwrite data provider."
+        "'custom' method is not implemented on refine-appwrite data provider.",
       );
     },
   };

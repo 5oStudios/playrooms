@@ -1,10 +1,13 @@
 'use client';
-import { useAppSelector } from '../../hooks/use-redux-typed';
-import { AnimatedGameCard } from './animated-game-card';
+
+import React from 'react';
+
+import { Chip } from '@nextui-org/react';
 import { nanoid } from 'nanoid';
 import { useRouter } from 'next/navigation';
-import { Chip } from '@nextui-org/react';
-import React from 'react';
+
+import { useAppSelector } from '../../hooks/use-redux-typed';
+import { AnimatedGameCard } from './animated-game-card';
 
 export default function PlatformGames() {
   const games = useAppSelector((state) => state.platform.games);

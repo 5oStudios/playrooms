@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { ThemedLayout } from '@components/themed-layout';
 import { authProviderServer } from '@providers/auth-provider';
 import { redirect } from 'next/navigation';

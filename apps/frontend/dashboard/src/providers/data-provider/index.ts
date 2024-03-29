@@ -1,9 +1,11 @@
 'use client';
+
+import { customDataProvider } from '@dataProvider';
 import {
   Account,
   Appwrite,
-  liveProvider as appwriteLiveProvider,
   Storage,
+  liveProvider as appwriteLiveProvider,
 } from '@refinedev/appwrite';
 import {
   APPWRITE_PROJECT,
@@ -11,7 +13,6 @@ import {
   APPWRITE_URL,
 } from '@utility/constants';
 import Cookies from 'js-cookie';
-import { customDataProvider } from '@dataProvider';
 
 const appwriteClient = new Appwrite();
 
