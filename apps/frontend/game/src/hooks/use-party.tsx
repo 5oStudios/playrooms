@@ -17,7 +17,7 @@ import { setMatchFoundData } from '../store/features/matchSlice';
 import { SocketState } from '../store/features/socketSlice';
 import { useAppDispatch, useAppSelector } from './use-redux-typed';
 
-export default function useParty({
+export function useParty({
   partyId,
   partyMode,
 }: {

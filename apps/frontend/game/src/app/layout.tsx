@@ -2,8 +2,6 @@ import { ReactNode } from 'react';
 
 import { Toaster } from 'sonner';
 
-import { BackgroundBeams, Navbar } from '@components';
-
 import './global.css';
 import { Providers } from './providers';
 
@@ -23,14 +21,14 @@ export default function RootLayout({
         <Toaster />
         <Providers>
           {/*<Socket />*/}
-          <Navbar />
+          {/* <Navbar /> */}
           <div
             className="p-4 flex justify-center items-center h-[calc(100vh-64px)]"
             style={{ minHeight: 'calc(100vh - 64px)' }}
           >
             {children}
           </div>
-          <BackgroundBeams />
+          {/* <DotBackground /> */}
         </Providers>
       </body>
     </html>
