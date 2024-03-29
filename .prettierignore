@@ -2,3 +2,9 @@
 /dist
 /coverage
 /.nx/cache
+.next
+android
+ios
+*.lock
+.vscode
+.github
