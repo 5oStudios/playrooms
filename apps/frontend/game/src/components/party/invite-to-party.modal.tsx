@@ -1,7 +1,7 @@
 import { Button, ModalContent } from '@nextui-org/react';
 import QRCode from 'react-qr-code';
 
-import BaseModal from '../modals/base-modal';
+import { BaseModal } from '@components';
 
 export const InviteToParty = ({
   isOpen,

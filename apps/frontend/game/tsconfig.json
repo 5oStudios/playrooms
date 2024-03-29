@@ -14,6 +14,7 @@
       "@mocks": ["apps/frontend/game/mocks"],
       "@hooks": ["apps/frontend/game/src/hooks"],
       "@store": ["apps/frontend/game/src/store"],
+      "@constants": ["apps/frontend/game/src/constants"]
     },
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,

@@ -6,8 +6,8 @@ import {
   useDisclosure,
 } from '@nextui-org/react';
 
-import { useAppSelector } from '../../hooks/use-redux-typed';
-import BaseModal from '../modals/base-modal';
+import { BaseModal } from '@components';
+import { useAppSelector } from '@hooks';
 
 export function Leaderboard() {
   const players = useAppSelector((state) => state.players);

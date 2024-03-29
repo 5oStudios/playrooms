@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import { MatchmakerTicket, PartyMatchmakerTicket } from '@heroiclabs/nakama-js';
 import { Button } from '@nextui-org/react';
@@ -6,19 +6,19 @@ import { useRouter } from 'next/navigation';
 
 import { gameSocket } from '@kingo/game-client';
 
-import { useAppDispatch, useAppSelector } from '../../../hooks/use-redux-typed';
-import { setParty } from '../../../store/features/partySlice';
-import { InviteToParty } from '../../party/invite-to-party.modal';
-import { PartyMembersTracker } from '../../party/party-members-tracker';
+import { useAppDispatch, useAppSelector } from '@hooks';
+import { setParty } from '@store';
+
+import { InviteToParty, PartyMembersTracker } from '../../party';
 import { PartyOpCodes, PartyState } from './joinLobby';
 
 export function LobbyPartyMode({
   setPartyState,
   setQueueTicket,
-}: {
+}: Readonly<{
   setPartyState: (partyState: PartyState) => void;
   setQueueTicket: (ticket: MatchmakerTicket | PartyMatchmakerTicket) => void;
-}) {
+}>) {
   const party = useAppSelector((state) => state.party);
   const session = useAppSelector((state) => state.session);
   const [inviteModalOpen, setInviteModalOpen] = useState(false);

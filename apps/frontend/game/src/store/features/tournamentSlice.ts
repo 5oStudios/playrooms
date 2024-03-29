@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-interface TournamentFormData {
+export interface TournamentFormData {
   questionsCollectionId: string;
   tournamentTitle: string;
   maxPlayers: string;

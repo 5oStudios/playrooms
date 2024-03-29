@@ -10,14 +10,14 @@ import { Controller, useForm } from 'react-hook-form';
 
 import { gameSocket } from '@kingo/game-client';
 
-import { useAppDispatch } from '../../../../hooks/use-redux-typed';
-import { setParty } from '../../../../store/features/partySlice';
-import BaseModal from '../../../modals/base-modal';
 import {
+  BaseModal,
   LobbyMode,
   lobbyModeSearchParamKey,
   partyIdSearchParamKey,
-} from '../../lobby-actions/joinLobby';
+} from '@components';
+import { useAppDispatch } from '@hooks';
+import { setParty } from '@store';
 
 enum PartyType {
   Public = 'public',
@@ -27,10 +27,10 @@ enum PartyType {
 export default function CreatePartyModal({
   createPartyModal,
   setCreatePartyModal,
-}: {
+}: Readonly<{
   createPartyModal: boolean;
   setCreatePartyModal: (value: boolean) => void;
-}) {
+}>) {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const path = usePathname();

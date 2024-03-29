@@ -17,7 +17,8 @@ import { usePresence } from 'framer-motion';
 import { useSearchParams } from 'next/navigation';
 import { IoChatbubbles } from 'react-icons/io5';
 
-import { Drawer, Match, matchIdSearchParamKey } from '@components';
+import { Drawer, Match } from '@components';
+import { matchIdSearchParamKey } from '@constants';
 import {
   useAppSelector,
   useChat,

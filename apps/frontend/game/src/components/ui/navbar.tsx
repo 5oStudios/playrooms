@@ -1,7 +1,5 @@
 'use client';
 
-import React from 'react';
-
 import {
   NavbarBrand,
   NavbarContent,
@@ -10,7 +8,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { SiMonogame } from 'react-icons/si';
 
-export default function Navbar() {
+export function Navbar() {
   const router = useRouter();
   return (
     <NextUINavbar className="bg-background/30">

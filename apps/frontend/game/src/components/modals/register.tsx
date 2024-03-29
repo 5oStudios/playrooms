@@ -1,4 +1,4 @@
-import { BaseModal } from './base-modal';
+import { BaseModal } from '@components';
 
 export const Register = () => {
   return (
