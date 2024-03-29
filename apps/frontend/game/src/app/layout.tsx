@@ -1,10 +1,11 @@
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 
 import { Toaster } from 'sonner';
 
+import { BackgroundBeams, Navbar } from '@components';
+
 import './global.css';
 import { Providers } from './providers';
-import { BackgroundBeams, Navbar } from '../components/ui';
 
 export const metadata = {
   title: 'Welcome to my game',

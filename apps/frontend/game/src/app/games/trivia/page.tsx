@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import { useState } from 'react';
 
 import { Link, ModalContent } from '@nextui-org/react';
 import { useRouter } from 'next/navigation';
@@ -10,7 +10,7 @@ import { LuGamepad2 } from 'react-icons/lu';
 import { BaseModal } from '@components';
 
 export default function Page() {
-  const [isOpen, setIsOpen] = React.useState(true);
+  const [isOpen, setIsOpen] = useState(true);
   const router = useRouter();
   return (
     <BaseModal

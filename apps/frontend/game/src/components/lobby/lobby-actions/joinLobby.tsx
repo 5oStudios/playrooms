@@ -1,8 +1,9 @@
-import React from 'react';
+'use client';
 
 import { Button, Divider } from '@nextui-org/react';
 
 import { gameSocket } from '@kingo/game-client';
+
 import useParty from '../../../hooks/use-party';
 import { LobbyPartyMode } from './lobby-party-mode';
 
@@ -29,10 +30,10 @@ export const partyIdSearchParamKey = 'partyId';
 export function JoinLobby({
   partyId,
   mode,
-}: {
+}: Readonly<{
   partyId?: string;
   mode: LobbyMode;
-}) {
+}>) {
   const {
     partyState,
     setPartyState,

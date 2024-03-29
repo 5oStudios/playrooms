@@ -1,10 +1,11 @@
+"use client"
 import React from 'react';
 
 import { Button, Divider } from '@nextui-org/react';
 import { useRouter } from 'next/navigation';
 
 import { LobbyMode, lobbyModeSearchParamKey } from '../lobby-actions/joinLobby';
-import CreatePartyModal from './modes/create-party';
+import { CreatePartyModal } from './modes';
 
 export const CreateLobby = () => {
   const router = useRouter();

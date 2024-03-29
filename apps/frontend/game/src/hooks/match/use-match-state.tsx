@@ -1,3 +1,5 @@
+'use client';
+
 import { useCallback, useEffect } from 'react';
 
 import { publish, useSubscribe, useSubscribeIf } from '@kingo/events';

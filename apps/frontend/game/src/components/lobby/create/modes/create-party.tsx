@@ -1,12 +1,5 @@
-import {
-  Button,
-  Input,
-  ModalContent,
-  Radio,
-  RadioGroup,
-} from '@nextui-org/react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Controller, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 
 import { gameSocket } from '@kingo/game-client';
 
@@ -24,7 +17,7 @@ enum PartyType {
   Private = 'private',
 }
 
-export default function CreatePartyModal({
+export function CreatePartyModal({
   createPartyModal,
   setCreatePartyModal,
 }: Readonly<{
@@ -64,59 +57,6 @@ export default function CreatePartyModal({
       size={'sm'}
       isOpen={createPartyModal}
       onClose={() => setCreatePartyModal(false)}
-    >
-      <form onSubmit={createPartyData.handleSubmit(handleCreateParty)}>
-        <ModalContent className={'gap-4 w-full'}>
-          <Controller
-            name={'partyType'}
-            control={createPartyData.control}
-            rules={{ required: true }}
-            render={({ field }) => (
-              <RadioGroup
-                label="Party Type"
-                color="secondary"
-                orientation="horizontal"
-                className={'w-full'}
-                defaultValue={PartyType.Public}
-                {...field}
-              >
-                <Radio value={PartyType.Public}>Public</Radio>
-                <Radio value={PartyType.Private}>Private</Radio>
-              </RadioGroup>
-            )}
-          />
-
-          <Controller
-            name="maxPlayers"
-            rules={{
-              required: true,
-              min: {
-                value: 2,
-                message: 'Minimum players is 2',
-              },
-              max: {
-                value: 256,
-                message: 'Maximum players is 256',
-              },
-            }}
-            control={createPartyData.control}
-            render={({ field, fieldState, formState }) => (
-              <Input
-                type="number"
-                {...field}
-                label="Max Players"
-                placeholder="4"
-                className={'w-full'}
-                errorMessage={fieldState.error?.message}
-              />
-            )}
-          />
-
-          <Button disableRipple type={'submit'} className={'w-full'}>
-            Create Party
-          </Button>
-        </ModalContent>
-      </form>
-    </BaseModal>
+    ></BaseModal>
   );
 }

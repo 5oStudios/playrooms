@@ -15,8 +15,7 @@ import {
   ModalHeader,
   useDisclosure,
 } from '@nextui-org/react';
-import { usePathname } from 'next/navigation';
-import { useRouter } from 'next/router';
+import { usePathname, useRouter } from 'next/navigation';
 import { Controller, useForm } from 'react-hook-form';
 
 import { BaseModal, ExternalPlatformsModal } from '@components';

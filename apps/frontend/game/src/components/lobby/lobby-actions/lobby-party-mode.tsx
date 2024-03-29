@@ -1,3 +1,5 @@
+'use client';
+
 import { useState } from 'react';
 
 import { MatchmakerTicket, PartyMatchmakerTicket } from '@heroiclabs/nakama-js';

@@ -1,4 +1,4 @@
-import PlatformGames from '../../components/games/platform-games';
+import { PlatformGames } from '@components';
 
 export default function Page() {
   return <PlatformGames />;

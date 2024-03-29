@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 import { useAppSelector } from '../../hooks/use-redux-typed';
 import { AnimatedGameCard } from './animated-game-card';
 
-export default function PlatformGames() {
+export function PlatformGames() {
   const games = useAppSelector((state) => state.platform.games);
   const router = useRouter();
   return (

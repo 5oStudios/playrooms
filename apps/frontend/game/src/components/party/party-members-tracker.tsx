@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+'use client';
+
+import { useState } from 'react';
 
 import { Users } from '@heroiclabs/nakama-js';
 import { Divider } from '@nextui-org/react';
@@ -7,9 +9,9 @@ import { toast } from 'sonner';
 
 import { gameClient, gameSocket } from '@kingo/game-client';
 
-import { useAppDispatch, useAppSelector } from '../../hooks/use-redux-typed';
-import { setParty } from '../../store/features/partySlice';
-import { NoSSRAvatar } from '../players/player-info';
+import { NoSSRAvatar } from '@components';
+import { useAppDispatch, useAppSelector } from '@hooks';
+import { setParty } from '@store';
 
 export const PartyMembersTracker = () => {
   const session = useAppSelector((state) => state.session);
