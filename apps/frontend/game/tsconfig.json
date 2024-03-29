@@ -11,12 +11,14 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "incremental": true,
+    "removeComments": false,
     "plugins": [
       {
         "name": "next"
       }
     ],
-    "types": ["jest", "node"]
+    "types": ["jest", "node"],
+
   },
   "include": [
     "**/*.ts",

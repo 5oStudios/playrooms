@@ -28,5 +28,18 @@
       "rules": {}
     }
   ],
-  "extends": ["./.eslintrc.base.json"]
+  "extends": ["./.eslintrc.base.json"],
+  "rules": {
+    "sort-imports": [
+      "error",
+      {
+        "groups": [
+          ["external", "builtin"],
+          "internal",
+          ["parent", "sibling", "index"]
+        ],
+        "newlines-between": "always"
+      }
+    ]
+  }
 }

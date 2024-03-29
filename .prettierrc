@@ -1,3 +1,18 @@
 {
-  "singleQuote": true
+  "singleQuote": true,
+  "plugins": ["@trivago/prettier-plugin-sort-imports"],
+  "trailingComma": "all",
+  "semi": true,
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true,
+  "importOrder": [
+    "^server-only|client-only$",
+    "^react$",
+    "<THIRD_PARTY_MODULES>",
+
+    "^@kingo/(.*)$",
+
+    "^~/(.*)$",
+    "^[./]"
+  ]
 }

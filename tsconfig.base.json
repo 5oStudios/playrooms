@@ -18,7 +18,16 @@
       "@kingo/core": ["libs/core/src/index.ts"],
       "@kingo/game-client": ["libs/game-client/src/index.ts"],
       "@kingo/tiktok-client": ["libs/tiktok-client/src/index.ts"],
-      "@kingo/events": ["libs/events/src/index.ts"]
+      "@kingo/events": ["libs/events/src/index.ts"],
+
+      "@components/*": ["components/*"],
+      "@hooks/*": ["hooks/*"],
+      "@store/*": ["store/*"],
+      "@lib/*": ["lib/*"],
+      "@pages/*": ["pages/*"],
+      "@styles/*": ["styles/*"],
+      "@types/*": ["types/*"],
+      "@utils/*": ["utils/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]
