@@ -12,6 +12,8 @@
 
     "^@kingo/(.*)$",
 
+    "^(@components|@hooks|@store|@utils)/(.*)$",
+
     "^~/(.*)$",
     "^[./]"
   ]

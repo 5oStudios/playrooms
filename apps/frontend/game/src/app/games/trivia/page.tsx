@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import { IoPeople } from 'react-icons/io5';
 import { LuGamepad2 } from 'react-icons/lu';
 
-import BaseModal from '../../../components/modals/base.modal';
+import { BaseModal } from '@components/modals';
 
 export default function Page() {
   const [isOpen, setIsOpen] = React.useState(true);

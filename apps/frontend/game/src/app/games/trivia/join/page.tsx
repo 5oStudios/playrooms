@@ -1,18 +1,19 @@
 'use client';
 
-import React, { Suspense, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { Suspense, useState } from 'react';
 
 import { BreadcrumbItem, Breadcrumbs, ModalContent } from '@nextui-org/react';
-import { useSearchParams } from 'next/navigation';
 
 import JoinLobby, {
   LobbyMode,
   lobbyModeSearchParamKey,
   partyIdSearchParamKey,
-} from '../../../../components/lobby/lobby-actions/joinLobby';
-import BaseModal from '../../../../components/modals/base.modal';
-import { PlayerInfo } from '../../../../components/players/player-info';
-import { useAppSelector } from '../../../../hooks/use-redux-typed';
+} from '@components/lobby/lobby-actions/joinLobby';
+import BaseModal from '@components/modals/base.modal';
+import { PlayerInfo } from '@components/players/player-info';
+import { useAppSelector } from '@hooks/use-redux-typed';
+
 import { SocketState } from '../../../../store/features/socketSlice';
 
 export default function Page() {
@@ -21,15 +22,13 @@ export default function Page() {
   return (
     <BaseModal
       closeButton={
-        <>
-          <div className={'flex self-start'}>
-            <Breadcrumbs variant={'solid'}>
-              <BreadcrumbItem href={'/games'}>Games</BreadcrumbItem>
-              <BreadcrumbItem href={'/games/trivia'}>Trivia</BreadcrumbItem>
-              <BreadcrumbItem href={'/games/trivia/join'}>Join</BreadcrumbItem>
-            </Breadcrumbs>
-          </div>
-        </>
+        <div className={'flex self-start'}>
+          <Breadcrumbs variant={'solid'}>
+            <BreadcrumbItem href={'/games'}>Games</BreadcrumbItem>
+            <BreadcrumbItem href={'/games/trivia'}>Trivia</BreadcrumbItem>
+            <BreadcrumbItem href={'/games/trivia/join'}>Join</BreadcrumbItem>
+          </Breadcrumbs>
+        </div>
       }
       isOpen={isOpen}
       onClose={() => setIsOpen(false)}

@@ -4,10 +4,9 @@ import React from 'react';
 
 import { Modal, ModalProps } from '@nextui-org/react';
 
-export default function BaseModal(props: ModalProps) {
+export function BaseModal(props: Readonly<ModalProps>) {
   return (
-    <>
-      <Modal
+    <Modal
         backdrop={'blur'}
         placement={'center'}
         {...props}
@@ -17,6 +16,5 @@ export default function BaseModal(props: ModalProps) {
       >
         {props.children}
       </Modal>
-    </>
   );
 }

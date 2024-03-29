@@ -1,33 +1,33 @@
 'use client';
-import React, { useEffect, useRef } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { matchIdSearchParamKey } from '../../../../../components/lobby/create/modes/create-tournament';
-import Drawer from '../../../../../components/ui/drawer';
-import {
-  Avatar,
-  Button,
-  cn,
-  Divider,
-  ModalContent,
-  ModalHeader,
-  ScrollShadow,
-  useDisclosure,
-} from '@nextui-org/react';
-import { IoChatbubbles } from 'react-icons/io5';
 import AutoScroll from '@brianmcallister/react-auto-scroll';
-import Match from '../../../../../components/match/match';
+import {
+    Avatar,
+    Button,
+    Divider,
+    ModalContent,
+    ModalHeader,
+    ScrollShadow,
+    cn,
+    useDisclosure,
+} from '@nextui-org/react';
+import { useSearchParams } from 'next/navigation';
+import React, { useEffect, useRef } from 'react';
+import { IoChatbubbles } from 'react-icons/io5';
+import { useChat } from '../../../../../hooks/chat/use-chat';
+import { useChatPlayers } from '../../../../../hooks/chat/use-chat-players';
 import { useMatch } from '../../../../../hooks/match/use-match';
+import { useMatchState } from '../../../../../hooks/match/use-match-state';
 import { useHost } from '../../../../../hooks/use-host';
 import { usePlayer } from '../../../../../hooks/use-player';
-import { useAppSelector } from '../../../../../hooks/use-redux-typed';
-import { useChatPlayers } from '../../../../../hooks/chat/use-chat-players';
 import { usePresence } from '../../../../../hooks/use-presence';
-import { useChat } from '../../../../../hooks/chat/use-chat';
+import { useAppSelector } from '../../../../../hooks/use-redux-typed';
 import {
-  ChatAnswerState,
-  ChatMessage,
+    ChatAnswerState,
+    ChatMessage,
 } from '../../../../../store/features/externalChatSlice';
-import { useMatchState } from '../../../../../hooks/match/use-match-state';
+import { matchIdSearchParamKey } from '../@components/lobby/create/modes/create-tournament';
+import Match from '../@components/match/match';
+import Drawer from '../@components/ui/drawer';
 
 export default function Page() {
   const searchParams = useSearchParams();

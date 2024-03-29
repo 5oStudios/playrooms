@@ -3,6 +3,17 @@
   "compilerOptions": {
     "jsx": "preserve",
     "allowJs": true,
+    "paths": {
+      "@kingo/core": ["libs/core/src/index.ts"],
+      "@kingo/events": ["libs/events/src/index.ts"],
+      "@kingo/game-client": ["libs/game-client/src/index.ts"],
+      "@kingo/tiktok-client": ["libs/tiktok-client/src/index.ts"],
+
+      "@components/*": ["apps/frontend/game/src/components/*"],
+      "@hooks/*": ["apps/frontend/game/src/hooks/*"],
+      "@utils/*": ["apps/frontend/game/src/utils/*"],
+      "@store/*": ["apps/frontend/game/src/store/*"]
+    },
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": false,

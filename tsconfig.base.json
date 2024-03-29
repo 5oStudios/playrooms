@@ -15,18 +15,10 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@components/*": ["components/*"],
-      "@hooks/*": ["hooks/*"],
       "@kingo/core": ["libs/core/src/index.ts"],
       "@kingo/events": ["libs/events/src/index.ts"],
       "@kingo/game-client": ["libs/game-client/src/index.ts"],
-      "@kingo/tiktok-client": ["libs/tiktok-client/src/index.ts"],
-      "@lib/*": ["lib/*"],
-      "@pages/*": ["pages/*"],
-      "@store/*": ["store/*"],
-      "@styles/*": ["styles/*"],
-      "@types/*": ["types/*"],
-      "@utils/*": ["utils/*"]
+      "@kingo/tiktok-client": ["libs/tiktok-client/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
