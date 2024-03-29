@@ -1,7 +1,5 @@
 'use client';
 
-import React from 'react';
-
 import {
   NavbarBrand,
   NavbarContent,
@@ -13,7 +11,7 @@ import { SiMonogame } from 'react-icons/si';
 export default function Navbar() {
   const router = useRouter();
   return (
-    <NextUINavbar className="bg-background/30">
+    <NextUINavbar className="bg-transparent">
       <NavbarBrand
         onClick={() => router.push('/')}
         className="space-x-2 cursor-pointer"
