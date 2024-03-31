@@ -13,7 +13,7 @@ import JoinLobby, {
 import BaseModal from '../../../../components/modals/base.modal';
 import { PlayerInfo } from '../../../../components/players/player-info';
 import { useAppSelector } from '../../../../hooks/use-redux-typed';
-import { SocketState } from '../../../../store/features/socketSlice';
+import { SocketState } from '../../../../lib/features/socketSlice';
 
 export default function Page() {
   const [isOpen, setIsOpen] = useState(true);

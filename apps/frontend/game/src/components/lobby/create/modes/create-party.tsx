@@ -13,7 +13,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { gameSocket } from '@kingo/game-client';
 
 import { useAppDispatch } from '../../../../hooks/use-redux-typed';
-import { setParty } from '../../../../store/features/partySlice';
+import { setParty } from '../../../../lib/features/partySlice';
 import BaseModal from '../../../modals/base.modal';
 import {
   LobbyMode,

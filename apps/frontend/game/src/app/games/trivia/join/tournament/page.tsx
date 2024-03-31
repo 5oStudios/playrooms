@@ -26,7 +26,7 @@ import { useChat } from '../../../../../hooks/chat/use-chat';
 import {
   ChatAnswerState,
   ChatMessage,
-} from '../../../../../store/features/externalChatSlice';
+} from '../../../../../lib/features/externalChatSlice';
 import { useMatchState } from '../../../../../hooks/match/use-match-state';
 
 export default function Page() {

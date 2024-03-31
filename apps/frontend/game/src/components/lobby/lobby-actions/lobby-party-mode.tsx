@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import { gameSocket } from '@kingo/game-client';
 
 import { useAppDispatch, useAppSelector } from '../../../hooks/use-redux-typed';
-import { setParty } from '../../../store/features/partySlice';
+import { setParty } from '../../../lib/features/partySlice';
 import { InviteToParty } from '../../party/invite-to-party.modal';
 import { PartyMembersTracker } from '../../party/party-members-tracker';
 import { PartyOpCodes, PartyState } from './joinLobby';

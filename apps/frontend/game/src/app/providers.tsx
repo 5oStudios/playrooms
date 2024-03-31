@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import { Provider } from 'react-redux';
 
 import { AuthGuard } from '../guards/auth.guard';
-import { store } from '../store/store';
+import { store } from '../lib/store';
 
 export function Providers({ children }: Readonly<{ children: ReactNode }>) {
   const router = useRouter();

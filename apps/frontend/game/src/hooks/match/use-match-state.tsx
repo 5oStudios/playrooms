@@ -6,8 +6,8 @@ import { HOST_COMMANDS } from '../../components/match/match';
 import {
   MatchState,
   setCurrentMatchState,
-} from '../../store/features/matchSlice';
-import { PlayerState } from '../../store/features/playersSlice';
+} from '../../lib/features/matchSlice';
+import { PlayerState } from '../../lib/features/playersSlice';
 import { HostState } from '../use-host';
 import { QuestionsFinishedEventKey } from '../use-questions';
 import { useAppDispatch, useAppSelector } from '../use-redux-typed';

@@ -4,8 +4,8 @@ import {
   ChatAnswerState,
   ChatMessage,
   editMessageMeta,
-} from '../../store/features/externalChatSlice';
-import { MatchState } from '../../store/features/matchSlice';
+} from '../../lib/features/externalChatSlice';
+import { MatchState } from '../../lib/features/matchSlice';
 import { PLAYER_PRESENCE, PlayerPresenceMessageDTO } from '../use-player';
 import { QUESTION_EVENTS, patterns } from '../use-questions';
 import { useAppDispatch, useAppSelector } from '../use-redux-typed';

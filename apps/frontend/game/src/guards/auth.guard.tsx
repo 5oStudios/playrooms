@@ -14,7 +14,7 @@ import {
 } from '@kingo/game-client';
 
 import { useAppDispatch, useAppSelector } from '../hooks/use-redux-typed';
-import { setSession } from '../store/features/sessionSlice';
+import { setSession } from '../lib/features/sessionSlice';
 import { storage } from '../utils/storage';
 
 const generatedUsername = generateUsername('', 0, 8, '');

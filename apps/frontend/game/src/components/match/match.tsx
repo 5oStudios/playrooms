@@ -18,8 +18,8 @@ import {
   useQuestions,
 } from '../../hooks/use-questions';
 import { useAppSelector } from '../../hooks/use-redux-typed';
-import { MatchState } from '../../store/features/matchSlice';
-import { PlayerScoreAction } from '../../store/features/playersSlice';
+import { MatchState } from '../../lib/features/matchSlice';
+import { PlayerScoreAction } from '../../lib/features/playersSlice';
 import { Answers } from '../sections/mcq/answers/answers';
 import { Question } from '../sections/mcq/questions/question';
 import { Leaderboard } from './leaderboard';

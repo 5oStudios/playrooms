@@ -21,7 +21,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { MockedQuestionsCollections } from '../../../../../mocks';
 import { useMatch } from '../../../../hooks/match/use-match';
 import { useAppDispatch } from '../../../../hooks/use-redux-typed';
-import { setTournamentFormData } from '../../../../store/features/tournamentSlice';
+import { setTournamentFormData } from '../../../../lib/features/tournamentSlice';
 import BaseModal from '../../../modals/base.modal';
 import { ExternalPlatformsModal } from '../../../modals/external-platforms';
 

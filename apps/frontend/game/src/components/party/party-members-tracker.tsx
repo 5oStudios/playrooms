@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 import { gameClient, gameSocket } from '@kingo/game-client';
 
 import { useAppDispatch, useAppSelector } from '../../hooks/use-redux-typed';
-import { setParty } from '../../store/features/partySlice';
+import { setParty } from '../../lib/features/partySlice';
 import { NoSSRAvatar } from '../players/player-info';
 
 export const PartyMembersTracker = () => {

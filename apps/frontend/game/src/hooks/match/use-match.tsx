@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { publish } from '@kingo/events';
 import { gameSocket } from '@kingo/game-client';
 
-import { setCurrentMatch } from '../../store/features/matchSlice';
+import { setCurrentMatch } from '../../lib/features/matchSlice';
 import { useAppDispatch, useAppSelector } from '../use-redux-typed';
 
 export interface JoinMatchProps {

@@ -5,8 +5,8 @@ import { useRef } from 'react';
 import { publish, useSubscribeIf, useSubscribeOnceIf } from '@kingo/events';
 
 import { PLAYER_COMMANDS } from '../components/match/match';
-import { MatchState } from '../store/features/matchSlice';
-import { PlayerScoreAction } from '../store/features/playersSlice';
+import { MatchState } from '../lib/features/matchSlice';
+import { PlayerScoreAction } from '../lib/features/playersSlice';
 import { CHAT_ANSWER_EVENTS } from './chat/use-chat';
 import { SOCKET_OP_CODES, SOCKET_SYNC, useMatchSocket } from './match';
 import { useAppSelector } from './use-redux-typed';

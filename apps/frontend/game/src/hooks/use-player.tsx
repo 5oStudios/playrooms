@@ -7,7 +7,7 @@ import { Presence } from '@heroiclabs/nakama-js';
 import { useSubscribe, useSubscribeIf } from '@kingo/events';
 
 import { PLAYER_COMMANDS } from '../components/match/match';
-import { MatchState } from '../store/features/matchSlice';
+import { MatchState } from '../lib/features/matchSlice';
 import {
   PlayerScoreAction,
   PlayerState,
@@ -16,7 +16,7 @@ import {
   removePlayer,
   setPlayerScore,
   setPlayerState,
-} from '../store/features/playersSlice';
+} from '../lib/features/playersSlice';
 import { SOCKET_OP_CODES, SOCKET_SYNC, useMatchSocket } from './match';
 import { HostState } from './use-host';
 import { useAppDispatch, useAppSelector } from './use-redux-typed';

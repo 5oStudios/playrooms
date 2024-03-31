@@ -13,8 +13,8 @@ import {
   PartyOpCodes,
   PartyState,
 } from '../components/lobby/lobby-actions/joinLobby';
-import { setMatchFoundData } from '../store/features/matchSlice';
-import { SocketState } from '../store/features/socketSlice';
+import { setMatchFoundData } from '../lib/features/matchSlice';
+import { SocketState } from '../lib/features/socketSlice';
 import { useAppDispatch, useAppSelector } from './use-redux-typed';
 
 export default function useParty({

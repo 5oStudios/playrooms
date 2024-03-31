@@ -6,7 +6,7 @@ import { useSearchParams } from 'next/navigation';
 
 import Match from '../../../../components/match/match';
 import { useAppSelector } from '../../../../hooks/use-redux-typed';
-import { SocketState } from '../../../../store/features/socketSlice';
+import { SocketState } from '../../../../lib/features/socketSlice';
 
 export default function Page() {
   return (

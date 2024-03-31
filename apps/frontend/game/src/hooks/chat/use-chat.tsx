@@ -12,7 +12,7 @@ import {
 import {
   ChatMessage,
   addMessage,
-} from '../../store/features/externalChatSlice';
+} from '../../lib/features/externalChatSlice';
 import { useAppDispatch, useAppSelector } from '../use-redux-typed';
 
 export enum CHAT_ANSWER_EVENTS {

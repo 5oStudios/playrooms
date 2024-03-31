@@ -4,7 +4,7 @@ import { useCallback, useEffect } from 'react';
 
 import { subscribe } from '@kingo/events';
 
-import { setAmIHost, setHostState } from '../store/features/matchSlice';
+import { setAmIHost, setHostState } from '../lib/features/matchSlice';
 import { SOCKET_OP_CODES, SOCKET_SYNC, useMatchSocket } from './match';
 import { useAppDispatch, useAppSelector } from './use-redux-typed';
 
