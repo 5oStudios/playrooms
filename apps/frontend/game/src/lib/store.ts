@@ -48,30 +48,31 @@ listenerMiddleware.startListening({
   actionCreator: setSession,
   effect: async (action, listenerApi) => {
     const session = action.payload;
-    if (!session) return;
-
-    storage.setItem({
-      key: LOCAL_STORAGE_AUTH_KEY,
-      value: session.token,
-    });
-    storage.setItem({
-      key: LOCAL_STORAGE_REFRESH_KEY,
-      value: session.refresh_token,
-    });
-
-    gameClient.getAccount(session).then((user) => {
-      listenerApi.dispatch(setUser(user.user));
-    });
-
-    gameSocket
-      .connect(session, true)
-      .then(() => {
-        makeStore().dispatch(setSocket(SocketState.CONNECTED));
-        console.log('Connected to socket');
-      })
-      .catch((error) => {
-        console.error('Error connecting to socket: ', error.message);
-        makeStore().dispatch(setSocket(SocketState.DISCONNECTED));
+    if (session) {
+      storage.setItem({
+        key: LOCAL_STORAGE_AUTH_KEY,
+        value: session.token,
       });
+      storage.setItem({
+        key: LOCAL_STORAGE_REFRESH_KEY,
+        value: session.refresh_token,
+      });
+      gameClient.getAccount(session).then((user) => {
+        listenerApi.dispatch(setUser(user.user));
+      });
+
+      gameSocket
+        .connect(session, true)
+        .then(() => {
+          makeStore().dispatch(setSocket(SocketState.CONNECTED));
+          console.log('Connected to socket');
+        })
+        .catch((error) => {
+          console.error('Error connecting to socket: ', error.message);
+          makeStore().dispatch(setSocket(SocketState.DISCONNECTED));
+        });
+    } else {
+      gameSocket.disconnect(true);
+    }
   },
 });
