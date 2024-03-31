@@ -7,15 +7,15 @@ import {
 } from '@nextui-org/react';
 
 import { useAppSelector } from '../../hooks/use-redux-typed';
+import { selectUserId } from '../../lib/features/sessionSlice';
 import BaseModal from '../modals/base.modal';
 
 export function Leaderboard() {
   const players = useAppSelector((state) => state.players);
   const playersClone = [...players];
   const disclosure = useDisclosure({ defaultOpen: true });
-  const session = useAppSelector((state) => state.session);
-  const isMe = players.find((player) => player.user_id === session?.user_id);
-  const matchState = useAppSelector((state) => state.match.currentMatchState);
+  const MyPlayerId = useAppSelector(selectUserId);
+  const isMe = players.find((player) => player.user_id === MyPlayerId);
   console.log(players);
 
   return (

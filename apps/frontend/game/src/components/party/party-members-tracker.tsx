@@ -9,10 +9,11 @@ import { gameClient, gameSocket } from '@kingo/game-client';
 
 import { useAppDispatch, useAppSelector } from '../../hooks/use-redux-typed';
 import { setParty } from '../../lib/features/partySlice';
+import { selectSession } from '../../lib/features/sessionSlice';
 import { NoSSRAvatar } from '../players/player-info';
 
 export const PartyMembersTracker = () => {
-  const session = useAppSelector((state) => state.session);
+  const session = useAppSelector(selectSession);
   const [localPartyMembers, setLocalPartyMembers] = useState<Users['users']>(
     [],
   );

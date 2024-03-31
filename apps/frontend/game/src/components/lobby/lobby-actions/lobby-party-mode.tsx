@@ -8,6 +8,7 @@ import { gameSocket } from '@kingo/game-client';
 
 import { useAppDispatch, useAppSelector } from '../../../hooks/use-redux-typed';
 import { setParty } from '../../../lib/features/partySlice';
+import { selectUserId } from '../../../lib/features/sessionSlice';
 import { InviteToParty } from '../../party/invite-to-party.modal';
 import { PartyMembersTracker } from '../../party/party-members-tracker';
 import { PartyOpCodes, PartyState } from './joinLobby';
@@ -20,14 +21,14 @@ export default function LobbyPartyMode({
   setQueueTicket: (ticket: MatchmakerTicket | PartyMatchmakerTicket) => void;
 }) {
   const party = useAppSelector((state) => state.party);
-  const session = useAppSelector((state) => state.session);
+  const MyPlayerId = useAppSelector(selectUserId);
   const [inviteModalOpen, setInviteModalOpen] = useState(false);
   const router = useRouter();
   const dispatch = useAppDispatch();
 
-  if (!session) return null;
+  if (!MyPlayerId) return null;
 
-  const isPartyLeader = party?.leader?.user_id === session.user_id;
+  const isPartyLeader = party?.leader?.user_id === MyPlayerId;
   const handleJoinOnline = () => {
     setPartyState(PartyState.IN_QUEUE);
     gameSocket.addMatchmakerParty(party.party_id, '*', 2, 4).then((ticket) => {

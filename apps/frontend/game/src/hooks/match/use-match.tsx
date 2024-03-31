@@ -4,6 +4,7 @@ import { publish } from '@kingo/events';
 import { gameSocket } from '@kingo/game-client';
 
 import { setCurrentMatch } from '../../lib/features/matchSlice';
+import { selectSession } from '../../lib/features/sessionSlice';
 import { useAppDispatch, useAppSelector } from '../use-redux-typed';
 
 export interface JoinMatchProps {
@@ -14,7 +15,7 @@ export interface JoinMatchProps {
 export function useMatch({ matchId }: { matchId?: string }) {
   const match = useAppSelector((state) => state.match.currentMatch);
   const dispatch = useAppDispatch();
-  const session = useAppSelector((state) => state.session);
+  const session = useAppSelector(selectSession);
 
   // Cleanup
   // useEffect(() => {

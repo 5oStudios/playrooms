@@ -14,7 +14,7 @@ import {
 } from '@kingo/game-client';
 
 import { useAppDispatch, useAppSelector } from '../hooks/use-redux-typed';
-import { setSession } from '../lib/features/sessionSlice';
+import { selectSession, setSession } from '../lib/features/sessionSlice';
 import { storage } from '../utils/storage';
 
 const generatedUsername = generateUsername('', 0, 8, '');
@@ -61,7 +61,7 @@ const getLocalSession = () => {
 };
 
 export function AuthGuard({ children }: Readonly<{ children: ReactNode }>) {
-  const session = useAppSelector((state) => state.session);
+  const session = useAppSelector(selectSession);
   const { session: localSession, state } = getLocalSession();
   const dispatch = useAppDispatch();
 
