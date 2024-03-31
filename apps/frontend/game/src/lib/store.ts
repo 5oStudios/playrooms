@@ -1,4 +1,4 @@
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, createListenerMiddleware } from '@reduxjs/toolkit';
 
 import {
   LOCAL_STORAGE_AUTH_KEY,
@@ -13,7 +13,7 @@ import matchSlice from './features/matchSlice';
 import partySlice from './features/partySlice';
 import platformSlice from './features/platformSlice';
 import playersSlice from './features/playersSlice';
-import sessionSlice from './features/sessionSlice';
+import sessionSlice, { setSession } from './features/sessionSlice';
 import socketSlice, { SocketState, setSocket } from './features/socketSlice';
 import tournamentSlice from './features/tournamentSlice';
 import userSlice, { setUser } from './features/userSlice';
@@ -35,23 +35,21 @@ export const makeStore = () => {
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
         serializableCheck: false,
-      }),
+      }).prepend(listenerMiddleware.middleware),
     devTools: process.env.NODE_ENV !== 'production',
   });
 };
-
-// Infer the type of makeStore
 export type AppStore = ReturnType<typeof makeStore>;
-// Infer the `RootState` and `AppDispatch` types from the store itself
 export type RootState = ReturnType<AppStore['getState']>;
 export type AppDispatch = AppStore['dispatch'];
 
-makeStore().subscribe(() => {
-  const session = makeStore().getState().session;
-  const socket = makeStore().getState().socket;
-  const user = makeStore().getState().user;
+const listenerMiddleware = createListenerMiddleware();
+listenerMiddleware.startListening({
+  actionCreator: setSession,
+  effect: async (action, listenerApi) => {
+    const session = action.payload;
+    if (!session) return;
 
-  if ((!user && session) || (user && user.id !== session.user_id)) {
     storage.setItem({
       key: LOCAL_STORAGE_AUTH_KEY,
       value: session.token,
@@ -60,12 +58,11 @@ makeStore().subscribe(() => {
       key: LOCAL_STORAGE_REFRESH_KEY,
       value: session.refresh_token,
     });
+
     gameClient.getAccount(session).then((user) => {
-      makeStore().dispatch(setUser(user.user));
+      listenerApi.dispatch(setUser(user.user));
     });
 
-    if (!session) return;
-    if (socket === SocketState.CONNECTED) return;
     gameSocket
       .connect(session, true)
       .then(() => {
@@ -76,5 +73,5 @@ makeStore().subscribe(() => {
         console.error('Error connecting to socket: ', error.message);
         makeStore().dispatch(setSocket(SocketState.DISCONNECTED));
       });
-  }
+  },
 });
