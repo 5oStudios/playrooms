@@ -21,9 +21,10 @@ export const makeStore = () => {
       tournament: tournamentSlice,
       externalChat: externalChatSlice,
       session: sessionSlice,
-      account: accountReducer,
       socket: socketSlice,
+
       match: matchSlice,
+      account: accountReducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
