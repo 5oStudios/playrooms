@@ -4,11 +4,12 @@ import { toast } from 'sonner';
 const baseURL = process.env.NEXT_PUBLIC_CLAWS_API_URL;
 console.log({ baseURL });
 
-const clawsClient = axios.create({
+export const clawsClient = axios.create({
   baseURL,
   headers: {
     'Content-Type': 'application/json',
     Accept: '*/*',
+    'Access-Control-Allow-Origin': '*',
   },
 });
 
@@ -43,4 +44,75 @@ export const clawsControls = () => ({
   drop: () => clawsClient.post('/control', { direction: 'drop' }),
 });
 
-export const { up, down, left, right, drop } = clawsControls();
+export const { up, down, left, right, drop } = {
+  up: () => {
+    toast.loading('Executing command...');
+
+    fetch('/api/control?direction=left', {
+      method: 'POST',
+    })
+      .then(() => {
+        toast.success('Action successful');
+      })
+      .catch((error) => {
+        toast.error(error.message);
+      })
+      .finally(toast.dismiss);
+  },
+  down: () => {
+    toast.loading('Executing command...');
+
+    fetch('/api/control?direction=down', {
+      method: 'POST',
+    })
+      .then(() => {
+        toast.success('Action successful');
+      })
+      .catch((error) => {
+        toast.error(error.message);
+      })
+      .finally(toast.dismiss);
+  },
+  left: () => {
+    toast.loading('Executing command...');
+
+    fetch('/api/control?direction=left', {
+      method: 'POST',
+    })
+      .then(() => {
+        toast.success('Action successful');
+      })
+      .catch((error) => {
+        toast.error(error.message);
+      })
+      .finally(toast.dismiss);
+  },
+  right: () => {
+    toast.loading('Executing command...');
+
+    fetch('/api/control?direction=right', {
+      method: 'POST',
+    })
+      .then(() => {
+        toast.success('Action successful');
+      })
+      .catch((error) => {
+        toast.error(error.message);
+      })
+      .finally(toast.dismiss);
+  },
+  drop: () => {
+    toast.loading('Executing command...');
+
+    fetch('/api/control?direction=drop', {
+      method: 'POST',
+    })
+      .then(() => {
+        toast.success('Action successful');
+      })
+      .catch((error) => {
+        toast.error(error.message);
+      })
+      .finally(toast.dismiss);
+  },
+};
