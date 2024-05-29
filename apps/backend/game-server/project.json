@@ -1,0 +1,24 @@
+{
+  "name": "game-server",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/backend/game-server/src",
+  "projectType": "application",
+  "targets": {
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "game-server:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "game-server:build:development"
+        },
+        "production": {
+          "buildTarget": "game-server:build:production"
+        }
+      }
+    }
+  },
+  "tags": []
+}
