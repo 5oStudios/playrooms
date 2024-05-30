@@ -1,23 +1,22 @@
-import { Room } from 'colyseus';
+import { Client, Room } from 'colyseus';
 
+import { ClawsPlayer } from './claws.player';
 import { ClawsState } from './claws.state';
 
-export class ClawsRoom extends Room {
+export class ClawsRoom extends Room<ClawsState> {
   static roomName = 'claws';
 
   onCreate(options: unknown) {
     this.setState(new ClawsState());
   }
 
-  onJoin(client: any, options: any) {
-    this.state.createPlayer();
+  onJoin(client: Client) {
+    const newPlayer = new ClawsPlayer();
+    newPlayer.sessionId = client.sessionId;
+    this.state.addPlayer(newPlayer);
   }
 
-  onLeave(client: any) {
-    this.state.removePlayer(client.sessionId);
-  }
-
-  onMessage(client: any, message: any) {
-    this.state.currentPlayer.moveClaws({ direction: message.direction });
+  onLeave(client: Client) {
+    this.state.removePlayerBySessionId(client.sessionId);
   }
 }

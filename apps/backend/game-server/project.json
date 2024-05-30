@@ -18,6 +18,12 @@
           "buildTarget": "game-server:build:production"
         }
       }
+    },
+    "start": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "NODE_ENV=production node dist/apps/backend/game-server/main.js"
+      }
     }
   },
   "tags": []

@@ -1,18 +1,18 @@
 import { ArraySchema, Schema, type } from '@colyseus/schema';
 import { ClawsPlayer } from './claws.player';
 
+const PLAYER_TURN_DURATION = 3;
+
 export class ClawsState extends Schema {
   @type({ array: ClawsPlayer })
-  players = new ArraySchema();
+  players = new ArraySchema<ClawsPlayer>();
 
   currentPlayer: ClawsPlayer | null = null;
 
-  createPlayer() {
-    const player = new ClawsPlayer();
+  addPlayer(player: ClawsPlayer) {
     this.players.push(player);
-    if (this.players.length === 1) {
-      this.startGame();
-    }
+    const isFirstPlayer = this.players.length === 1;
+    if (isFirstPlayer) this.startGame();
   }
 
   removePlayer(playerId: string) {
@@ -22,10 +22,17 @@ export class ClawsState extends Schema {
     }
   }
 
+  removePlayerBySessionId(sessionId: string) {
+    const player = this.players.find((p) => p.sessionId === sessionId);
+    if (player) {
+      this.players.splice(this.players.indexOf(player), 1);
+    }
+  }
+
   startGame() {
     this.currentPlayer = this.players[0];
     this.currentPlayer.startTurn({
-      countDownInSeconds: 3,
+      countDownInSeconds: PLAYER_TURN_DURATION,
       onCountDownEnd: () => {
         this.nextPlayer();
       },
@@ -39,7 +46,7 @@ export class ClawsState extends Schema {
       this.currentPlayer = this.players[0];
     }
     this.currentPlayer.startTurn({
-      countDownInSeconds: 3,
+      countDownInSeconds: PLAYER_TURN_DURATION,
       onCountDownEnd: () => {
         this.nextPlayer();
       },

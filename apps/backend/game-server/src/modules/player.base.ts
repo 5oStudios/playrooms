@@ -6,5 +6,8 @@ export class Player extends Schema {
   id: string = faker.database.mongodbObjectId();
 
   @type('string')
+  sessionId: string = faker.database.mongodbObjectId();
+
+  @type('string')
   name: string = faker.person.firstName();
 }
