@@ -1,6 +1,11 @@
 import { ArraySchema, Schema, type } from '@colyseus/schema';
 import { ClawsPlayer } from './claws.player';
 
+export enum GameState {
+  WAITING = 'waiting',
+  STARTED = 'started',
+  ENDED = 'ended',
+}
 
 export class ClawsState extends Schema {
   @type({ array: ClawsPlayer })
@@ -10,7 +15,7 @@ export class ClawsState extends Schema {
   currentPlayer: ClawsPlayer | null = null;
 
   @type('string')
-  gameState: 'started' | 'ended' | 'waiting' = 'waiting';
+  gameState: GameState = GameState.WAITING;
 
   @type('number')
   startedAt: number = 0;
