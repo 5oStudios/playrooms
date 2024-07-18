@@ -1,14 +1,14 @@
 import { Command, Dispatcher } from '@colyseus/command';
 
 import { CLAWS_CONFIG } from './claws.config';
-import { ClawsDirection, ClawsPlayerState } from './claws.player';
 import { ClawsRoom } from './claws.room';
-import { GameState } from './claws.state';
+import { CLAWS_DIRECTION, ClawsPlayerState } from './state/player.state';
+import { GAME_STATE } from './state/room.state';
 
 export class StartGameCommand extends Command<ClawsRoom> {
   async execute() {
     this.state.currentPlayer = this.state.players[0];
-    this.room.state.gameState = GameState.STARTED;
+    this.room.state.gameState = GAME_STATE.STARTED;
     this.state.startedAt = this.clock.currentTime;
 
     new Dispatcher(this.room).dispatch(new HandlePlayerTurnCommand());
@@ -23,16 +23,16 @@ export class HandlePlayerTurnCommand extends Command<ClawsRoom> {
 
     await new Dispatcher(this.room).dispatch(new MoveClawCommand(), {
       sessionId: this.state.currentPlayer.sessionId,
-      direction: ClawsDirection.LEFT,
+      direction: CLAWS_DIRECTION.LEFT,
     });
     await new Dispatcher(this.room).dispatch(new MoveClawCommand(), {
       sessionId: this.state.currentPlayer.sessionId,
-      direction: ClawsDirection.DROP,
+      direction: CLAWS_DIRECTION.DROP,
     });
   }
 
   validate() {
-    return this.state.gameState === GameState.STARTED;
+    return this.state.gameState === GAME_STATE.STARTED;
   }
 }
 
@@ -47,20 +47,20 @@ export class EndTurnCommand extends Command<ClawsRoom> {
 
 type MoveClawCommandPayload = {
   sessionId: string;
-  direction: ClawsDirection;
+  direction: CLAWS_DIRECTION;
 };
 export class MoveClawCommand extends Command<
   ClawsRoom,
   MoveClawCommandPayload
 > {
   validate({ sessionId, direction }: MoveClawCommandPayload) {
-    const isGameStarted = this.state.gameState === GameState.STARTED;
+    const isGameStarted = this.state.gameState === GAME_STATE.STARTED;
     if (!isGameStarted) return false;
 
     const isPlayersTurn = this.state.currentPlayer.sessionId === sessionId;
     if (!isPlayersTurn) return false;
 
-    const isValidDirection = Object.values(ClawsDirection).includes(direction);
+    const isValidDirection = Object.values(CLAWS_DIRECTION).includes(direction);
     if (!isValidDirection) return false;
 
     const isMoving = this.state.currentPlayer.state === ClawsPlayerState.MOVING;
@@ -76,7 +76,7 @@ export class MoveClawCommand extends Command<
     );
     await this.state.currentPlayer.moveClaw(direction);
 
-    if (direction === ClawsDirection.DROP) {
+    if (direction === CLAWS_DIRECTION.DROP) {
       await new Dispatcher(this.room).dispatch(new EndTurnCommand());
     }
   }

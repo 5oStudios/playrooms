@@ -1,26 +1,30 @@
 import { ArraySchema, Schema, type } from '@colyseus/schema';
-import { ClawsPlayer } from './claws.player';
+import { PlayerState } from './player.state';
+import { MachineState } from './machine.state';
 
-export enum GameState {
+export enum GAME_STATE {
   WAITING = 'waiting',
   STARTED = 'started',
   ENDED = 'ended',
 }
 
-export class ClawsState extends Schema {
-  @type({ array: ClawsPlayer })
-  players = new ArraySchema<ClawsPlayer>();
+export class RoomState extends Schema {
+  @type({ array: PlayerState })
+  players = new ArraySchema<PlayerState>();
 
-  @type(ClawsPlayer)
-  currentPlayer: ClawsPlayer | null = null;
+  @type(PlayerState)
+  currentPlayer: PlayerState | null = null;
 
   @type('string')
-  gameState: GameState = GameState.WAITING;
+  gameState: GAME_STATE = GAME_STATE.WAITING;
+
+  @type(MachineState)
+  machine: MachineState = new MachineState();
 
   @type('number')
   startedAt: number = 0;
 
-  addPlayer(player: ClawsPlayer) {
+  addPlayer(player: PlayerState) {
     this.players.push(player);
   }
 

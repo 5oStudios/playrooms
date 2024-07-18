@@ -1,8 +1,8 @@
 import { type } from '@colyseus/schema';
-import { Player } from '../player.base';
 import axios from 'axios';
+import { Player } from '../../player.base';
 
-export enum ClawsDirection {
+export enum CLAWS_DIRECTION {
   UP = 'up',
   DOWN = 'down',
   LEFT = 'left',
@@ -15,7 +15,7 @@ export enum ClawsPlayerState {
   MOVING = 'moving',
 }
 
-export class ClawsPlayer extends Player {
+export class PlayerState extends Player {
   @type('boolean')
   isMyTurn = false;
 
@@ -61,7 +61,7 @@ export class ClawsPlayer extends Player {
     this.lastMoveAt = Date.now();
   }
 
-  async moveClaw(direction: ClawsDirection) {
+  async moveClaw(direction: CLAWS_DIRECTION) {
     this.state = ClawsPlayerState.MOVING;
     await axios.post('https://api.mshemali.dev/control', {
       direction,
