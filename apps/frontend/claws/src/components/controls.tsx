@@ -5,26 +5,26 @@ import arrowLeft from '../../public/assets/controls/arrowLeft.svg';
 import arrowRight from '../../public/assets/controls/arrowRight.svg';
 import arrowUp from '../../public/assets/controls/arrowUp.svg';
 import dropClaw from '../../public/assets/controls/drop.svg';
-import { down, drop, left, right, up } from '../services/claws-controls';
+import { clawsControls, down, drop, left, right, up } from '../services/claws-controls';
 
-// const controls = [
-//   {
-//     keys: ['w', 'arrowup'],
-//     handler: clawsControls().up,
-//   },
-//   {
-//     keys: ['s', 'arrowdown'],
-//     handler: clawsControls().down,
-//   },
-//   {
-//     keys: ['a', 'arrowleft'],
-//     handler: clawsControls().left,
-//   },
-//   {
-//     keys: ['d', 'arrowright'],
-//     handler: clawsControls().right,
-//   },
-// ];
+const controls = [
+  {
+    keys: ['w', 'arrowup'],
+    handler: clawsControls().up,
+  },
+  {
+    keys: ['s', 'arrowdown'],
+    handler: clawsControls().down,
+  },
+  {
+    keys: ['a', 'arrowleft'],
+    handler: clawsControls().left,
+  },
+  {
+    keys: ['d', 'arrowright'],
+    handler: clawsControls().right,
+  },
+];
 
 export const Controls = () => {
   return (
