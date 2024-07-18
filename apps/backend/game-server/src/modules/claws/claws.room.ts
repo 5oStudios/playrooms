@@ -2,7 +2,8 @@ import { Dispatcher } from '@colyseus/command';
 import { Client, Room } from 'colyseus';
 
 import { CLAWS_CONFIG } from './claws.config';
-import { MoveClawCommand, StartGameCommand } from './commands';
+import { MoveClawCommand } from './commands/move-claw.command';
+import { StartGameCommand } from './commands/start-game.command';
 import { PlayerState } from './state/player.state';
 import { RoomState } from './state/room.state';
 
