@@ -29,38 +29,22 @@ export class ClawsPlayer extends Player {
   @type('number')
   totalRounds = 0;
 
-  private timerInterval?: NodeJS.Timeout;
+  constructor(playerInfo: Partial<Player>) {
+    super(playerInfo);
+  }
 
-  startTurn({
-              countDownInSeconds = 0,
-              onCountDownEnd,
-            }: {
-    countDownInSeconds?: number;
-    onCountDownEnd?: () => void;
-  }) {
-    this.currentTurnTimerInSeconds = 0;
-
-    this.timerInterval = setInterval(() => {
-      this.currentTurnTimerInSeconds++;
-      if (this.currentTurnTimerInSeconds >= countDownInSeconds) {
-        this.endTurn();
-        if (onCountDownEnd) {
-          onCountDownEnd();
-        }
-      }
-    }, 1000);
-
+  startTurn(){
     this.isMyTurn = true;
-    this.totalRounds++;
+    this.totalRounds++
   }
 
   endTurn() {
-    if (this.timerInterval) {
-      clearInterval(this.timerInterval);
-    }
-
-    this.lastMoveAt = Date.now();
     this.currentTurnTimerInSeconds = 0;
     this.isMyTurn = false;
+    this.lastMoveAt = Date.now();
+  }
+
+  moveClaw(direction: 'down' | 'left' | 'right') {
+    this.totalMoves++;
   }
 }

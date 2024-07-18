@@ -20,6 +20,9 @@ dependencies:
   '@capacitor/preferences':
     specifier: ^5.0.7
     version: 5.0.7(@capacitor/core@5.7.5)
+  '@colyseus/command':
+    specifier: ^0.2.1
+    version: 0.2.1(colyseus@0.15.17)
   '@colyseus/playground':
     specifier: ^0.15.12
     version: 0.15.12(express@4.19.2)
@@ -3398,6 +3401,17 @@ packages:
       express-session: 1.18.0
       grant: 5.4.22
       jsonwebtoken: 9.0.2
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
+
+  /@colyseus/command@0.2.1(colyseus@0.15.17):
+    resolution: {integrity: sha512-kwNvJTNDRshuxfcKZyFoO0hpcaUQKTpncl551eLsZr8xgAiu2uyhmuQTcsPYmrDZ1fV8MxcbBlEfu8H+4JtbhA==}
+    peerDependencies:
+      colyseus: '*'
+    dependencies:
+      colyseus: 0.15.17(@colyseus/schema@2.0.32)(express@4.19.2)
+      debug: 4.3.4(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
     dev: false
@@ -12167,7 +12181,7 @@ packages:
       json-schema-typed: 7.0.3
       onetime: 5.1.2
       pkg-up: 3.1.0
-      semver: 7.5.2
+      semver: 7.6.2
     dev: false
 
   /confusing-browser-globals@1.0.11:

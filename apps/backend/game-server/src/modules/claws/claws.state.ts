@@ -1,18 +1,22 @@
 import { ArraySchema, Schema, type } from '@colyseus/schema';
 import { ClawsPlayer } from './claws.player';
 
-const PLAYER_TURN_DURATION = 3;
 
 export class ClawsState extends Schema {
   @type({ array: ClawsPlayer })
   players = new ArraySchema<ClawsPlayer>();
 
+  @type(ClawsPlayer)
   currentPlayer: ClawsPlayer | null = null;
+
+  @type('string')
+  gameState: 'started' | 'ended' | 'waiting' = 'waiting';
+
+  @type('number')
+  startedAt: number = 0;
 
   addPlayer(player: ClawsPlayer) {
     this.players.push(player);
-    const isFirstPlayer = this.players.length === 1;
-    if (isFirstPlayer) this.startGame();
   }
 
   removePlayer(playerId: string) {
@@ -29,27 +33,17 @@ export class ClawsState extends Schema {
     }
   }
 
-  startGame() {
-    this.currentPlayer = this.players[0];
-    this.currentPlayer.startTurn({
-      countDownInSeconds: PLAYER_TURN_DURATION,
-      onCountDownEnd: () => {
-        this.nextPlayer();
-      },
-    });
-  }
-
-  nextPlayer() {
-    const currentPlayerIndex = this.players.indexOf(this.currentPlayer);
-    this.currentPlayer = this.players[currentPlayerIndex + 1];
-    if (!this.currentPlayer) {
-      this.currentPlayer = this.players[0];
-    }
-    this.currentPlayer.startTurn({
-      countDownInSeconds: PLAYER_TURN_DURATION,
-      onCountDownEnd: () => {
-        this.nextPlayer();
-      },
-    });
-  }
+  // nextPlayer() {
+  //   const currentPlayerIndex = this.players.indexOf(this.currentPlayer);
+  //   this.currentPlayer = this.players[currentPlayerIndex + 1];
+  //   if (!this.currentPlayer) {
+  //     this.currentPlayer = this.players[0];
+  //   }
+  //   this.currentPlayer.startTurn({
+  //     countDownInSeconds: CLAWS_CONFIG.PLAYER_TURN_DURATION,
+  //     onCountDownEnd: () => {
+  //       this.nextPlayer();
+  //     },
+  //   });
+  // }
 }
