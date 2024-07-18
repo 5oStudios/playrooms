@@ -13,7 +13,7 @@ export class ClawsRoom extends Room<ClawsState> {
 
   onCreate() {
     this.setState(new ClawsState());
-    this.onMessage('move-claw', (client, message) => {
+    this.onMessage('move-claw', async (client, message) => {
       this.dispatcher.dispatch(new MoveClawCommand(), {
         sessionId: client.sessionId,
         direction: message.direction,

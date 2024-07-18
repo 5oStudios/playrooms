@@ -10,9 +10,17 @@ export enum ClawsDirection {
   DROP = 'drop',
 }
 
+export enum ClawsPlayerState {
+  IDLE = 'idle',
+  MOVING = 'moving',
+}
+
 export class ClawsPlayer extends Player {
   @type('boolean')
   isMyTurn = false;
+
+  @type('string')
+  state: ClawsPlayerState = ClawsPlayerState.IDLE;
 
   @type('number')
   totalMoves = 0;
@@ -54,9 +62,11 @@ export class ClawsPlayer extends Player {
   }
 
   async moveClaw(direction: ClawsDirection) {
-    this.totalMoves++;
+    this.state = ClawsPlayerState.MOVING;
     await axios.post('https://api.mshemali.dev/control', {
       direction,
     });
+    this.totalMoves++;
+    this.state = ClawsPlayerState.IDLE;
   }
 }

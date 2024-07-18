@@ -1,7 +1,7 @@
 import { Command, Dispatcher } from '@colyseus/command';
 
 import { CLAWS_CONFIG } from './claws.config';
-import { ClawsDirection } from './claws.player';
+import { ClawsDirection, ClawsPlayerState } from './claws.player';
 import { ClawsRoom } from './claws.room';
 import { GameState } from './claws.state';
 
@@ -17,7 +17,7 @@ export class StartGameCommand extends Command<ClawsRoom> {
 
 export class HandlePlayerTurnCommand extends Command<ClawsRoom> {
   async execute() {
-    console.log('Starting player turn');
+    console.log('Starting player turn ', this.state.currentPlayer.sessionId);
     this.state.currentPlayer.startTurn();
     await this.clock.duration(CLAWS_CONFIG.PLAYER_TURN_DURATION);
 
@@ -29,15 +29,19 @@ export class HandlePlayerTurnCommand extends Command<ClawsRoom> {
       sessionId: this.state.currentPlayer.sessionId,
       direction: ClawsDirection.DROP,
     });
-
-    this.state.currentPlayer.endTurn();
-    console.log('Player turn ended');
-    await this.clock.duration(CLAWS_CONFIG.TIMEOUT_BEFORE_NEXT_TURN);
-    await new Dispatcher(this.room).dispatch(new SelectNextPlayerCommand());
   }
 
   validate() {
     return this.state.gameState === GameState.STARTED;
+  }
+}
+
+export class EndTurnCommand extends Command<ClawsRoom> {
+  async execute() {
+    this.state.currentPlayer.endTurn();
+    console.log('Player turn ended ', this.state.currentPlayer.sessionId);
+    await this.clock.duration(CLAWS_CONFIG.TIMEOUT_BEFORE_NEXT_TURN);
+    await new Dispatcher(this.room).dispatch(new SelectNextPlayerCommand());
   }
 }
 
@@ -59,12 +63,22 @@ export class MoveClawCommand extends Command<
     const isValidDirection = Object.values(ClawsDirection).includes(direction);
     if (!isValidDirection) return false;
 
+    const isMoving = this.state.currentPlayer.state === ClawsPlayerState.MOVING;
+    if (isMoving) return false;
+
     return true;
   }
 
   async execute({ direction }) {
-    console.log(`Moving claw ${direction}`);
+    console.log(
+      `Moving claw ${direction} `,
+      this.state.currentPlayer.sessionId,
+    );
     await this.state.currentPlayer.moveClaw(direction);
+
+    if (direction === ClawsDirection.DROP) {
+      await new Dispatcher(this.room).dispatch(new EndTurnCommand());
+    }
   }
 }
 
