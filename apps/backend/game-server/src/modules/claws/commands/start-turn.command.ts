@@ -18,6 +18,10 @@ export class StartPlayerTurnCommand extends Command<ClawsRoom> {
       );
       await this.room.dispatcher.dispatch(new MoveClawCommand(), {
         sessionId: this.room.state.currentPlayer.sessionId,
+        direction: CLAWS_DIRECTION.LEFT,
+      });
+      await this.room.dispatcher.dispatch(new MoveClawCommand(), {
+        sessionId: this.room.state.currentPlayer.sessionId,
         direction: CLAWS_DIRECTION.DROP,
       });
     }, CLAWS_CONFIG.PLAYER_TURN_DURATION);

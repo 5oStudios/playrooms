@@ -14,7 +14,7 @@ export class MoveClawCommand extends Command<
   MoveClawCommandPayload
 > {
   validate({ sessionId, direction }: MoveClawCommandPayload) {
-    const isCurrentPlayer = this.state.currentPlayer.sessionId === sessionId;
+    const isCurrentPlayer = this.state.currentPlayer?.sessionId === sessionId;
     if (!isCurrentPlayer) return false;
 
     const isMyTurn = this.state.currentPlayer.isMyTurn;

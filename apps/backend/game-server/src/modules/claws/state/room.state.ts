@@ -41,18 +41,4 @@ export class RoomState extends Schema {
       this.players.splice(this.players.indexOf(player), 1);
     }
   }
-
-  // nextPlayer() {
-  //   const currentPlayerIndex = this.players.indexOf(this.currentPlayer);
-  //   this.currentPlayer = this.players[currentPlayerIndex + 1];
-  //   if (!this.currentPlayer) {
-  //     this.currentPlayer = this.players[0];
-  //   }
-  //   this.currentPlayer.startTurn({
-  //     countDownInSeconds: CLAWS_CONFIG.PLAYER_TURN_DURATION,
-  //     onCountDownEnd: () => {
-  //       this.nextPlayer();
-  //     },
-  //   });
-  // }
 }

@@ -15,7 +15,7 @@ const rooms = [ClawsRoom];
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const globalPrefix = 'api';
+  const globalPrefix = '';
   app.setGlobalPrefix(globalPrefix);
   const port = process.env.PORT || 3000;
 
@@ -30,8 +30,7 @@ async function bootstrap() {
     gameServer.define(room.roomName, room);
   });
 
-  // await gameServer.listen(3001);
-  Logger.log(`🎮 Game server is running on ws://localhost:3001`);
+  Logger.log(`🎮 Game server is running on ws://localhost:${port}`);
 
   app.use('/playground', playground);
 
