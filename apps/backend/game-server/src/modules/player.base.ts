@@ -10,4 +10,9 @@ export class Player extends Schema {
 
   @type('string')
   name: string = faker.person.firstName();
+
+  constructor(playerInfo: Partial<Player>) {
+    super();
+    Object.assign(this, playerInfo);
+  }
 }

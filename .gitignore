@@ -11,7 +11,9 @@ tmp
 node_modules
 
 # IDEs and editors
-/.idea
+.idea/*
+!.idea/scopes
+
 .project
 .classpath
 .c9/

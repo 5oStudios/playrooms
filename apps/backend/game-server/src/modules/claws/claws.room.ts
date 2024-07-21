@@ -1,19 +1,33 @@
+import { Dispatcher } from '@colyseus/command';
 import { Client, Room } from 'colyseus';
 
-import { ClawsPlayer } from './claws.player';
-import { ClawsState } from './claws.state';
+import { CLAWS_CONFIG } from './claws.config';
+import { MoveClawCommand } from './commands/move-claw.command';
+import { StartGameCommand } from './commands/start-game.command';
+import { PlayerState } from './state/player.state';
+import { RoomState } from './state/room.state';
 
-export class ClawsRoom extends Room<ClawsState> {
-  static roomName = 'claws';
+export class ClawsRoom extends Room<RoomState> {
+  static roomName = CLAWS_CONFIG.ROOM_NAME;
+  maxClients = CLAWS_CONFIG.MAX_PLAYERS;
+  dispatcher = new Dispatcher(this);
 
-  onCreate(options: unknown) {
-    this.setState(new ClawsState());
+  onCreate() {
+    this.setState(new RoomState());
+    this.onMessage('move-claw', async (client, message) => {
+      this.dispatcher.dispatch(new MoveClawCommand(), {
+        sessionId: client.sessionId,
+        direction: message.direction,
+      });
+    });
   }
 
   onJoin(client: Client) {
-    const newPlayer = new ClawsPlayer();
-    newPlayer.sessionId = client.sessionId;
-    this.state.addPlayer(newPlayer);
+    this.state.addPlayer(new PlayerState({ sessionId: client.sessionId }));
+
+    if (this.state.players.length === CLAWS_CONFIG.MIN_PLAYERS_TO_START) {
+      this.dispatcher.dispatch(new StartGameCommand());
+    }
   }
 
   onLeave(client: Client) {
