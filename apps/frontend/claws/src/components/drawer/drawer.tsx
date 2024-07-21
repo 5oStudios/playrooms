@@ -6,6 +6,7 @@ import 'react-modern-drawer/dist/index.css';
 
 import DrawerHeader from './drawerHeader';
 import Login from './login';
+import QueueBoard from './queueBoard';
 
 type DrawerProps = {
   title: string;
@@ -29,7 +30,7 @@ export default function BottomDrawer({
         <DrawerHeader title={title} toggleDrawer={toggleDrawer} />
         <div className="flex flex-col items-center">
           <div className="bg-slate-200 w-5/6 h-[1px] mt-2"></div>
-          <Login/>
+          {title === 'Join Play' ? <Login /> : <QueueBoard />}
         </div>
       </Drawer>
     </>
