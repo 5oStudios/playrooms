@@ -2,9 +2,9 @@ import { generateRandomUser } from '../../../app/mock/generateRandomUsers';
 import QueueCard from './card';
 
 export default function QueueBoard() {
-  const users = generateRandomUser(10);
+  const users = generateRandomUser(20);
   return (
-    <div>
+    <div className="mt-4 max-h-[650px] overflow-y-auto">
       {users.map((user, index) => (
         <QueueCard
           id={index}

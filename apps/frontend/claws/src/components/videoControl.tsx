@@ -13,7 +13,7 @@ type VideoControlProps = {
 
 export default function VideoControl({ mute, setMute }: VideoControlProps) {
   return (
-    <div className="absolute flex flex-col gap-2 right-2 bottom-32 z-10">
+    <div className="absolute flex flex-col gap-2 right-2 bottom-32 z-30">
       <button className="bg-white p-1 rounded-full">
         <Image src={info} alt={'info'} />
       </button>

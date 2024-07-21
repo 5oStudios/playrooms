@@ -19,6 +19,7 @@ export default function BottomDrawer({
   isOpen,
   toggleDrawer,
 }: DrawerProps) {
+  const style = title === 'Queue Board' ? 'ml-[110px]' : '';
   return (
     <>
       <Drawer
@@ -27,7 +28,11 @@ export default function BottomDrawer({
         direction="bottom"
         style={{ height: '80%', borderRadius: '30px 30px 0 0' }}
       >
-        <DrawerHeader title={title} toggleDrawer={toggleDrawer} />
+        <DrawerHeader
+          title={title}
+          toggleDrawer={toggleDrawer}
+          className={style}
+        />
         <div className="flex flex-col items-center">
           <div className="bg-slate-200 w-5/6 h-[1px] mt-2"></div>
           {title === 'Join Play' ? <Login /> : <QueueBoard />}

@@ -20,9 +20,6 @@ export default function Index() {
   const searchParams = useSearchParams();
   const youtubeId = searchParams.get('yt');
 
-  // const { w, a, s, d, arrowleft, arrowright, arrowup, arrowdown } = useWASD();
-  //
-  // console.log({ w, a, s, d, arrowleft, arrowright, arrowup, arrowdown });
   const [mute, setMute] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [title, setTitle] = useState('Join Play');
@@ -30,15 +27,17 @@ export default function Index() {
   const toggleDrawer = () => {
     setIsOpen((prevState) => !prevState);
   };
+
   return (
-    <div>
+    <div className="min-h-screen flex flex-col justify-between">
       <Header viewers={20} waiting={20} />
-      <div className="relative">
-        <VideoControl setMute={setMute} mute={mute} />
+      <div className="relative flex-grow">
         <VideoPlayer youtubeId={youtubeId} mute={mute} />
+        <VideoControl setMute={setMute} mute={mute} />
       </div>
       <Controls />
-      <div className="flex flex-col items-center mt-[19px]">
+      {/* footer */}
+      <footer className="fixed bottom-0 left-0 right-0 flex flex-col items-center bg-white p-4">
         <button
           className="bg-gradient-to-t from-secondary to-darkYellow w-[380px] h-[58px] rounded-3xl"
           onClick={() => {
@@ -49,7 +48,7 @@ export default function Index() {
           Join Play
         </button>
         <button
-          className="mt-4 flex justify-center items-center button-gradient-border w-[380px] h-[58px] "
+          className="mt-4 flex justify-center items-center button-gradient-border w-[380px] h-[58px]"
           onClick={() => {
             setTitle('Queue Board');
             toggleDrawer();
@@ -57,7 +56,7 @@ export default function Index() {
         >
           Queue Board
         </button>
-      </div>
+      </footer>
       <Drawer isOpen={isOpen} toggleDrawer={toggleDrawer} title={title} />
     </div>
   );

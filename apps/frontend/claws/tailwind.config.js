@@ -17,6 +17,9 @@ module.exports = {
         secondary: '#E8710B',
         darkYellow: '#FCC92F',
       },
+      fontFamily: {
+        urbanist: ['Urbanist',"sans-serif"],
+      },
     },
   },
   plugins: [],
