@@ -1,8 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap');
 
 .button-gradient-border {
   position: relative;
@@ -32,4 +33,18 @@
   display: inline-block;
   background-color: white; /* Your button's background color */
   border-radius: inherit;
+}
+
+/* Ensure the controls are responsive */
+.video-control-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  /* Add any additional responsive styles here */
+}
+
+.video-control-button {
+  margin: 0 10px;
+  /* Ensure button sizes are appropriate for mobile */
 }

@@ -18,7 +18,7 @@ module.exports = {
         darkYellow: '#FCC92F',
       },
       fontFamily: {
-        urbanist: ['Urbanist',"sans-serif"],
+        urbanist: ['Urbanist', 'sans-serif'],
       },
     },
   },

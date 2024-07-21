@@ -19,7 +19,7 @@ export default function QueueCard({
     <div className="flex flex-col w-full items-center mt-4">
       <div className="flex justify-center items-center w-full mx-5 ">
         <div className="flex items-center  text-2xl font-bold w-[238.31px]">
-          <p className="mr-3.5 text-[32px] font-urbanist">{id}</p>
+          <p className="mr-3.5 text-[32px] font-urbanist w-[24.33px]">{id}</p>
           <Image
             src={images}
             alt="profile picture"
@@ -27,7 +27,7 @@ export default function QueueCard({
             width={54.65}
             height={54.65}
           />
-          <p className="text-[17.92px] font-urbanist">{name}</p>
+          <p className="text-[16px] font-urbanist">{name}</p>
         </div>
         <p className="w-[139px] text-right text-[12.54px] font-urbanist">{points} Point</p>
       </div>
