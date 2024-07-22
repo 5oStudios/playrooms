@@ -8,18 +8,19 @@ import { MoveClawCommand } from './player/move-claw.command';
 
 export class StartPlayerTurnCommand extends Command<ClawsRoom> {
   async execute() {
-    console.log('Starting player turn ', this.state.currentPlayer.sessionId);
     this.state.currentPlayer.startTurn();
 
     this.clock.setTimeout(async () => {
-      console.log(
-        'Automatically dropping claw ',
-        this.state.currentPlayer.sessionId,
-      );
-      await this.room.dispatcher.dispatch(new MoveClawCommand(), {
-        sessionId: this.room.state.currentPlayer.sessionId,
-        direction: CLAWS_DIRECTION.LEFT,
-      });
+      const didPlayerMove = this.state.currentPlayer.totalMovesThisRound > 0;
+
+      // we need to preform any movement before dropping the claw
+      if (!didPlayerMove) {
+        await this.room.dispatcher.dispatch(new MoveClawCommand(), {
+          sessionId: this.room.state.currentPlayer.sessionId,
+          direction: CLAWS_DIRECTION.LEFT,
+        });
+      }
+      
       await this.room.dispatcher.dispatch(new MoveClawCommand(), {
         sessionId: this.room.state.currentPlayer.sessionId,
         direction: CLAWS_DIRECTION.DROP,

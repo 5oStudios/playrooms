@@ -27,6 +27,12 @@ export class PlayerState extends Player {
   totalMoves = 0;
 
   @type('number')
+  totalMovesThisRound = 0;
+
+  @type('number')
+  totalDrops = 0;
+
+  @type('number')
   totalWins = 0;
 
   @type('number')
@@ -53,13 +59,13 @@ export class PlayerState extends Player {
 
   startTurn() {
     this.isMyTurn = true;
+    this.currentTurnTimerInSeconds = 0;
+    this.totalMovesThisRound = 0;
     this.totalRounds++;
   }
 
   endTurn() {
-    this.currentTurnTimerInSeconds = 0;
     this.isMyTurn = false;
-    this.lastMoveAt = Date.now();
   }
 
   async moveClaw(direction: CLAWS_DIRECTION) {
@@ -68,13 +74,15 @@ export class PlayerState extends Player {
       direction,
     });
     this.totalMoves++;
+    this.totalMovesThisRound++;
     this.state = ClawsPlayerState.IDLE;
+    this.lastMoveAt = Date.now();
     return result;
   }
 
   async dropClaw() {
     const result = await this.moveClaw(CLAWS_DIRECTION.DROP);
-    console.log('Drop claw result: ', result);
+    this.totalDrops++;
     if (result === 'lose') {
       this.totalLosses++;
       this.lastLossAt = Date.now();
