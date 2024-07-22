@@ -21,11 +21,19 @@ export class RoomState extends Schema {
   @type(MachineState)
   machine: MachineState = new MachineState();
 
+  @type('string')
+  streamUrl: string = '';
+
   @type('number')
   startedAt: number = 0;
 
   @type({ array: PlayerState })
   removedPlayers: PlayerState[] = new ArraySchema<PlayerState>();
+
+  constructor(roomState: Partial<RoomState> = {}) {
+    super();
+    Object.assign(this, roomState);
+  }
 
   existsInPlayers(email: string) {
     return this.players.some((p) => p.email === email);

@@ -1,6 +1,6 @@
 import { Dispatcher } from '@colyseus/command';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { Client, Room } from 'colyseus';
+import { Injectable, OnModuleInit, UnauthorizedException } from '@nestjs/common';
+import { Client, matchMaker, Room } from 'colyseus';
 
 import { CLAWS_CONFIG } from './claws.config';
 import { MoveClawCommand } from './commands/player/move-claw.command';
@@ -18,7 +18,7 @@ type AuthenticatedUser = {
 };
 
 @Injectable()
-export class ClawsRoom extends Room<RoomState> {
+export class ClawsRoom extends Room<RoomState> implements OnModuleInit {
   static roomName = CLAWS_CONFIG.ROOM_NAME;
   maxClients = CLAWS_CONFIG.MAX_PLAYERS;
   dispatcher = new Dispatcher(this);
@@ -39,8 +39,14 @@ export class ClawsRoom extends Room<RoomState> {
     return user;
   }
 
-  onCreate() {
-    this.setState(new RoomState());
+  onCreate({ streamUrl }: {
+    streamUrl: string;
+
+
+  }) {
+    if (!streamUrl) throw new Error('Stream URL is required');
+
+    this.setState(new RoomState({ streamUrl }));
     this.onMessage('move-claw', async (client, message) => {
       this.dispatcher.dispatch(new MoveClawCommand(), {
         sessionId: client.sessionId,
@@ -62,5 +68,14 @@ export class ClawsRoom extends Room<RoomState> {
     // this.dispatcher.dispatch(new RemovePlayerCommand(), client);
     this.state.removeFromPlayers(client.sessionId);
 
+  }
+
+  async onModuleInit() {
+    const availableStreams = ['https://cam.mshemali.dev'];
+    for (const index in availableStreams) {
+      await matchMaker.createRoom(ClawsRoom.roomName, {
+        streamUrl: availableStreams[index],
+      });
+    }
   }
 }
