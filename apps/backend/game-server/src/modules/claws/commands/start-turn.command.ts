@@ -10,7 +10,7 @@ export class StartPlayerTurnCommand extends Command<ClawsRoom> {
   async execute() {
     this.state.currentPlayer.startTurn();
 
-    this.clock.setTimeout(async () => {
+    const playerTurnTimer = this.clock.setTimeout(async () => {
       const didPlayerMove = this.state.currentPlayer.totalMovesThisRound > 0;
 
       // we need to preform any movement before dropping the claw
@@ -20,12 +20,14 @@ export class StartPlayerTurnCommand extends Command<ClawsRoom> {
           direction: CLAWS_DIRECTION.LEFT,
         });
       }
-      
+
       await this.room.dispatcher.dispatch(new MoveClawCommand(), {
         sessionId: this.room.state.currentPlayer.sessionId,
         direction: CLAWS_DIRECTION.DROP,
       });
     }, CLAWS_CONFIG.PLAYER_TURN_DURATION);
+
+    this.room.timers.set(this.state.currentPlayer.sessionId, playerTurnTimer);
   }
 
   validate() {

@@ -1,6 +1,6 @@
 import { Dispatcher } from '@colyseus/command';
 import { Injectable, OnModuleInit, UnauthorizedException } from '@nestjs/common';
-import { Client, matchMaker, Room } from 'colyseus';
+import { Client, Delayed, matchMaker, Room } from 'colyseus';
 
 import { CLAWS_CONFIG } from './claws.config';
 import { MoveClawCommand } from './commands/player/move-claw.command';
@@ -10,6 +10,7 @@ import { RoomState } from './state/room.state';
 import { KEYCLOAK_INSTANCE } from 'nest-keycloak-connect';
 import { getInstance } from '../../main';
 import { AddPlayerCommand } from './commands/room/add-player.command';
+import * as process from 'node:process';
 
 type AuthenticatedUser = {
   email: string;
@@ -21,9 +22,11 @@ type AuthenticatedUser = {
 export class ClawsRoom extends Room<RoomState> implements OnModuleInit {
   static roomName = CLAWS_CONFIG.ROOM_NAME;
   maxClients = CLAWS_CONFIG.MAX_PLAYERS;
+  // @ts-ignore
+  autoDispose = false;
   dispatcher = new Dispatcher(this);
   static authenticatedUser: AuthenticatedUser;
-
+  timers: Map<string, Delayed> = new Map();
 
   static async onAuth(token: string) {
     if (process.env.NODE_ENV === 'development') return {};
@@ -41,8 +44,6 @@ export class ClawsRoom extends Room<RoomState> implements OnModuleInit {
 
   onCreate({ streamUrl }: {
     streamUrl: string;
-
-
   }) {
     if (!streamUrl) throw new Error('Stream URL is required');
 
@@ -67,7 +68,7 @@ export class ClawsRoom extends Room<RoomState> implements OnModuleInit {
     // CLAWS_CONFIG.ALLOW_RECONNECTION && await this.allowReconnection(client, CLAWS_CONFIG.RECONNECTION_TIMEOUT);
     // this.dispatcher.dispatch(new RemovePlayerCommand(), client);
     this.state.removeFromPlayers(client.sessionId);
-
+    this.timers.get(client.sessionId)?.clear();
   }
 
   async onModuleInit() {
