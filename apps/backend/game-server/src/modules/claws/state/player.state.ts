@@ -1,6 +1,7 @@
 import { type } from '@colyseus/schema';
 import axios from 'axios';
 import { Player } from '../../player.base';
+import { Client } from 'colyseus';
 
 export enum CLAWS_DIRECTION {
   UP = 'up',
@@ -46,13 +47,13 @@ export class PlayerState extends Player {
   @type('number')
   totalRounds = 0;
 
-  constructor(playerInfo: Partial<Player>) {
+  constructor(playerInfo: Client) {
     super(playerInfo);
   }
 
-  startTurn(){
+  startTurn() {
     this.isMyTurn = true;
-    this.totalRounds++
+    this.totalRounds++;
   }
 
   endTurn() {

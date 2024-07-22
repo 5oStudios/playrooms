@@ -1,5 +1,6 @@
 import { Schema, type } from '@colyseus/schema';
 import { faker } from '@faker-js/faker';
+import { Client } from 'colyseus';
 
 export class Player extends Schema {
   @type('string')
@@ -11,8 +12,10 @@ export class Player extends Schema {
   @type('string')
   email: string = faker.internet.email();
 
-  constructor(playerInfo: Partial<Player>) {
+  constructor(client: Client) {
     super();
-    Object.assign(this, playerInfo);
+    this.sessionId = client.sessionId || this.sessionId;
+    this.name = client.auth?.name || this.name;
+    this.email = client.auth?.email || this.email;
   }
 }

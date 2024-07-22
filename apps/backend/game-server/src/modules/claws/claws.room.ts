@@ -10,7 +10,6 @@ import { RoomState } from './state/room.state';
 import { KEYCLOAK_INSTANCE } from 'nest-keycloak-connect';
 import { getInstance } from '../../main';
 import { AddPlayerCommand } from './commands/room/add-player.command';
-import * as process from 'node:process';
 import { RemovePlayerCommand } from './commands/room/remove-player.command';
 
 type AuthenticatedUser = {
@@ -28,8 +27,7 @@ export class ClawsRoom extends Room<RoomState> {
 
 
   static async onAuth(token: string) {
-    if (process.env.NODE_ENV === 'development')
-      return true;
+    if (process.env.NODE_ENV === 'development') return {};
 
     const authService = getInstance().get(KEYCLOAK_INSTANCE);
     const user = await authService.grantManager.userInfo(token);
@@ -53,9 +51,6 @@ export class ClawsRoom extends Room<RoomState> {
   }
 
   onJoin(client: Client<PlayerState>) {
-    if (ClawsRoom.authenticatedUser)
-      Object.assign(client.userData, ClawsRoom.authenticatedUser);
-
     this.dispatcher.dispatch(new AddPlayerCommand(), new PlayerState(client));
 
     if (this.state.players.length === CLAWS_CONFIG.MIN_PLAYERS_TO_START) {
