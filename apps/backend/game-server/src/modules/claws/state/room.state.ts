@@ -28,13 +28,6 @@ export class RoomState extends Schema {
     this.players.push(player);
   }
 
-  removePlayer(playerId: string) {
-    const player = this.players.find((p) => p.id === playerId);
-    if (player) {
-      this.players.splice(this.players.indexOf(player), 1);
-    }
-  }
-
   removePlayerBySessionId(sessionId: string) {
     const player = this.players.find((p) => p.sessionId === sessionId);
     if (player) {
