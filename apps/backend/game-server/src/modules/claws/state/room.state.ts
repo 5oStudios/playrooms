@@ -24,14 +24,28 @@ export class RoomState extends Schema {
   @type('number')
   startedAt: number = 0;
 
-  addPlayer(player: PlayerState) {
-    this.players.push(player);
+  removedPlayers: PlayerState[] = new ArraySchema<PlayerState>();
+
+  existsInPlayers(email: string) {
+    return this.players.some((p) => p.email === email);
   }
 
-  removePlayerBySessionId(sessionId: string) {
+  existsInRemovedPlayers(email: string) {
+    return this.removedPlayers.some((p) => p.email === email);
+  }
+
+  removeFromPlayers(sessionId: string) {
     const player = this.players.find((p) => p.sessionId === sessionId);
     if (player) {
       this.players.splice(this.players.indexOf(player), 1);
+      this.removedPlayers.push(player);
+    }
+  }
+
+  removeFromRemovedPlayers(sessionId: string) {
+    const player = this.removedPlayers.find((p) => p.sessionId === sessionId);
+    if (player) {
+      this.removedPlayers.splice(this.removedPlayers.indexOf(player), 1);
     }
   }
 }
