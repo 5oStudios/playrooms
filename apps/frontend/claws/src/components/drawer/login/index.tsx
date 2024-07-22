@@ -1,10 +1,11 @@
 import Image from 'next/image';
+import Link from 'next/link';
 
 import google from '../../../../public/assets/drawer/google.svg';
 import tiktok from '../../../../public/assets/drawer/tiktok.svg';
 import logo from '../../../../public/assets/logo.svg';
 
-function index() {
+function Index() {
   return (
     <div className="flex flex-col items-center mt-[71px] w-[375px]">
       <Image src={logo} alt={'company logo'} />
@@ -27,9 +28,12 @@ function index() {
             <p>Continue with Google</p>
           </div>
         </button>
-        <button className="mt-6 bg-gradient-to-t from-secondary to-darkYellow w-[380px] h-[58px] rounded-3xl">
-          <p className="text-white font-semibold">Start Play</p>
-        </button>
+        <Link
+          className="mt-6 bg-gradient-to-t from-secondary to-darkYellow w-[380px] h-[58px] rounded-3xl flex items-center justify-center"
+          href={'/pages/rooms'}
+        >
+          <p className="text-white font-semibold">Rooms</p>
+        </Link>
         <div className="mt-[50px] flex justify-center gap-2 w-full">
           <p>Do you have questions?</p>
           <button>
@@ -43,4 +47,4 @@ function index() {
   );
 }
 
-export default index;
+export default Index;
