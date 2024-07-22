@@ -1,5 +1,5 @@
 import { Dispatcher } from '@colyseus/command';
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Client, Room } from 'colyseus';
 
 import { CLAWS_CONFIG } from './claws.config';
@@ -8,8 +8,8 @@ import { StartGameCommand } from './commands/start-game.command';
 import { PlayerState } from './state/player.state';
 import { RoomState } from './state/room.state';
 import { KEYCLOAK_INSTANCE } from 'nest-keycloak-connect';
-import KeycloakConnect from 'keycloak-connect';
 import { Promise } from 'cypress/types/cy-bluebird';
+import { getInstance } from '../../main';
 
 type AuthenticatedUser = {
   email: string;
@@ -22,18 +22,12 @@ export class ClawsRoom extends Room<RoomState> {
   static roomName = CLAWS_CONFIG.ROOM_NAME;
   maxClients = CLAWS_CONFIG.MAX_PLAYERS;
   dispatcher = new Dispatcher(this);
-  static keycloak: KeycloakConnect.Keycloak;
   static authenticatedUser: AuthenticatedUser;
 
-  constructor(
-    @Inject(KEYCLOAK_INSTANCE) readonly _keycloak: KeycloakConnect.Keycloak,
-  ) {
-    super();
-    ClawsRoom.keycloak = _keycloak;
-  }
 
   static async onAuth(token: string) {
-    const user = await ClawsRoom.keycloak.grantManager.userInfo(token) as AuthenticatedUser;
+    const authService = getInstance().get(KEYCLOAK_INSTANCE);
+    const user = await authService.grantManager.userInfo(token);
     if (!user) {
       throw new UnauthorizedException({
         message: 'User not authenticated',

@@ -4,7 +4,7 @@
  */
 import { playground } from '@colyseus/playground';
 import { WebSocketTransport } from '@colyseus/ws-transport';
-import { Logger } from '@nestjs/common';
+import { INestApplication, Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { Server } from 'colyseus';
 
@@ -12,9 +12,11 @@ import { AppModule } from './app/app.module';
 import { ClawsRoom } from './modules/claws/claws.room';
 
 const rooms = [ClawsRoom];
+let app: INestApplication;
+export const getInstance = () => app;
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  app = await NestFactory.create(AppModule);
   const globalPrefix = '';
   app.setGlobalPrefix(globalPrefix);
   const port = process.env.PORT || 3000;
