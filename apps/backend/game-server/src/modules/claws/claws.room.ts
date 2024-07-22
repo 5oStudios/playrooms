@@ -10,7 +10,6 @@ import { RoomState } from './state/room.state';
 import { KEYCLOAK_INSTANCE } from 'nest-keycloak-connect';
 import { getInstance } from '../../main';
 import { AddPlayerCommand } from './commands/room/add-player.command';
-import { RemovePlayerCommand } from './commands/room/remove-player.command';
 
 type AuthenticatedUser = {
   email: string;
@@ -59,7 +58,9 @@ export class ClawsRoom extends Room<RoomState> {
   }
 
   async onLeave(client: Client) {
-    CLAWS_CONFIG.ALLOW_RECONNECTION && await this.allowReconnection(client, CLAWS_CONFIG.RECONNECTION_TIMEOUT);
-    this.dispatcher.dispatch(new RemovePlayerCommand(), client);
+    // CLAWS_CONFIG.ALLOW_RECONNECTION && await this.allowReconnection(client, CLAWS_CONFIG.RECONNECTION_TIMEOUT);
+    // this.dispatcher.dispatch(new RemovePlayerCommand(), client);
+    this.state.removeFromPlayers(client.sessionId);
+
   }
 }

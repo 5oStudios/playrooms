@@ -24,6 +24,7 @@ export class RoomState extends Schema {
   @type('number')
   startedAt: number = 0;
 
+  @type({ array: PlayerState })
   removedPlayers: PlayerState[] = new ArraySchema<PlayerState>();
 
   existsInPlayers(email: string) {
