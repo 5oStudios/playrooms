@@ -4,7 +4,7 @@ import { CLAWS_CONFIG } from '../claws.config';
 import { ClawsRoom } from '../claws.room';
 import { CLAWS_DIRECTION } from '../state/player.state';
 import { GAME_STATE } from '../state/room.state';
-import { MoveClawCommand } from './move-claw.command';
+import { MoveClawCommand } from './player/move-claw.command';
 
 export class StartPlayerTurnCommand extends Command<ClawsRoom> {
   async execute() {

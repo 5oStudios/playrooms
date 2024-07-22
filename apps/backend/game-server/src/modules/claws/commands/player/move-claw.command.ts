@@ -1,14 +1,15 @@
 import { Command } from '@colyseus/command';
 import { Client } from 'colyseus';
 
-import { ClawsRoom } from '../claws.room';
-import { CLAWS_DIRECTION } from '../state/player.state';
-import { EndTurnCommand } from './end-turn.command';
+import { ClawsRoom } from '../../claws.room';
+import { CLAWS_DIRECTION } from '../../state/player.state';
+import { EndTurnCommand } from '../end-turn.command';
 
 type MoveClawCommandPayload = {
   sessionId: Client['sessionId'];
   direction: CLAWS_DIRECTION;
 };
+
 export class MoveClawCommand extends Command<
   ClawsRoom,
   MoveClawCommandPayload
@@ -30,14 +31,11 @@ export class MoveClawCommand extends Command<
   }
 
   async execute({ direction }) {
-    console.log(
-      `Moving claw ${direction} `,
-      this.state.currentPlayer.sessionId,
-    );
-    await this.state.currentPlayer.moveClaw(direction);
-
     if (direction === CLAWS_DIRECTION.DROP) {
+      await this.state.currentPlayer.dropClaw();
       await this.room.dispatcher.dispatch(new EndTurnCommand());
+    } else {
+      await this.state.currentPlayer.moveClaw(direction);
     }
   }
 }

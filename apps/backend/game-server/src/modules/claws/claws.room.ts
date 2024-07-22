@@ -3,7 +3,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Client, Room } from 'colyseus';
 
 import { CLAWS_CONFIG } from './claws.config';
-import { MoveClawCommand } from './commands/move-claw.command';
+import { MoveClawCommand } from './commands/player/move-claw.command';
 import { StartGameCommand } from './commands/start-game.command';
 import { PlayerState } from './state/player.state';
 import { RoomState } from './state/room.state';
