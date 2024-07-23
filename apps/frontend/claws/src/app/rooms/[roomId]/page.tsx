@@ -36,14 +36,6 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
     setIsOpen((prevState) => !prevState);
   };
 
-  const [control, setControl] = useState({
-    up: false,
-    down: false,
-    left: false,
-    right: false,
-    drop: false,
-  });
-
   const room = useColyseusRoom();
   const state = useColyseusState();
   const myPlayer = state?.players.find(
@@ -60,26 +52,6 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
       disconnectFromColyseus();
     };
   }, []);
-
-  useEffect(() => {
-    console.log('myPlayer', myPlayer?.isMyTurn);
-    if (myPlayer?.isMyTurn)
-      setControl({
-        up: false,
-        down: false,
-        left: false,
-        right: true,
-        drop: false,
-      });
-    else
-      setControl({
-        up: true,
-        down: true,
-        left: true,
-        right: true,
-        drop: true,
-      });
-  }, [myPlayer]);
 
   if (error) {
     return <div>{error}</div>;
@@ -98,7 +70,7 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
       </div>
       <footer className="fixed bottom-0 left-0 right-0 flex flex-col items-center bg-white p-4">
         <Controls
-          disabled={control}
+          isMyTurn={myPlayer?.isMyTurn}
           actions={{
             drop: () => room?.send('move-claw', { direction: 'drop' }),
             up: () => room?.send('move-claw', { direction: 'up' }),

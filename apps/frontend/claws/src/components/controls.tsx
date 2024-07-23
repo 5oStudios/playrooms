@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+
 import Image from 'next/image';
 
 import arrowDown from '../../public/assets/controls/arrowDown.svg';
@@ -35,9 +37,11 @@ import { cn } from '../utils';
 //   },
 // ];
 
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 export const Controls = ({
   actions,
-  disabled,
+  isMyTurn,
 }: {
   actions: {
     up: () => void;
@@ -46,22 +50,28 @@ export const Controls = ({
     right: () => void;
     drop: () => void;
   };
-  disabled: {
-    up: boolean;
-    down: boolean;
-    left: boolean;
-    right: boolean;
-    drop: boolean;
-  };
+  isMyTurn: boolean | undefined;
 }) => {
   const { up, down, left, right, drop } = actions;
-  const {
-    up: upDisabled,
-    down: downDisabled,
-    left: leftDisabled,
-    right: rightDisabled,
-    drop: dropDisabled,
-  } = disabled;
+  const [controlDisabled, setControlDisabled] = useState({
+    up: true,
+    down: true,
+    left: true,
+    right: true,
+    drop: true,
+  });
+
+  useEffect(() => {
+    if (isMyTurn) {
+      setControlDisabled({
+        up: false,
+        down: false,
+        left: false,
+        right: true,
+        drop: true,
+      });
+    }
+  }, [isMyTurn]);
 
   const buttonStyles = cn(
     'flex justify-center items-center bg-primary w-10 h-10 rounded-xl shadow-lg shadow-gray-600',
@@ -73,32 +83,56 @@ export const Controls = ({
     <div className="flex mt-9 w-full justify-center items-center">
       <div className="flex flex-col w-[149px] h-[120px] items-center mr-[50px]">
         <button
-          onClick={up}
-          disabled={upDisabled}
-          className={cn(buttonStyles, upDisabled ? opacity : transition)}
+          onClick={() => {
+            up();
+            setControlDisabled({ ...controlDisabled, drop: false });
+          }}
+          disabled={controlDisabled.up}
+          className={cn(
+            buttonStyles,
+            controlDisabled.up ? opacity : transition,
+          )}
         >
           <Image src={arrowUp} alt={'up arrow'} />
         </button>
         <div className="flex w-[149px] justify-between">
           <button
-            onClick={left}
-            disabled={leftDisabled}
-            className={cn(buttonStyles, leftDisabled ? opacity : transition)}
+            onClick={() => {
+              left();
+              setControlDisabled({ ...controlDisabled, drop: false });
+            }}
+            disabled={controlDisabled.left}
+            className={cn(
+              buttonStyles,
+              controlDisabled.left ? opacity : transition,
+            )}
           >
             <Image src={arrowLeft} alt={'left arrow'} />
           </button>
           <button
-            onClick={right}
-            disabled={rightDisabled}
-            className={cn(buttonStyles, rightDisabled ? opacity : transition)}
+            onClick={() => {
+              right();
+              setControlDisabled({ ...controlDisabled, drop: false });
+            }}
+            disabled={controlDisabled.right}
+            className={cn(
+              buttonStyles,
+              controlDisabled.right ? opacity : transition,
+            )}
           >
             <Image src={arrowRight} alt={'right arrow'} />
           </button>
         </div>
         <button
-          onClick={down}
-          disabled={downDisabled}
-          className={cn(buttonStyles, downDisabled ? opacity : transition)}
+          onClick={() => {
+            down();
+            setControlDisabled({ ...controlDisabled, drop: false });
+          }}
+          disabled={controlDisabled.down}
+          className={cn(
+            buttonStyles,
+            controlDisabled.down ? opacity : transition,
+          )}
         >
           <Image src={arrowDown} alt={'down arrow'} />
         </button>
@@ -106,11 +140,21 @@ export const Controls = ({
 
       <div className="flex flex-col items-center">
         <button
-          onClick={drop}
-          disabled={dropDisabled}
+          onClick={async () => {
+            drop();
+            await wait(500);
+            setControlDisabled({
+              up: true,
+              down: true,
+              left: true,
+              right: true,
+              drop: true,
+            });
+          }}
+          disabled={controlDisabled.drop}
           className={cn(
             buttonStyles,
-            dropDisabled ? opacity : transition,
+            controlDisabled.drop ? opacity : transition,
             'w-[52px] h-[86px]',
           )}
         >

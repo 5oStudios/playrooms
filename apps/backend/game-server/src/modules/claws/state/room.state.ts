@@ -4,6 +4,7 @@ import { MachineState } from './machine.state';
 
 export enum GAME_STATE {
   WAITING = 'waiting',
+  CHOOSING = 'choosing',
   STARTED = 'started',
   ENDED = 'ended',
 }
@@ -14,6 +15,9 @@ export class RoomState extends Schema {
 
   @type(PlayerState)
   currentPlayer: PlayerState | null = null;
+
+  @type('number')
+  nextPlayerIndex: number = 0;
 
   @type('string')
   gameState: GAME_STATE = GAME_STATE.WAITING;
