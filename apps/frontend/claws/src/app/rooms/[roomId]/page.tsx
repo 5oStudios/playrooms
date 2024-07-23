@@ -6,13 +6,23 @@ import { Room } from 'colyseus.js';
 import dynamic from 'next/dynamic';
 import { useSearchParams } from 'next/navigation';
 import 'react-modern-drawer/dist/index.css';
+import { min } from 'rxjs';
 
-import { gameClient } from '@kingo/game-client';
+import {
+  RoomState,
+  client,
+  connectToColyseus,
+  disconnectFromColyseus,
+  gameClient,
+  useColyseusRoom,
+  useColyseusState,
+} from '@kingo/game-client';
 
 import { Controls } from '../../../components/controls';
 import Header from '../../../components/header';
 import VideoControl from '../../../components/videoControl';
 import WebView from '../../../components/webView';
+import { calcWaitingQueue, useClawsRoom } from './useClawsRoom';
 
 export default function RoomPage({ params }: { params: { roomId: string } }) {
   // const LazyReactPlayer = dynamic(() => import('react-player/youtube'), {
@@ -26,35 +36,69 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
     setIsOpen((prevState) => !prevState);
   };
 
-  const [room, setRoom] = useState<Room | null>(null);
+  const [control, setControl] = useState({
+    up: false,
+    down: false,
+    left: false,
+    right: false,
+    drop: false,
+  });
+
+  const room = useColyseusRoom();
+  const state = useColyseusState();
+  const myPlayer = state?.players.find(
+    (player) => player.sessionId === room?.sessionId,
+  );
   const [error, setError] = useState<string | null>(null);
-  console.log('room', room?.state.maxClients);
 
   useEffect(() => {
-    gameClient
-      .joinById(params.roomId)
-      .then(setRoom)
-      .catch(({ message }) => setError(message));
+    connectToColyseus({
+      roomId: params.roomId,
+    }).catch(({ message }) => setError(message));
 
     return () => {
-      room?.leave();
+      disconnectFromColyseus();
     };
   }, []);
+
+  useEffect(() => {
+    console.log('myPlayer', myPlayer?.isMyTurn);
+    if (myPlayer?.isMyTurn)
+      setControl({
+        up: false,
+        down: false,
+        left: false,
+        right: true,
+        drop: false,
+      });
+    else
+      setControl({
+        up: true,
+        down: true,
+        left: true,
+        right: true,
+        drop: true,
+      });
+  }, [myPlayer]);
 
   if (error) {
     return <div>{error}</div>;
   }
+  if (!state) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="min-h-screen flex flex-col justify-between">
-      <Header viewers={0} waiting={room?.state?.maxClients} />
+      <Header viewers={0} waiting={calcWaitingQueue(state.players.length)} />
       <div className="relative flex-grow ">
-        <VideoControl setMute={setMute} mute={mute} />
+        {/*<VideoControl setMute={setMute} mute={mute} />*/}
         {/* <VideoPlayer youtubeId={youtubeId} mute={mute} /> */}
-        <WebView url="https://cam.mshemali.dev/" />
+        <WebView url={state.streamUrl} />
       </div>
       <footer className="fixed bottom-0 left-0 right-0 flex flex-col items-center bg-white p-4">
         <Controls
+          disabled={control}
           actions={{
             drop: () => room?.send('move-claw', { direction: 'drop' }),
             up: () => room?.send('move-claw', { direction: 'up' }),

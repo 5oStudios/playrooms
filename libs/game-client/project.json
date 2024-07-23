@@ -6,14 +6,19 @@
   "targets": {
     "build": {
       "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "options": {
         "outputPath": "dist/libs/game-client",
         "main": "libs/game-client/src/index.ts",
         "tsConfig": "libs/game-client/tsconfig.lib.json",
-        "assets": ["libs/game-client/*.md"]
+        "assets": [
+          "libs/game-client/*.md"
+        ]
       }
     }
   },
   "tags": []
 }
+//npx schema-codegen apps/backend/game-server/src/modules/claws/state/room.state.ts --output libs/game-client/src/lib/types --ts

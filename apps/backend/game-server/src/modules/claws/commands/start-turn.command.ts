@@ -31,6 +31,16 @@ export class StartPlayerTurnCommand extends Command<ClawsRoom> {
   }
 
   validate() {
-    return this.state.gameState === GAME_STATE.STARTED;
+    const isGameStarted = this.state.gameState === GAME_STATE.STARTED;
+    if (!isGameStarted) {
+      return false;
+    }
+
+    const isCurrentPlayer = this.state.currentPlayer;
+    if (!isCurrentPlayer) {
+      return false;
+    }
+
+    return true;
   }
 }

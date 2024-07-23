@@ -27,7 +27,7 @@ export default function Header({ viewers, waiting }: HeaderProps) {
           <div className="flex gap-2 text-white">
             <Image src={users} alt={'waiting'} />
             <p>waiting</p>
-            <p>{'(' + viewers + ')'}</p>
+            <p>{'(' + waiting + ')'}</p>
           </div>
         </div>
       </div>

@@ -49,3 +49,30 @@ export default function VideoPlayer({ youtubeId, mute }: VideoPlayerProps) {
     />
   );
 }
+
+export const WebPlayer = ({ url }: { url: string }) => {
+  const playerRef = useRef<Player | null>(null);
+  const [playedSeconds, setPlayedSeconds] = useState(0);
+
+  const handleProgress = (state: { playedSeconds: number }) => {
+    setPlayedSeconds(state.playedSeconds);
+  };
+
+  useEffect(() => {
+    if (playerRef.current) {
+      playerRef.current.seekTo(playedSeconds, 'seconds');
+    }
+  }, [playedSeconds]);
+
+  return (
+    <LazyReactPlayer
+      ref={playerRef}
+      url={url}
+      controls={false}
+      width="100%"
+      height={460}
+      stopOnUnmount={false}
+      onProgress={handleProgress}
+    />
+  );
+};

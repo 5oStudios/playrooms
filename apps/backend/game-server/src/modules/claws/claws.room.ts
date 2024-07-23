@@ -11,6 +11,7 @@ import { KEYCLOAK_INSTANCE } from 'nest-keycloak-connect';
 import { getInstance } from '../../main';
 import { AddPlayerCommand } from './commands/room/add-player.command';
 import * as process from 'node:process';
+import { SelectNextPlayerCommand } from './commands/next-player.command';
 
 type AuthenticatedUser = {
   email: string;
@@ -69,6 +70,10 @@ export class ClawsRoom extends Room<RoomState> implements OnModuleInit {
     // this.dispatcher.dispatch(new RemovePlayerCommand(), client);
     this.state.removeFromPlayers(client.sessionId);
     this.timers.get(client.sessionId)?.clear();
+
+    if (this.state.currentPlayer?.sessionId === client.sessionId) {
+      this.dispatcher.dispatch(new SelectNextPlayerCommand());
+    }
   }
 
   async onModuleInit() {
