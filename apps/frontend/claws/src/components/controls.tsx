@@ -5,28 +5,47 @@ import arrowLeft from '../../public/assets/controls/arrowLeft.svg';
 import arrowRight from '../../public/assets/controls/arrowRight.svg';
 import arrowUp from '../../public/assets/controls/arrowUp.svg';
 import dropClaw from '../../public/assets/controls/drop.svg';
-import { clawsControls, down, drop, left, right, up } from '../services/claws-controls';
 
-const controls = [
-  {
-    keys: ['w', 'arrowup'],
-    handler: clawsControls().up,
-  },
-  {
-    keys: ['s', 'arrowdown'],
-    handler: clawsControls().down,
-  },
-  {
-    keys: ['a', 'arrowleft'],
-    handler: clawsControls().left,
-  },
-  {
-    keys: ['d', 'arrowright'],
-    handler: clawsControls().right,
-  },
-];
+// import {
+//   clawsControls,
+//   down,
+//   drop,
+//   left,
+//   right,
+//   up,
+// } from '../services/claws-controls';
+//
+// const controls = [
+//   {
+//     keys: ['w', 'arrowup'],
+//     handler: clawsControls().up,
+//   },
+//   {
+//     keys: ['s', 'arrowdown'],
+//     handler: clawsControls().down,
+//   },
+//   {
+//     keys: ['a', 'arrowleft'],
+//     handler: clawsControls().left,
+//   },
+//   {
+//     keys: ['d', 'arrowright'],
+//     handler: clawsControls().right,
+//   },
+// ];
 
-export const Controls = () => {
+export const Controls = ({
+  actions,
+}: {
+  actions: {
+    up: () => void;
+    down: () => void;
+    left: () => void;
+    right: () => void;
+    drop: () => void;
+  };
+}) => {
+  const { up, down, left, right, drop } = actions;
   return (
     <div className="flex mt-9 w-full justify-center items-center">
       <div className="flex flex-col w-[149px] h-[120px] items-center mr-[50px]">
@@ -65,9 +84,7 @@ export const Controls = () => {
         >
           <Image src={dropClaw} alt={'drop claw'} />
         </button>
-        <p className="text-primary font-semibold text-3xl mt-4">
-          Drop
-        </p>
+        <p className="text-primary font-semibold text-3xl mt-4">Drop</p>
       </div>
     </div>
   );

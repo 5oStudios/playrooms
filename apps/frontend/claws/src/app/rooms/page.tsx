@@ -2,26 +2,18 @@
 
 import React, { useEffect, useState } from 'react';
 
+import { Room, RoomAvailable } from 'colyseus.js';
 import { useRouter } from 'next/navigation';
 
-import { ColyseusClient } from '../../lib/colyseus/colyseusClient';
+import { gameClient } from '@kingo/game-client';
 
-type Room = {
-  clients: number;
-  maxClients: number;
-  name: string;
-  roomId: string;
-};
-
-// Page component
 function Page() {
-  const [rooms, setRooms] = useState<Room[]>([]);
-  const gameClient = new ColyseusClient();
+  const [rooms, setRooms] = useState<RoomAvailable[]>([]);
+
   useEffect(() => {
     const fetchRooms = async () => {
       const availableRooms = await gameClient.getAvailableRooms();
       setRooms(availableRooms);
-      console.log(availableRooms);
     };
 
     fetchRooms();
@@ -33,8 +25,8 @@ function Page() {
         <p className="text-xl text-white font-bold">Claws Room</p>
       </div>
       <div className="flex-grow flex flex-wrap justify-start items-start mt-10">
-        {rooms.map((room, index) => (
-          <RoomCard key={index} roomClient={room} gameClient={gameClient} />
+        {rooms.map((room) => (
+          <RoomCard {...room} />
         ))}
       </div>
       <footer className="flex justify-center items-center bg-primary h-[117px]">
@@ -48,26 +40,16 @@ function Page() {
 
 export default Page;
 
-function RoomCard({
-  roomClient,
-  gameClient,
-}: {
-  roomClient: Room;
-  gameClient: ColyseusClient;
-}) {
+function RoomCard({ roomId, maxClients, clients, metadata }: RoomAvailable) {
   const router = useRouter();
   return (
     <div className="flex flex-col justify-start items-start bg-primary w-56 h-56 rounded-xl p-4 m-2 text-white">
-      <p>Name: {roomClient.name}</p>
-      <p>RoomId: {roomClient.roomId}</p>
-      <p>No of clients: {roomClient.clients}</p>
-      <p>Max no of clients: {roomClient.maxClients}</p>
+      <p>
+        Players {clients} / {maxClients}
+      </p>
       <button
         className="bg-gradient-to-t from-secondary to-darkYellow w-full h-10 rounded-xl mt-auto mb-2"
-        onClick={async () => {
-          const playerData = await gameClient.joinById(roomClient.roomId);
-          // router.push({})
-        }}
+        onClick={() => router.push(`/rooms/${roomId}`)}
       >
         Join
       </button>
