@@ -12,12 +12,14 @@ type DrawerProps = {
   title: string;
   isOpen: boolean;
   toggleDrawer: () => void;
+  children?: React.ReactNode;
 };
 
 export default function BottomDrawer({
   title,
   isOpen,
   toggleDrawer,
+  children,
 }: DrawerProps) {
   const style = title === 'Queue Board' ? 'ml-[110px]' : '';
   return (
@@ -33,10 +35,7 @@ export default function BottomDrawer({
           toggleDrawer={toggleDrawer}
           className={style}
         />
-        <div className="flex flex-col items-center">
-          <div className="bg-slate-200 w-5/6 h-[1px] mt-2"></div>
-          {title === 'Join Play' ? <Login /> : <QueueBoard />}
-        </div>
+        <div className="flex flex-col items-center">{children}</div>
       </Drawer>
     </>
   );

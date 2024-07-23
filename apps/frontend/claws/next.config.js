@@ -13,7 +13,11 @@ const nextConfig = {
     svgr: false,
   },
   images: {
-    domains: ['avatars.githubusercontent.com', 'cloudflare-ipfs.com'],
+    domains: [
+      'avatars.githubusercontent.com',
+      'cloudflare-ipfs.com',
+      'i.pravatar.cc',
+    ],
   },
   reactStrictMode: false,
 };

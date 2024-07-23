@@ -19,6 +19,8 @@ import {
 } from '@kingo/game-client';
 
 import { Controls } from '../../../components/controls';
+import Drawer from '../../../components/drawer/drawer';
+import QueueBoard from '../../../components/drawer/queueBoard';
 import Header from '../../../components/header';
 import VideoControl from '../../../components/videoControl';
 import WebView from '../../../components/webView';
@@ -30,7 +32,6 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
   // });
   // const youtubeId = searchParams.get('yt');
   const [isOpen, setIsOpen] = useState(false);
-  const [title, setTitle] = useState('Join Play');
   const [mute, setMute] = useState(false);
   const toggleDrawer = () => {
     setIsOpen((prevState) => !prevState);
@@ -83,12 +84,18 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
         <button
           className="mt-4 flex justify-center items-center button-gradient-border w-[380px] h-[58px]"
           onClick={() => {
-            setTitle('Queue Board');
             toggleDrawer();
           }}
         >
           Queue Board
         </button>
+        <Drawer
+          isOpen={isOpen}
+          toggleDrawer={toggleDrawer}
+          title={'Queue Board'}
+        >
+          <QueueBoard players={state.players} />
+        </Drawer>
       </footer>
     </div>
   );

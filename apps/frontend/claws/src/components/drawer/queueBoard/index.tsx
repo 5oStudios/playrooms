@@ -1,18 +1,29 @@
+import React from 'react';
+
+import { PlayerState } from '@kingo/game-client';
+
 import { generateRandomUser } from '../../../app/mock/generateRandomUsers';
 import QueueCard from './card';
 
-export default function QueueBoard() {
-  const users = generateRandomUser(20);
+export default function QueueBoard({ players }: { players: PlayerState[] }) {
   return (
-    <div className="mt-4 max-h-[650px] overflow-y-auto">
-      {users.map((user, index) => (
-        <QueueCard
-          id={index}
-          images={user.image}
-          name={user.name}
-          points={user.points}
-        />
-      ))}
+    <div className="overflow-y-auto w-[90%]">
+      {players
+        .sort((a, b) => b.totalWins - a.totalWins)
+        .map((user, index) => (
+          <>
+            {index === 0 && (
+              <div className="bg-slate-200 w-full mt-2 h-[1px] mx-auto"></div>
+            )}
+            <QueueCard
+              id={index}
+              images={undefined}
+              name={user.name}
+              points={user.totalWins}
+            />
+            <div className="bg-slate-200 w-full h-[1px] mx-auto"></div>
+          </>
+        ))}
     </div>
   );
 }
