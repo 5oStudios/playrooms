@@ -4,20 +4,18 @@ import { useEffect, useState } from 'react';
 
 import 'react-modern-drawer/dist/index.css';
 
-import {
-  connectToColyseus,
-  disconnectFromColyseus,
-  useColyseusRoom,
-  useColyseusState,
-} from '@kingo/game-client';
-
 import { Controls } from '../../../components/controls';
 import Drawer from '../../../components/drawer/drawer';
 import QueueBoard from '../../../components/drawer/queueBoard';
 import Header from '../../../components/header';
 import WebView from '../../../components/webView';
+import { useAppDispatch, useAppSelector } from '../../../features/hooks';
+import {
+  joinRoomById,
+  leaveRoom,
+  selectJoinedRoom,
+} from '../../../features/rooms/joinedRoomSlice';
 import { calcWaitingQueue } from './useClawsRoom';
-
 
 export default function RoomPage({ params }: { params: { roomId: string } }) {
   // const LazyReactPlayer = dynamic(() => import('react-player/youtube'), {
@@ -29,42 +27,43 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
   const toggleDrawer = () => {
     setIsOpen((prevState) => !prevState);
   };
-
-  const room = useColyseusRoom();
-  const state = useColyseusState();
-  const myPlayer = state?.players.find(
-    (player) => player.sessionId === room?.sessionId,
-  );
-  const [error, setError] = useState<string | null>(null);
+  const dispatch = useAppDispatch();
+  const joinedRoom = useAppSelector(selectJoinedRoom);
+  const { roomState, myPlayerState, status, error } = joinedRoom;
 
   useEffect(() => {
-    connectToColyseus({
-      roomId: params.roomId,
-    }).catch(({ message }) => setError(message));
+    if (status === 'idle') dispatch(joinRoomById(params.roomId));
 
     return () => {
-      disconnectFromColyseus();
+      dispatch(leaveRoom());
     };
   }, []);
 
-  if (error) {
+  if (status === 'failed') {
     return <div>{error}</div>;
   }
-  if (!state) {
+  if (status === 'loading') {
     return <div>Loading...</div>;
   }
 
+  if (!roomState) return <div>Unknown error</div>;
+  console.log('players', roomState.players.length);
+
   return (
     <div className="min-h-screen flex flex-col justify-between">
-      <Header viewers={0} waiting={calcWaitingQueue(state.players.length)} />
+      {roomState.players.length}
+      <Header
+        viewers={0}
+        waiting={calcWaitingQueue(roomState.players.length)}
+      />
       <div className="relative flex-grow ">
         {/*<VideoControl setMute={setMute} mute={mute} />*/}
         {/* <VideoPlayer youtubeId={youtubeId} mute={mute} /> */}
-        <WebView url={state.streamUrl} />
+        <WebView url={roomState.streamUrl} />
       </div>
       <footer className="fixed bottom-0 left-0 right-0 flex flex-col items-center bg-white p-4">
         <Controls
-          isMyTurn={myPlayer?.isMyTurn}
+          isMyTurn={myPlayerState?.isMyTurn}
           actions={{
             drop: () => room?.send('move-claw', { direction: 'drop' }),
             up: () => room?.send('move-claw', { direction: 'up' }),
@@ -87,7 +86,7 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
           toggleDrawer={toggleDrawer}
           title={'Queue Board'}
         >
-          <QueueBoard players={state.players} />
+          <QueueBoard players={roomState.players} />
         </Drawer>
       </footer>
     </div>

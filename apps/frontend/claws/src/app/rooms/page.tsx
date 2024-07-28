@@ -12,7 +12,7 @@ import { getAvailableRooms } from '../../features/rooms/roomsSlice';
 function Page() {
   const dispatch = useAppDispatch();
   const { availableRooms, state, error } = useAppSelector(
-    (state) => state.rooms,
+    (state) => state.rooms.availableRooms,
   );
 
   React.useEffect(() => {
@@ -39,7 +39,6 @@ function Page() {
 export default Page;
 
 function RoomCard({ roomId, maxClients, clients, metadata }: RoomAvailable) {
-  console.log({ metadata });
   const router = useRouter();
   return (
     <div className="flex flex-col justify-start items-start bg-primary w-56 h-56 rounded-xl p-4 m-2 text-white">

@@ -1,8 +1,15 @@
 {
-  "ignorePatterns": ["**/*"],
+  "ignorePatterns": [
+    "**/*"
+  ],
   "overrides": [
     {
-      "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
+      "files": [
+        "*.ts",
+        "*.tsx",
+        "*.js",
+        "*.jsx"
+      ],
       "rules": {
         "@nx/enforce-module-boundaries": [
           "error",
@@ -12,7 +19,9 @@
             "depConstraints": [
               {
                 "sourceTag": "*",
-                "onlyDependOnLibsWithTags": ["*"]
+                "onlyDependOnLibsWithTags": [
+                  "*"
+                ]
               }
             ]
           }
@@ -20,23 +29,38 @@
       }
     },
     {
-      "files": ["*.ts", "*.tsx"],
+      "files": [
+        "*.ts",
+        "*.tsx"
+      ],
       "rules": {}
     },
     {
-      "files": ["*.js", "*.jsx"],
+      "files": [
+        "*.js",
+        "*.jsx"
+      ],
       "rules": {}
     }
   ],
-  "extends": ["./.eslintrc.base.json"],
+  "extends": [
+    "./.eslintrc.base.json"
+  ],
   "rules": {
     "sort-imports": [
-      "error",
+      "warn",
       {
         "groups": [
-          ["external", "builtin"],
+          [
+            "external",
+            "builtin"
+          ],
           "internal",
-          ["parent", "sibling", "index"]
+          [
+            "parent",
+            "sibling",
+            "index"
+          ]
         ],
         "newlines-between": "always"
       }

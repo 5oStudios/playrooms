@@ -1,15 +1,21 @@
-import { configureStore } from '@reduxjs/toolkit';
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
 
-import { clawsRoomReducer } from './claws/slice';
+import { listenerMiddleware } from '../listenerMiddleware';
+import { joinedRoomSlice } from './rooms/joinedRoomSlice';
 import { roomsSlice } from './rooms/roomsSlice';
 
-export const store = configureStore({
-  reducer: {
-    rooms: roomsSlice.reducer,
-    clawsRoom: clawsRoomReducer,
-  },
-});
+export const makeStore = () =>
+  configureStore({
+    reducer: {
+      rooms: combineReducers({
+        availableRooms: roomsSlice.reducer,
+        joinedRoom: joinedRoomSlice.reducer,
+      }),
+    },
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware().prepend(listenerMiddleware.middleware),
+  });
 
-export type AppStore = typeof store;
+export type AppStore = ReturnType<typeof makeStore>;
 export type RootState = ReturnType<AppStore['getState']>;
 export type AppDispatch = AppStore['dispatch'];

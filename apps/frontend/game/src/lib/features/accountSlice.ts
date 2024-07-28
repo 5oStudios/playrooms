@@ -5,6 +5,7 @@ import { gameClient } from '@kingo/game-client';
 
 import { startAppListening } from '../listenerMiddleware';
 
+
 const initialState: ApiAccount | null = null;
 
 const accountSlice = createSlice({
