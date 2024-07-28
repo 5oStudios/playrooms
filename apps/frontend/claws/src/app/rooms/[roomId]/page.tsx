@@ -2,18 +2,11 @@
 
 import { useEffect, useState } from 'react';
 
-import { Room } from 'colyseus.js';
-import dynamic from 'next/dynamic';
-import { useSearchParams } from 'next/navigation';
 import 'react-modern-drawer/dist/index.css';
-import { min } from 'rxjs';
 
 import {
-  RoomState,
-  client,
   connectToColyseus,
   disconnectFromColyseus,
-  gameClient,
   useColyseusRoom,
   useColyseusState,
 } from '@kingo/game-client';
@@ -22,9 +15,9 @@ import { Controls } from '../../../components/controls';
 import Drawer from '../../../components/drawer/drawer';
 import QueueBoard from '../../../components/drawer/queueBoard';
 import Header from '../../../components/header';
-import VideoControl from '../../../components/videoControl';
 import WebView from '../../../components/webView';
-import { calcWaitingQueue, useClawsRoom } from './useClawsRoom';
+import { calcWaitingQueue } from './useClawsRoom';
+
 
 export default function RoomPage({ params }: { params: { roomId: string } }) {
   // const LazyReactPlayer = dynamic(() => import('react-player/youtube'), {

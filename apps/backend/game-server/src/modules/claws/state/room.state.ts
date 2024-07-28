@@ -17,7 +17,7 @@ export class RoomState extends Schema {
   currentPlayer: PlayerState | null = null;
 
   @type('number')
-  nextPlayerIndex: number = 0;
+  nextPlayerIndex = 0;
 
   @type('string')
   gameState: GAME_STATE = GAME_STATE.WAITING;
@@ -26,10 +26,10 @@ export class RoomState extends Schema {
   machine: MachineState = new MachineState();
 
   @type('string')
-  streamUrl: string = '';
+  streamUrl = '';
 
   @type('number')
-  startedAt: number = 0;
+  startedAt = 0;
 
   @type({ array: PlayerState })
   removedPlayers: PlayerState[] = new ArraySchema<PlayerState>();

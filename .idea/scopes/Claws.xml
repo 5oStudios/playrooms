@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="Claws" pattern="file[playrooms]:apps/frontend/claws//*" />
+</component>

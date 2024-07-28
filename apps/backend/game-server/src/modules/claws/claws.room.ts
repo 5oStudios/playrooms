@@ -43,12 +43,13 @@ export class ClawsRoom extends Room<RoomState> implements OnModuleInit {
     return user;
   }
 
-  onCreate({ streamUrl }: {
+  async onCreate({ streamUrl }: {
     streamUrl: string;
   }) {
     if (!streamUrl) throw new Error('Stream URL is required');
 
     this.setState(new RoomState({ streamUrl }));
+    await this.setMetadata({ streamUrl });
     this.onMessage('move-claw', async (client, message) => {
       this.dispatcher.dispatch(new MoveClawCommand(), {
         sessionId: client.sessionId,

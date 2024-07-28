@@ -6,6 +6,14 @@ const ClawsRoomSlice = createSlice({
     room: null,
     error: null,
   },
+  extraReducers: (builder) => {
+    builder.addCase(setRoom, (state, action) => {
+      state.room = action.payload;
+    });
+    builder.addCase(setError, (state, action) => {
+      state.error = action.payload;
+    });
+  },
   reducers: {
     setRoom(state, action) {
       state.room = action.payload;

@@ -3,6 +3,7 @@ import { ReactNode } from 'react';
 import { Toaster } from 'sonner';
 
 import './global.css';
+import { Providers } from './providers';
 
 export const metadata = {
   title: 'Welcome to claws',
@@ -12,8 +13,10 @@ export const metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <Toaster />
-      <body>{children}</body>
+      <Providers>
+        <Toaster />
+        <body>{children}</body>
+      </Providers>
     </html>
   );
 }
