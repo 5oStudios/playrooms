@@ -9,9 +9,7 @@ export class StartGameCommand extends Command<ClawsRoom> {
     this.room.state.gameState = GAME_STATE.STARTED;
     this.state.startedAt = this.clock.currentTime;
 
-    this.state.currentPlayer = this.state.players.find(
-      (player) => player.orderInQueue === 0,
-    );
+    this.state.currentPlayer = this.state.players.peek();
     await this.room.dispatcher.dispatch(new StartPlayerTurnCommand());
   }
 }

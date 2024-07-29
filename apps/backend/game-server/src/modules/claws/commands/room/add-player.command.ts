@@ -16,7 +16,6 @@ export class AddPlayerCommand extends Command<ClawsRoom, PlayerState> {
   }
 
   execute(player: PlayerState) {
-    player.orderInQueue = this.state.players.length;
-    this.state.players.push(player);
+    this.state.players.enqueue(player);
   }
 }

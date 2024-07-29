@@ -1,6 +1,7 @@
 import { ArraySchema, Schema, type } from '@colyseus/schema';
 import { PlayerState } from './player.state';
 import { MachineState } from './machine.state';
+import { QueueSchema } from '../../../queue';
 
 export enum GAME_STATE {
   WAITING = 'waiting',
@@ -11,7 +12,7 @@ export enum GAME_STATE {
 
 export class RoomState extends Schema {
   @type({ array: PlayerState })
-  players = new ArraySchema<PlayerState>();
+  players = new QueueSchema<PlayerState>();
 
   @type(PlayerState)
   currentPlayer: PlayerState | null = null;
