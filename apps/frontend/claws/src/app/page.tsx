@@ -8,10 +8,10 @@ import 'react-modern-drawer/dist/index.css';
 
 import { Controls } from '../components/controls';
 import Drawer from '../components/drawer/drawer';
-import Header from '../components/header';
 import VideoControl from '../components/videoControl';
 import VideoPlayer from '../components/videoPlayer';
 import WebView from '../components/webView';
+import SingleRoomHeader from '../lib/features/rooms/components/singleRoomHeader';
 
 export default function Index() {
   const LazyReactPlayer = dynamic(() => import('react-player/youtube'), {
@@ -31,7 +31,6 @@ export default function Index() {
 
   return (
     <div className="min-h-screen flex flex-col justify-between">
-      <Header viewers={20} waiting={20} />
       {/*<div className="relative flex-grow ">*/}
       {/*  <VideoControl setMute={setMute} mute={mute} />*/}
       {/*  /!* <VideoPlayer youtubeId={youtubeId} mute={mute} /> *!/*/}

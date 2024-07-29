@@ -6,22 +6,17 @@ import 'react-modern-drawer/dist/index.css';
 
 import { Controls } from '../../../components/controls';
 import Drawer from '../../../components/drawer/drawer';
-import QueueBoard from '../../../components/drawer/queueBoard';
-import Header from '../../../components/header';
 import WebView from '../../../components/webView';
+import QueueBoard from '../../../lib/features/rooms/components/queueBoard';
+import SingleRoomHeader from '../../../lib/features/rooms/components/singleRoomHeader';
 import {
   joinRoomById,
   leaveRoom,
   selectJoinedRoom,
 } from '../../../lib/features/rooms/joinedRoomSlice';
 import { useAppDispatch, useAppSelector } from '../../../lib/hooks';
-import { calcWaitingQueue } from './useClawsRoom';
 
 export default function RoomPage({ params }: { params: { roomId: string } }) {
-  // const LazyReactPlayer = dynamic(() => import('react-player/youtube'), {
-  //   ssr: false,
-  // });
-  // const youtubeId = searchParams.get('yt');
   const [isOpen, setIsOpen] = useState(false);
   const [mute, setMute] = useState(false);
   const toggleDrawer = () => {
@@ -48,18 +43,11 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
   }
 
   if (!roomState) return <div>Unknown error</div>;
-  console.log('players', roomState.players.length);
 
   return (
     <div className="min-h-screen flex flex-col justify-between">
-      {roomState.players.length}
-      <Header
-        viewers={0}
-        waiting={calcWaitingQueue(roomState.players.length)}
-      />
+      <SingleRoomHeader />
       <div className="relative flex-grow ">
-        {/*<VideoControl setMute={setMute} mute={mute} />*/}
-        {/* <VideoPlayer youtubeId={youtubeId} mute={mute} /> */}
         <WebView url={roomState.streamUrl} />
       </div>
       <footer className="fixed bottom-0 left-0 right-0 flex flex-col items-center bg-white p-4">
