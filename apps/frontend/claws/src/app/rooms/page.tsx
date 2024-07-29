@@ -6,8 +6,8 @@ import { RoomAvailable } from 'colyseus.js';
 import { useRouter } from 'next/navigation';
 
 import WebView from '../../components/webView';
-import { useAppDispatch, useAppSelector } from '../../features/hooks';
-import { getAvailableRooms } from '../../features/rooms/roomsSlice';
+import { getAvailableRooms } from '../../lib/features/rooms/roomsSlice';
+import { useAppDispatch, useAppSelector } from '../../lib/hooks';
 
 function Page() {
   const dispatch = useAppDispatch();

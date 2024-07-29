@@ -9,12 +9,12 @@ import Drawer from '../../../components/drawer/drawer';
 import QueueBoard from '../../../components/drawer/queueBoard';
 import Header from '../../../components/header';
 import WebView from '../../../components/webView';
-import { useAppDispatch, useAppSelector } from '../../../features/hooks';
 import {
   joinRoomById,
   leaveRoom,
   selectJoinedRoom,
-} from '../../../features/rooms/joinedRoomSlice';
+} from '../../../lib/features/rooms/joinedRoomSlice';
+import { useAppDispatch, useAppSelector } from '../../../lib/hooks';
 import { calcWaitingQueue } from './useClawsRoom';
 
 export default function RoomPage({ params }: { params: { roomId: string } }) {

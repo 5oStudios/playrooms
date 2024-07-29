@@ -4,7 +4,7 @@ import { Room } from 'colyseus.js';
 import { PlayerState, RoomState, gameClient } from '@kingo/game-client';
 
 import { startAppListening } from '../../listenerMiddleware';
-import { RootState } from '../store';
+import { RootState } from '../../store';
 
 export let joinedRoomInstance: Room<RoomState> | undefined;
 

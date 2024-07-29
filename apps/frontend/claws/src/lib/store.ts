@@ -1,8 +1,8 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 
-import { listenerMiddleware } from '../listenerMiddleware';
-import { joinedRoomSlice } from './rooms/joinedRoomSlice';
-import { roomsSlice } from './rooms/roomsSlice';
+import { joinedRoomSlice } from './features/rooms/joinedRoomSlice';
+import { roomsSlice } from './features/rooms/roomsSlice';
+import { listenerMiddleware } from './listenerMiddleware';
 
 export const makeStore = () =>
   configureStore({
