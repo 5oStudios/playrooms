@@ -12,6 +12,7 @@ import { getInstance } from '../../main';
 import { AddPlayerCommand } from './commands/room/add-player.command';
 import * as process from 'node:process';
 import { SelectNextPlayerCommand } from './commands/next-player.command';
+import { StartPlayerTurnCommand } from './commands/start-turn.command';
 
 type AuthenticatedUser = {
   email: string;
@@ -27,7 +28,10 @@ export class ClawsRoom extends Room<RoomState> implements OnModuleInit {
   autoDispose = false;
   dispatcher = new Dispatcher(this);
   static authenticatedUser: AuthenticatedUser;
-  timers: Map<string, Delayed> = new Map();
+  timers: Map<{
+    sessionId: string;
+    timerKey?: string;
+  }, Delayed> = new Map();
 
   static async onAuth(token: string) {
     if (process.env.NODE_ENV === 'development') return {};
@@ -70,10 +74,14 @@ export class ClawsRoom extends Room<RoomState> implements OnModuleInit {
     // CLAWS_CONFIG.ALLOW_RECONNECTION && await this.allowReconnection(client, CLAWS_CONFIG.RECONNECTION_TIMEOUT);
     // this.dispatcher.dispatch(new RemovePlayerCommand(), client);
     this.state.removeFromPlayers(client.sessionId);
-    this.timers.get(client.sessionId)?.clear();
+    this.timers.get({
+      sessionId: client.sessionId,
+    })?.clear();
 
     if (this.state.currentPlayer?.sessionId === client.sessionId) {
       this.dispatcher.dispatch(new SelectNextPlayerCommand());
+      await this.dispatcher.dispatch(new StartPlayerTurnCommand());
+
     }
   }
 

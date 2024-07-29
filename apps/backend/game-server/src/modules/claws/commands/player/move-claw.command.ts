@@ -3,7 +3,7 @@ import { Client } from 'colyseus';
 
 import { ClawsRoom } from '../../claws.room';
 import { CLAWS_DIRECTION } from '../../state/player.state';
-import { EndTurnCommand } from '../end-turn.command';
+import { EndPlayerTurn } from '../end-player.turn';
 
 type MoveClawCommandPayload = {
   sessionId: Client['sessionId'];
@@ -33,7 +33,7 @@ export class MoveClawCommand extends Command<
   async execute({ direction }) {
     if (direction === CLAWS_DIRECTION.DROP) {
       await this.state.currentPlayer.dropClaw();
-      await this.room.dispatcher.dispatch(new EndTurnCommand());
+      await this.room.dispatcher.dispatch(new EndPlayerTurn());
     } else {
       await this.state.currentPlayer.moveClaw(direction);
     }

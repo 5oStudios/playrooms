@@ -10,6 +10,9 @@ export default function SingleRoomHeader() {
   const currentTurnTimerInSeconds = useAppSelector(
     (state) => state.rooms.joinedRoom.myPlayerState?.currentTurnTimerInSeconds,
   );
+  const roomStatus = useAppSelector(
+    (state) => state.rooms.joinedRoom.roomState?.gameState,
+  );
   const playersCount = useAppSelector(
     (state) => state.rooms.joinedRoom.roomState?.players.length,
   );
@@ -20,7 +23,7 @@ export default function SingleRoomHeader() {
     <div className="flex flex-col justify-end items-center w-full h-[117px] bg-primary">
       <div className="flex flex-col w-full h-full justify-end items-center">
         <div className="flex gap-6 mb-4">
-          <div>{currentTurnTimerInSeconds}</div>
+          <p>{currentTurnTimerInSeconds}</p>
 
           <div className="bg-gray-300/50 w-[1px] h-full" />
 
@@ -45,6 +48,9 @@ export default function SingleRoomHeader() {
             <p>waiting</p>
             <p>{'(' + waiting + ')'}</p>
           </div>
+
+          <div className="bg-gray-300/50 w-[1px] h-full" />
+          <p>{roomStatus}</p>
         </div>
       </div>
     </div>

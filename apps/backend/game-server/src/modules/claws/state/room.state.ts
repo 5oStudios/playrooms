@@ -16,9 +16,6 @@ export class RoomState extends Schema {
   @type(PlayerState)
   currentPlayer: PlayerState | null = null;
 
-  @type('number')
-  nextPlayerIndex = 0;
-
   @type('string')
   gameState: GAME_STATE = GAME_STATE.WAITING;
 

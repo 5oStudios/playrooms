@@ -6,10 +6,12 @@ import { StartPlayerTurnCommand } from './start-turn.command';
 
 export class StartGameCommand extends Command<ClawsRoom> {
   async execute() {
-    this.state.currentPlayer = this.state.players[0];
     this.room.state.gameState = GAME_STATE.STARTED;
     this.state.startedAt = this.clock.currentTime;
 
+    this.state.currentPlayer = this.state.players.find(
+      (player) => player.orderInQueue === 0,
+    );
     await this.room.dispatcher.dispatch(new StartPlayerTurnCommand());
   }
 }

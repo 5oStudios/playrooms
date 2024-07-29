@@ -53,19 +53,24 @@ export class PlayerState extends Player {
   @type('number')
   totalRounds = 0;
 
+  @type('number')
+  orderInQueue;
+
   constructor(playerInfo: Client) {
     super(playerInfo);
   }
 
   startTurn() {
     this.isMyTurn = true;
-    this.currentTurnTimerInSeconds = 0;
+    this.orderInQueue = 0;
     this.totalMovesThisRound = 0;
     this.totalRounds++;
   }
 
   endTurn() {
+    console.log('Ending turn of ' + this.name);
     this.isMyTurn = false;
+    this.currentTurnTimerInSeconds = 0;
   }
 
   async moveClaw(direction: CLAWS_DIRECTION) {
