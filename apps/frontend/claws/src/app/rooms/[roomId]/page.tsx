@@ -28,8 +28,9 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
     setIsOpen((prevState) => !prevState);
   };
   const dispatch = useAppDispatch();
-  const joinedRoom = useAppSelector(selectJoinedRoom);
-  const { roomState, myPlayerState, status, error } = joinedRoom;
+  const { roomState, myPlayerState, status, error } = useAppSelector(
+    (state) => state.rooms.joinedRoom,
+  );
 
   useEffect(() => {
     if (status === 'idle') dispatch(joinRoomById(params.roomId));

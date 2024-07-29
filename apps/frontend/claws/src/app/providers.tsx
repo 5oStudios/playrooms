@@ -13,6 +13,7 @@ export const Providers = ({ children }: { children: ReactNode }) => {
 export default function StoreProvider({ children }: { children: ReactNode }) {
   const storeRef = useRef<AppStore>();
   if (!storeRef.current) {
+    console.log('Creating store');
     storeRef.current = makeStore();
   }
 

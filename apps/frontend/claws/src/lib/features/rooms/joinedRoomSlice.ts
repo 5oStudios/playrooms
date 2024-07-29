@@ -72,15 +72,16 @@ startAppListening({
   effect: async (action, listenerApi) => {
     const room = action.payload;
     room.onStateChange((roomState) => {
-      listenerApi.dispatch(setRoom(roomState));
+      console.log('roomState', roomState);
+      listenerApi.dispatch(setRoom({ ...roomState }));
       listenerApi.dispatch(
         setMyPlayer(
           roomState.players.find((p) => p.sessionId === room.sessionId),
         ),
       );
     });
-    room.onLeave(() => {
-      listenerApi.dispatch(setRoom(null));
-    });
+    // room.onLeave(() => {
+    //   // listenerApi.dispatch(setRoom(null));
+    // });
   },
 });
