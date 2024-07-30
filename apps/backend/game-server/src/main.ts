@@ -7,8 +7,10 @@ import { WebSocketTransport } from '@colyseus/ws-transport';
 import { INestApplication, Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { Server } from 'colyseus';
+import supertokens from 'supertokens-node';
 
 import { AppModule } from './app/app.module';
+import { SupertokensExceptionFilter } from './modules/auth/auth.filter';
 import { ClawsRoom } from './modules/claws/claws.room';
 
 const rooms = [ClawsRoom];
@@ -27,6 +29,14 @@ async function bootstrap() {
       server,
     }),
   });
+
+  app.enableCors({
+    origin: ['https://supertokens.com'],
+    allowedHeaders: ['content-type', ...supertokens.getAllCORSHeaders()],
+    credentials: true,
+  });
+
+  app.useGlobalFilters(new SupertokensExceptionFilter());
 
   rooms.forEach((room) => {
     gameServer.define(room.roomName, room);
