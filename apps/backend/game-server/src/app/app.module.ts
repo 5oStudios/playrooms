@@ -5,8 +5,6 @@ import { appInfo } from '@kingo/core';
 import { AuthModule } from '../modules/auth/auth.module';
 import { ClawsRoom } from '../modules/claws/claws.room';
 import { RoomsModule } from '../modules/rooms/rooms.module';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 
 @Module({
   imports: [
@@ -26,9 +24,8 @@ import { AppService } from './app.service';
     // }),
     RoomsModule,
   ],
-  controllers: [AppController],
+  // controllers: [AppController],
   providers: [
-    AppService,
     ClawsRoom,
     // {
     //   provide: APP_GUARD,

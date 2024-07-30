@@ -5,9 +5,13 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { signInAndUp } from 'supertokens-auth-react/recipe/thirdparty';
 
+import { setUser } from '../../../lib/features/auth/userSlice';
+import { useAppDispatch } from '../../../lib/hooks';
+
 export default function CallbackPage() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     async function handleGoogleCallback() {
@@ -23,6 +27,7 @@ export default function CallbackPage() {
           } else {
             // sign in successful
           }
+          console.log('response', response.user);
           router.push('/');
         } else if (response.status === 'SIGN_IN_UP_NOT_ALLOWED') {
           // the reason string is a user friendly message

@@ -1,19 +1,24 @@
-import { Controller, Get, Session, UseGuards } from '@nestjs/common';
-import { UserInfo } from 'supertokens-node/lib/build/recipe/thirdparty/types';
+import {
+  Controller,
+  Get,
+  UnauthorizedException,
+  UseGuards,
+} from '@nestjs/common';
+import supertokens, { User } from 'supertokens-node';
 import { SessionContainer } from 'supertokens-node/recipe/session';
-// @ts-ignore
-import { getUserById } from 'supertokens-node/recipe/thirdparty';
 
 import { AuthGuard } from './auth.guard';
+import { Session } from './session/session.decorator';
 
 @Controller('auth')
 export class AuthController {
   @Get('userinfo')
   @UseGuards(new AuthGuard())
-  async getUserInfo(@Session() session: SessionContainer): Promise<UserInfo> {
-    const userInfo = await getUserById(session.getUserId());
+  async getUserInfo(@Session() session: SessionContainer): Promise<User> {
+    const userId = session.getUserId();
+    const userInfo = await supertokens.getUser(userId);
     if (!userInfo) {
-      throw new Error('User not found');
+      throw new UnauthorizedException('User not found');
     }
     return userInfo;
   }
