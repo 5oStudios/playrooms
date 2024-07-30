@@ -31,10 +31,15 @@ async function bootstrap() {
   });
 
   app.enableCors({
-    origin: ['https://supertokens.com'],
+    origin: true,
     allowedHeaders: ['content-type', ...supertokens.getAllCORSHeaders()],
     credentials: true,
   });
+
+  // matchMaker.controller.DEFAULT_CORS_HEADERS = {
+  //   ...matchMaker.controller.DEFAULT_CORS_HEADERS,
+  //   'Access-Control-Allow-Origin': '*',
+  // };
 
   app.useGlobalFilters(new SupertokensExceptionFilter());
 

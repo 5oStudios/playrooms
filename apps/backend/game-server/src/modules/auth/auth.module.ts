@@ -9,11 +9,7 @@ import { AuthMiddleware } from './auth.middleware';
 import { AuthModuleConfig, ConfigInjectionToken } from './config.interface';
 import { SupertokensService } from './supertokens/supertokens.service';
 
-@Module({
-  providers: [],
-  exports: [],
-  controllers: [],
-})
+@Module({})
 export class AuthModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(AuthMiddleware).forRoutes('*');

@@ -146,6 +146,9 @@ dependencies:
   next:
     specifier: 14.1.0
     version: 14.1.0(@babel/core@7.24.6)(react-dom@18.2.0)(react@18.2.0)
+  nextjs-cors:
+    specifier: ^2.2.0
+    version: 2.2.0(next@14.1.0)
   playroomkit:
     specifier: ^0.0.67
     version: 0.0.67(react-dom@18.2.0)(react@18.2.0)
@@ -200,6 +203,9 @@ dependencies:
   sonner:
     specifier: ^1.4.0
     version: 1.4.41(react-dom@18.2.0)(react@18.2.0)
+  supertokens-auth-react:
+    specifier: ^0.44.0
+    version: 0.44.0(react-dom@18.2.0)(react@18.2.0)(supertokens-web-js@0.13.0)
   supertokens-node:
     specifier: ^20.0.0
     version: 20.0.0
@@ -15448,6 +15454,10 @@ packages:
       tslib: 2.6.2
     dev: false
 
+  /intl-tel-input@17.0.21:
+    resolution: {integrity: sha512-TfyPxLe41QZPOf6RqBxRE2dpQ0FThB/PBD/gRbxVhGW7IuYg30QD90x/vjmEo4vkZw7j8etxpVcjIZVRcG+Otw==}
+    dev: false
+
   /invariant@2.2.4:
     resolution: {integrity: sha512-phJfQVBuaJM5raOpJjSfkiD6BpbCE4Ns//LaXl6wGYtUBY83nWS6Rf9tXm2e8VaK60JEjYldbPif/A2B1C2gNA==}
     dependencies:
@@ -17962,6 +17972,15 @@ packages:
     transitivePeerDependencies:
       - '@babel/core'
       - babel-plugin-macros
+
+  /nextjs-cors@2.2.0(next@14.1.0):
+    resolution: {integrity: sha512-FZu/A+L59J4POJNqwXYyCPDvsLDeu5HjSBvytzS6lsrJeDz5cmnH45zV+VoNic0hjaeER9xGaiIjZIWzEHnxQg==}
+    peerDependencies:
+      next: ^8.1.1-canary.54 || ^9.0.0 || ^10.0.0-0 || ^11.0.0 || ^12.0.0 || ^13.0.0 || ^14.0.0
+    dependencies:
+      cors: 2.8.5
+      next: 14.1.0(@babel/core@7.24.6)(react-dom@18.2.0)(react@18.2.0)
+    dev: false
 
   /nimma@0.2.2:
     resolution: {integrity: sha512-V52MLl7BU+tH2Np9tDrIXK8bql3MVUadnMIl/0/oZSGC9keuro0O9UUv9QKp0aMvtN8HRew4G7byY7H4eWsxaQ==}
@@ -21950,6 +21969,25 @@ packages:
     dependencies:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
+    dev: false
+
+  /supertokens-auth-react@0.44.0(react-dom@18.2.0)(react@18.2.0)(supertokens-web-js@0.13.0):
+    resolution: {integrity: sha512-Jml/PDEKY2FxHCXM3Owd7ZfZzkgulIu69nd34nKL6a+wUCFv+qZJga0zNM6i9kMZVrZ6Pty7wE55Dj3O3FyKBQ==}
+    engines: {node: '>=16.0.0', npm: '>=8'}
+    peerDependencies:
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
+      supertokens-web-js: ^0.13.0
+    dependencies:
+      intl-tel-input: 17.0.21
+      prop-types: 15.8.1
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+      react-qr-code: 2.0.13(react@18.2.0)
+      supertokens-js-override: 0.0.4
+      supertokens-web-js: 0.13.0
+    transitivePeerDependencies:
+      - react-native-svg
     dev: false
 
   /supertokens-js-override@0.0.4:

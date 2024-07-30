@@ -1,23 +1,14 @@
 'use client';
 
 import { ReactNode, useRef } from 'react';
+import React from 'react';
 
 import { Provider } from 'react-redux';
-import SuperTokens from 'supertokens-web-js';
-import Session from 'supertokens-web-js/recipe/session';
-import ThirdParty from 'supertokens-web-js/recipe/thirdparty';
 
 import { AppStore, makeStore } from '../lib/store';
+import { SuperTokensProvider } from './providers/SupertokensProvider';
 
 export const Providers = ({ children }: { children: ReactNode }) => {
-  SuperTokens.init({
-    appInfo: {
-      apiDomain: 'https://api.supertokens.com',
-      apiBasePath: '/auth',
-      appName: '...',
-    },
-    recipeList: [Session.init(), ThirdParty.init()],
-  });
   return <StoreProvider>{children}</StoreProvider>;
 };
 
@@ -27,5 +18,9 @@ export default function StoreProvider({ children }: { children: ReactNode }) {
     storeRef.current = makeStore();
   }
 
-  return <Provider store={storeRef.current}>{children}</Provider>;
+  return (
+    <SuperTokensProvider>
+      <Provider store={storeRef.current}>{children}</Provider>
+    </SuperTokensProvider>
+  );
 }

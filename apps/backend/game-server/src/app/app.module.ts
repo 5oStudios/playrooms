@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 
+import { appInfo } from '@kingo/core';
+
 import { AuthModule } from '../modules/auth/auth.module';
 import { ClawsRoom } from '../modules/claws/claws.room';
 import { RoomsModule } from '../modules/rooms/rooms.module';
@@ -13,14 +15,7 @@ import { AppService } from './app.service';
       connectionURI:
         'https://st-dev-5c395cd0-4e53-11ef-a24d-7fa502ed3c7e.aws.supertokens.io',
       apiKey: 'DM=imTfRcBAcE6Km3BDZpEH2Mp',
-      appInfo: {
-        // Learn more about this on https://supertokens.com/docs/passwordless/appinfo
-        appName: 'Kingo',
-        apiDomain: 'https://api.supertokens.com',
-        websiteDomain: 'localhost:3001',
-        apiBasePath: '/auth',
-        websiteBasePath: '/auth',
-      },
+      appInfo,
     }),
     // KeycloakConnectModule.register({
     //   authServerUrl: 'https://auth.5ostudios.com',
