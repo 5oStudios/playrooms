@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 
 import { Toaster } from 'sonner';
 
+import { UserInformation } from '../lib/features/auth/components/userInformation';
 import './global.css';
 import { Providers } from './providers';
 
@@ -13,10 +14,13 @@ export const metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <Providers>
-        <Toaster />
-        <body>{children}</body>
-      </Providers>
+      <body>
+        <Providers>
+          <Toaster />
+          <UserInformation />
+          {children}
+        </Providers>
+      </body>
     </html>
   );
 }

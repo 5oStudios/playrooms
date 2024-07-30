@@ -3,6 +3,6 @@ export const appInfo = {
   appName: 'Kingo',
   apiDomain: 'http://localhost:3000',
   websiteDomain: 'http://localhost:3001',
-  apiBasePath: '/',
-  websiteBasePath: '/',
+  apiBasePath: '/auth',
+  websiteBasePath: '/api/auth',
 };

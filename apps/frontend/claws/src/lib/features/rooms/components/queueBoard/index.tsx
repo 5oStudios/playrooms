@@ -2,7 +2,6 @@ import React from 'react';
 
 import { PlayerState } from '@kingo/game-client';
 
-import { generateRandomUser } from '../../../../../app/mock/generateRandomUsers';
 import QueueCard from './card';
 
 export default function QueueBoard({ players }: { players: PlayerState[] }) {

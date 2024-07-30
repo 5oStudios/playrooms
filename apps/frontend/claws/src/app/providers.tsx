@@ -9,7 +9,11 @@ import { AppStore, makeStore } from '../lib/store';
 import { SuperTokensProvider } from './providers/SupertokensProvider';
 
 export const Providers = ({ children }: { children: ReactNode }) => {
-  return <StoreProvider>{children}</StoreProvider>;
+  return (
+    <SuperTokensProvider>
+      <StoreProvider>{children}</StoreProvider>
+    </SuperTokensProvider>
+  );
 };
 
 export default function StoreProvider({ children }: { children: ReactNode }) {
@@ -18,9 +22,5 @@ export default function StoreProvider({ children }: { children: ReactNode }) {
     storeRef.current = makeStore();
   }
 
-  return (
-    <SuperTokensProvider>
-      <Provider store={storeRef.current}>{children}</Provider>
-    </SuperTokensProvider>
-  );
+  return <Provider store={storeRef.current}>{children}</Provider>;
 }

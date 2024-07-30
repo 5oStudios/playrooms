@@ -19,9 +19,10 @@ const AuthButton = ({ thirdPartyId }: { thirdPartyId: string }) => {
 
   const authButtonClicked = async (thirdPartyId: string) => {
     const authURL = await getAuthorisationURLWithQueryParamsAndSetState({
-      frontendRedirectURI: 'http://localhost:3001/rooms',
       thirdPartyId,
+      frontendRedirectURI: `http://localhost:3001/auth/callback`,
     });
+    console.log({ authURL });
     router.push(authURL);
   };
 
