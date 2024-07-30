@@ -26,21 +26,26 @@ const AuthButton = ({ thirdPartyId }: { thirdPartyId: string }) => {
     router.push(authURL);
   };
 
+  const providers = ['google', 'apple', 'github'];
+
   return (
-    <button
-      type="submit"
-      className="w-full px-5 py-2 text-xl bg-white border-2 rounded-md shadow text-zinc-700 border-zinc-700"
-      onClick={() => authButtonClicked(thirdPartyId)}
+    <div
+      style={{
+        display: 'flex',
+      }}
     >
-      <div className="flex flex-row w-3/4 mx-auto">
-        <img
-          src={`/logos/${thirdPartyId.toLowerCase()}.svg`}
-          alt="Github Logo"
-          className="w-auto h-6 my-auto mr-4"
-        />
-        <p className="mx-auto">Continue with {thirdPartyId}</p>
-      </div>
-    </button>
+      {providers.map((provider) => (
+        <button
+          style={{
+            border: '1px solid black',
+          }}
+          key={provider}
+          onClick={() => authButtonClicked(provider)}
+        >
+          Sign in with {provider}
+        </button>
+      ))}
+    </div>
   );
 };
 
