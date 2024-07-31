@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { RoomAvailable } from 'colyseus.js';
 import { useRouter } from 'next/navigation';
@@ -10,62 +10,67 @@ import WebView from '../../components/webView';
 import { getAvailableRooms } from '../../lib/features/rooms/roomsSlice';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
 
-function Page() {
+
+const Page = () => {
   const dispatch = useAppDispatch();
   const { availableRooms, state, error } = useAppSelector(
     (state) => state.rooms.availableRooms,
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (state === 'idle') dispatch(getAvailableRooms());
   }, [dispatch, state]);
 
   return (
     <div className="flex flex-col min-h-screen">
-      <div className="flex justify-center items-center bg-primary h-[117px]">
-        <p className="text-xl text-white font-bold">Available Rooms</p>
-      </div>
-      {state === 'loading' && <Spinner />}
+      <header className="flex justify-center items-center bg-primary h-28">
+        <h1 className="text-2xl text-white font-bold">Available Rooms</h1>
+      </header>
 
-      {state === 'failed' && <p>{error}</p>}
+      <main className="flex-grow p-4">
+        {state === 'loading' && <Spinner />}
 
-      {state === 'succeeded' && (
-        <div className="flex-grow flex flex-wrap justify-start items-start mt-10">
-          <div className="flex-grow flex flex-wrap justify-start items-start mt-10">
+        {state === 'failed' && (
+          <p className="text-center text-red-500">{error}</p>
+        )}
+
+        {state === 'succeeded' && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {availableRooms.map((room) => (
               <RoomCard key={room.roomId} {...room} />
             ))}
           </div>
-        </div>
-      )}
-      {/* <footer className="flex justify-center items-center bg-primary h-[117px]">
-        <button className="text-white bg-gradient-to-t from-secondary to-darkYellow w-[380px] h-[58px] rounded-3xl flex items-center justify-center">
+        )}
+      </main>
+
+      <footer className="flex justify-center items-center bg-primary h-28">
+        <button className="text-white bg-gradient-to-t from-secondary to-darkYellow w-80 h-14 rounded-3xl flex items-center justify-center">
           Create Room
         </button>
-      </footer> */}
+      </footer>
     </div>
   );
-}
+};
 
 export default Page;
 
-function RoomCard({ roomId, maxClients, clients, metadata }: RoomAvailable) {
+const RoomCard = ({ roomId, maxClients, clients, metadata }: RoomAvailable) => {
   const router = useRouter();
+
   return (
-    <div className="flex flex-col justify-start items-start bg-primary w-56 h-72 rounded-xl p-4 m-2 text-white">
-      <p>
+    <div className="flex flex-col bg-primary p-4 rounded-xl text-white w-full h-full shadow-lg">
+      <p className="mb-2">
         Players {clients} / {maxClients}
       </p>
-      <div>
+      <div className="flex-grow mb-4">
         <WebView url={metadata.streamUrl} />
       </div>
-      <div className="pt-4"></div>
       <button
-        className="bg-gradient-to-t from-secondary to-darkYellow w-full h-10 rounded-xl mt-auto mb-2"
+        className="bg-gradient-to-t from-secondary to-darkYellow w-full h-10 rounded-xl mt-auto"
         onClick={() => router.push(`/rooms/${roomId}`)}
       >
         Join
       </button>
     </div>
   );
-}
+};
