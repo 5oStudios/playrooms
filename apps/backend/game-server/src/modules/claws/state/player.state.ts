@@ -1,7 +1,9 @@
 import { type } from '@colyseus/schema';
 import axios from 'axios';
-import { Player } from '../../player.base';
 import { Client } from 'colyseus';
+
+import { Player } from '../../player.base';
+import { CLAWS_CONFIG } from '../claws.config';
 
 export enum CLAWS_DIRECTION {
   UP = 'up',
@@ -48,7 +50,7 @@ export class PlayerState extends Player {
   lastMoveAt = 0;
 
   @type('number')
-  currentTurnTimerInSeconds = 0;
+  currentTurnTimerInSeconds = CLAWS_CONFIG.PLAYER_TURN_DURATION / 1000;
 
   @type('number')
   totalRounds = 0;
@@ -61,6 +63,7 @@ export class PlayerState extends Player {
     this.isMyTurn = true;
     this.totalMovesThisRound = 0;
     this.totalRounds++;
+    this.currentTurnTimerInSeconds = CLAWS_CONFIG.PLAYER_TURN_DURATION / 1000;
   }
 
   endTurn() {
@@ -71,9 +74,12 @@ export class PlayerState extends Player {
 
   async moveClaw(direction: CLAWS_DIRECTION) {
     this.state = ClawsPlayerState.MOVING;
-    const { data: result } = await axios.post('https://api.mshemali.dev/control', {
-      direction,
-    });
+    const { data: result } = await axios.post(
+      'https://api.mshemali.dev/control',
+      {
+        direction,
+      },
+    );
     this.totalMoves++;
     this.totalMovesThisRound++;
     this.state = ClawsPlayerState.IDLE;

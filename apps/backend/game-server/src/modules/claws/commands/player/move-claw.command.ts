@@ -8,13 +8,16 @@ import { EndPlayerTurn } from '../end-player.turn';
 type MoveClawCommandPayload = {
   sessionId: Client['sessionId'];
   direction: CLAWS_DIRECTION;
+  forceAction?: boolean;
 };
 
 export class MoveClawCommand extends Command<
   ClawsRoom,
   MoveClawCommandPayload
 > {
-  validate({ sessionId, direction }: MoveClawCommandPayload) {
+  validate({ sessionId, direction, forceAction }: MoveClawCommandPayload) {
+    if (forceAction) return true;
+
     const isCurrentPlayer = this.state.currentPlayer?.sessionId === sessionId;
     if (!isCurrentPlayer) return false;
 

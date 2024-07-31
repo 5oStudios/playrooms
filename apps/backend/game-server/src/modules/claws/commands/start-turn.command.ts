@@ -11,36 +11,12 @@ export class StartPlayerTurnCommand extends Command<ClawsRoom> {
   async execute() {
     this.state.currentPlayer.startTurn();
 
-    if (CLAWS_CONFIG.AUTO_PLAY_AFTER_PLAYER_TURN_DURATION) {
-      const autoPlayTimer = this.clock.setTimeout(async () => {
-        const didPlayerMove = this.state.currentPlayer.totalMovesThisRound > 0;
-
-        // we need to preform any movement before dropping the claw
-        if (!didPlayerMove) {
-          await this.room.dispatcher.dispatch(new MoveClawCommand(), {
-            sessionId: this.room.state.currentPlayer.sessionId,
-            direction: CLAWS_DIRECTION.LEFT,
-          });
-        }
-
-        await this.room.dispatcher.dispatch(new MoveClawCommand(), {
-          sessionId: this.room.state.currentPlayer.sessionId,
-          direction: CLAWS_DIRECTION.DROP,
-        });
-
-        autoPlayTimer.clear();
-      }, CLAWS_CONFIG.PLAYER_TURN_DURATION);
-    }
-
     const currentTurnTimer = this.clock.setInterval(() => {
-      this.state.currentPlayer.currentTurnTimerInSeconds += 1;
+      if (this.state.currentPlayer.currentTurnTimerInSeconds <= 0) {
+        currentTurnTimer.clear();
+        this.room.dispatcher.dispatch(new EndPlayerTurn());
+      } else this.state.currentPlayer.currentTurnTimerInSeconds -= 1;
     }, 1000);
-
-    const endTurnTimer = this.clock.setTimeout(async () => {
-      currentTurnTimer.clear();
-      endTurnTimer.clear();
-      await this.room.dispatcher.dispatch(new EndPlayerTurn());
-    }, CLAWS_CONFIG.PLAYER_TURN_DURATION);
   }
 
   validate() {

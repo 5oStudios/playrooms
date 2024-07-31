@@ -33,10 +33,10 @@ async function bootstrap() {
     return {
       'Access-Control-Allow-Origin': 'http://localhost:3001',
       Vary: '*',
-      'Access-Control-Allow-Headers': supertokens
-        .getAllCORSHeaders()
-        .join(', '),
-      'Access-Control-Allow-Credentials': 'true',
+      'Access-Control-Allow-Headers': [
+        'content-type',
+        supertokens.getAllCORSHeaders(),
+      ].join(', '),
     };
   };
 
