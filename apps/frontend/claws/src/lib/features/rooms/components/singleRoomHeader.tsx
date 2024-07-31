@@ -5,17 +5,20 @@ import Image from 'next/image';
 import eye from '../../../../../public/assets/eye.svg';
 import users from '../../../../../public/assets/user.svg';
 import { useAppSelector } from '../../../hooks';
+import { selectMyPlayerState } from '../joinedRoomSlice';
 
 export default function SingleRoomHeader() {
-  const currentTurnTimerInSeconds = useAppSelector(
-    (state) => state.rooms.joinedRoom.myPlayerState?.currentTurnTimerInSeconds,
-  );
+  const myPlayer = useAppSelector(selectMyPlayerState);
   const roomStatus = useAppSelector(
     (state) => state.rooms.joinedRoom.roomState?.gameState,
   );
   const playersCount = useAppSelector(
     (state) => state.rooms.joinedRoom.roomState?.players.length,
   );
+  if (!myPlayer) return null;
+
+  const { currentTurnTimerInSeconds } = myPlayer;
+
   const viewersCount = 0;
   const waiting = 0;
 

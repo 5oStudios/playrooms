@@ -25,16 +25,17 @@ export const leaveRoom = createAsyncThunk('baseRoom/leaveRoom', async () => {
 
 const initialState: {
   roomState: RoomState | null;
-  myPlayerState: PlayerState | null;
+  myPlayerSessionId: string | null;
   error: string | null;
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
 } = {
   roomState: null,
-  myPlayerState: null,
+  myPlayerSessionId: null,
   error: null,
   status: 'idle',
 };
 
+// @ts-ignore
 export const joinedRoomSlice = createSlice({
   name: 'joinedRoom',
   initialState,
@@ -42,8 +43,8 @@ export const joinedRoomSlice = createSlice({
     setRoom(state, action) {
       state.roomState = action.payload;
     },
-    setMyPlayer(state, action) {
-      state.myPlayerState = action.payload;
+    setMyPlayerSessionId(state, action) {
+      state.myPlayerSessionId = action.payload;
     },
     setError(state, action) {
       state.error = action.payload;
@@ -64,22 +65,25 @@ export const joinedRoomSlice = createSlice({
   },
 });
 
-export const { setRoom, setError, setMyPlayer } = joinedRoomSlice.actions;
+export const { setRoom, setError, setMyPlayerSessionId } =
+  joinedRoomSlice.actions;
 export const selectJoinedRoom = (state: RootState) => state.rooms.joinedRoom;
+export const selectMyPlayerState = (state: RootState) =>
+  state.rooms.joinedRoom.roomState?.players.find(
+    (player) => player.sessionId === state.rooms.joinedRoom.myPlayerSessionId,
+  );
 
 startAppListening({
   actionCreator: joinRoomById.fulfilled,
   effect: async (action, listenerApi) => {
     const room = action.payload;
+
+    listenerApi.dispatch(setMyPlayerSessionId(room.sessionId));
+
     room.onStateChange((roomState) => {
-      console.log('roomState', roomState);
       listenerApi.dispatch(setRoom({ ...roomState }));
-      listenerApi.dispatch(
-        setMyPlayer(
-          roomState.players.find((p) => p.sessionId === room.sessionId),
-        ),
-      );
     });
+
     // room.onLeave(() => {
     //   // listenerApi.dispatch(setRoom(null));
     // });

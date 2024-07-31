@@ -9,8 +9,8 @@ export default function QueueBoard() {
   const players = useAppSelector(
     (state) => state.rooms.joinedRoom.roomState?.players,
   );
-  const myPlayer = useAppSelector(
-    (state) => state.rooms.joinedRoom.myPlayerState,
+  const myPlayerSessionId = useAppSelector(
+    (state) => state.rooms.joinedRoom.myPlayerSessionId,
   );
 
   if (!players)
@@ -34,7 +34,7 @@ export default function QueueBoard() {
               images={undefined}
               name={player.name}
               points={player.totalWins}
-              isMyPlayer={player.sessionId === myPlayer?.sessionId}
+              isMyPlayer={player.sessionId === myPlayerSessionId}
             />
             <div className="bg-slate-200 w-full h-[1px] mx-auto"></div>
           </>
