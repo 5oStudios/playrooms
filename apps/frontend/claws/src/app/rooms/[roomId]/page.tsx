@@ -75,7 +75,7 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
           toggleDrawer={toggleDrawer}
           title={'Queue Board'}
         >
-          <QueueBoard players={roomState.players} />
+          <QueueBoard />
         </Drawer>
       </footer>
     </div>

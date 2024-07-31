@@ -7,13 +7,15 @@ type QueueCardProps = {
   images: string | undefined;
   name: string;
   points: number;
+  isMyPlayer?: boolean;
 };
 
 export default function QueueCard({
-  id,
-  images,
   name,
   points,
+  images,
+  id,
+  isMyPlayer,
 }: QueueCardProps) {
   const nameInitials = name
     .split(' ')
@@ -43,7 +45,9 @@ export default function QueueCard({
             {id + 1}
           </p>
           {imageComponent}
-          <p className="text-[16px] font-urbanist">{name}</p>
+          <p className="text-[16px] font-urbanist">
+            {name} {isMyPlayer ? ' (You)' : ''}
+          </p>
         </div>
         <p className="w-[139px] text-right text-[12.54px] font-urbanist">
           {points} Point
