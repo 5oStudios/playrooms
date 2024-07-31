@@ -6,21 +6,28 @@ type WebViewProps = {
 
 const WebView = ({ url }: WebViewProps) => {
   if (!url) {
-    return <div className="w-full h-full flex items-center justify-center text-gray-500">No URL provided</div>;
+    return (
+      <div className="w-full h-full flex items-center justify-center text-gray-500">
+        No URL provided
+      </div>
+    );
   }
 
   return (
-    <div className="w-full h-full flex justify-center items-center">
-      <div className="w-[700px] h-[560px]">
-        <iframe
-          src={url}
-          title="Web View"
-          className="w-full h-full border-none"
-          allowFullScreen
-        />
-      </div>
+    <div className="relative w-[200px] h-[150px] p-1 overflow-hidden">
+      <iframe
+        src={url}
+        title="Web View"
+        style={{
+          width: '700px',
+          height: '560px',
+          transform: 'scale(0.2857)',
+          transformOrigin: '0 0',
+        }}
+        className="m-4 mx-auto"
+        allowFullScreen
+      />
     </div>
   );
 };
-
 export default WebView;
