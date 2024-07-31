@@ -6,8 +6,6 @@ import { gameClient } from '@kingo/game-client';
 export const getAvailableRooms = createAsyncThunk(
   'rooms/getAvailableRooms',
   async () => {
-    // wait 1000ms
-    await new Promise((resolve) => setTimeout(resolve, 2000));
     return await gameClient.getAvailableRooms();
   },
 );

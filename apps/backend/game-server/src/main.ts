@@ -6,7 +6,7 @@ import { playground } from '@colyseus/playground';
 import { WebSocketTransport } from '@colyseus/ws-transport';
 import { INestApplication, Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { Server } from 'colyseus';
+import { Server, matchMaker } from 'colyseus';
 import supertokens from 'supertokens-node';
 
 import { AppModule } from './app/app.module';
@@ -23,23 +23,30 @@ async function bootstrap() {
   app.setGlobalPrefix(globalPrefix);
   const port = process.env.PORT || 3000;
 
+  app.enableCors({
+    origin: 'http://localhost:3001',
+    allowedHeaders: [...supertokens.getAllCORSHeaders()],
+    credentials: true,
+  });
+
+  matchMaker.controller.getCorsHeaders = function (req) {
+    return {
+      'Access-Control-Allow-Origin': 'http://localhost:3001',
+      Vary: '*',
+      'Access-Control-Allow-Headers': supertokens
+        .getAllCORSHeaders()
+        .join(', '),
+      'Access-Control-Allow-Credentials': 'true',
+    };
+  };
+
   const server = app.getHttpServer();
+
   const gameServer = new Server({
     transport: new WebSocketTransport({
       server,
     }),
   });
-
-  app.enableCors({
-    origin: true,
-    allowedHeaders: ['content-type', ...supertokens.getAllCORSHeaders()],
-    credentials: true,
-  });
-
-  // matchMaker.controller.DEFAULT_CORS_HEADERS = {
-  //   ...matchMaker.controller.DEFAULT_CORS_HEADERS,
-  //   'Access-Control-Allow-Origin': '*',
-  // };
 
   app.useGlobalFilters(new SupertokensExceptionFilter());
 

@@ -2,6 +2,8 @@ import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 import { User } from './types';
+import {startAppListening} from "../../listenerMiddleware";
+import {gameClient} from "@kingo/game-client";
 
 export const verifySession = createAsyncThunk(
   'user/verifySession',
@@ -9,20 +11,6 @@ export const verifySession = createAsyncThunk(
     const response = await axios.get('http://localhost:3000/auth/userinfo');
     return response.data;
   },
-  // new Promise<User>((resolve, reject) => {
-  //   signInAndUp()
-  //     .then((response) => {
-  //       if (response.status === 'OK') {
-  //         resolve(response.user);
-  //       }
-  //       console.log(response.status);
-  //       reject(response.status);
-  //     })
-  //     .catch((error) => {
-  //       console.error('Oops! Something went wrong.', error);
-  //       reject(error);
-  //     });
-  // }),
 );
 
 interface UserState {
@@ -64,3 +52,12 @@ export const userSlice = createSlice({
 });
 
 export const { setUser, clearUser } = userSlice.actions;
+
+
+startAppListening({
+  actionCreator: verifySession.fulfilled,
+  effect: async (action, listenerApi) => {
+    gameClient.auth.token = action.payload.id;
+    console.log('User token:', action.payload);
+  },
+})

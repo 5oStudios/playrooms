@@ -113,6 +113,9 @@ dependencies:
   colyseus.js:
     specifier: ^0.15.25
     version: 0.15.25
+  cors:
+    specifier: ^2.8.5
+    version: 2.8.5
   eventemitter3:
     specifier: ^5.0.1
     version: 5.0.1
@@ -313,6 +316,9 @@ devDependencies:
   '@trivago/prettier-plugin-sort-imports':
     specifier: ^4.3.0
     version: 4.3.0(prettier@2.8.8)
+  '@types/cors':
+    specifier: ^2.8.17
+    version: 2.8.17
   '@types/jest':
     specifier: ^29.5.12
     version: 29.5.12
@@ -11929,8 +11935,8 @@ packages:
     engines: {node: '>=6.0'}
     dev: true
 
-  /chromedriver@127.0.0:
-    resolution: {integrity: sha512-/Jla24iL0ly/EI7i/q0ukANkpAWvAkSHbvC7FtBZXFJXe6klH0n/XT56VSBcBYB1iMgWM8kPwqF8pb9gdqN9UA==}
+  /chromedriver@127.0.1:
+    resolution: {integrity: sha512-j57OWXsxdhwK+faTWA2pi+8hf052qVjZjP0wXnjqY/QglHtlOXWhRj4s7/+ybJRNgs1zQ5csfOyV6sQQdH+Fnw==}
     engines: {node: '>=18'}
     hasBin: true
     requiresBuild: true
@@ -16821,7 +16827,7 @@ packages:
     dependencies:
       jwk-to-pem: 2.0.5
     optionalDependencies:
-      chromedriver: 127.0.0
+      chromedriver: 127.0.1
     transitivePeerDependencies:
       - debug
       - supports-color
