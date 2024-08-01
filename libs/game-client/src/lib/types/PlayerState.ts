@@ -21,4 +21,5 @@ export class PlayerState extends Player {
     @type("number") public lastMoveAt!: number;
     @type("number") public currentTurnTimerInSeconds!: number;
     @type("number") public totalRounds!: number;
+    @type("number") public queueOrder!: number;
 }

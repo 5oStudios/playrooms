@@ -13,8 +13,9 @@ export class Player extends Schema {
   email: string = faker.internet.email();
 
   constructor(client: Client) {
+    console.log('Player.constructor parent', client);
     super();
-    this.sessionId = client.sessionId || this.sessionId;
+    this.sessionId = client?.sessionId || this.sessionId;
     this.name = client.auth?.name || this.name;
     this.email = client.auth?.email || this.email;
   }

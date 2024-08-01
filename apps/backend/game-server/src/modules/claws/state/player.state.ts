@@ -55,6 +55,9 @@ export class PlayerState extends Player {
   @type('number')
   totalRounds = 0;
 
+  @type('number')
+  queueOrder = 0;
+
   constructor(playerInfo: Client) {
     super(playerInfo);
   }

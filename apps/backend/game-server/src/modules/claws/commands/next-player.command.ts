@@ -7,10 +7,9 @@ import { StartPlayerTurnCommand } from './start-turn.command';
 
 export class SelectNextPlayerCommand extends Command<ClawsRoom> {
   async execute() {
-    this.state.gameState = GAME_STATE.CHOOSING;
+    this.state.players.decreaseQueueOrder();
 
-    const lastPlayer = this.state.players.dequeue();
-    this.state.players.enqueue(lastPlayer);
+    this.state.gameState = GAME_STATE.CHOOSING;
 
     await this.clock.duration(CLAWS_CONFIG.TIMEOUT_BEFORE_NEXT_TURN);
 

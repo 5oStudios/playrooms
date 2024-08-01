@@ -20,7 +20,7 @@ export default function SingleRoomHeader() {
   const { currentTurnTimerInSeconds } = myPlayer;
 
   const viewersCount = 0;
-  const waiting = 0;
+  const waiting = myPlayer.queueOrder;
 
   return (
     <div className="flex flex-col justify-end items-center w-full h-[117px] bg-primary">
