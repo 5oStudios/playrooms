@@ -44,7 +44,7 @@ function Index() {
         </button>
         <Link
           className="mt-6 bg-gradient-to-t from-secondary to-darkYellow w-[380px] h-[58px] rounded-3xl flex items-center justify-center"
-          href={'/pages/rooms'}
+          href={'/rooms'}
         >
           <p className="text-white font-semibold">Start Play</p>
         </Link>
