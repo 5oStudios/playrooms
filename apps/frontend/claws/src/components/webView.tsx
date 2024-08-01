@@ -18,7 +18,7 @@ const WebView = ({ url }: WebViewProps) => {
   }
 
   return (
-    <div className="relative p-32 shadow-lg overflow-hidden rounded-xl">
+    <div className="relative p-32 shadow-lg">
       <IframeResizer
         license="GPLv3"
         src={url}

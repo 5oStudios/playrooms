@@ -57,11 +57,11 @@ const RoomCard = ({ roomId, maxClients, clients, metadata }: RoomAvailable) => {
   const router = useRouter();
 
   return (
-    <div className="flex flex-col bg-primary p-4 gap-3 rounded-xl text-white w-full h-full shadow-lg sm:w-80 md:w-96">
+    <div className="flex flex-col bg-primary p-4 gap-3 rounded-xl text-white w-full h-full shadow-xl sm:w-80 md:w-96">
       <p className="text-center text-lg">
         Players {clients} / {maxClients}
       </p>
-      <div className="flex-1">
+      <div className="flex-1 rounded-xl overflow-hidden">
         <WebView url={metadata.streamUrl} />
       </div>
       <button
