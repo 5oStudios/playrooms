@@ -25,7 +25,7 @@ async function bootstrap() {
 
   app.enableCors({
     origin: 'http://localhost:3001',
-    allowedHeaders: [...supertokens.getAllCORSHeaders()],
+    allowedHeaders: [...supertokens.getAllCORSHeaders(), 'content-type'],
     credentials: true,
   });
 

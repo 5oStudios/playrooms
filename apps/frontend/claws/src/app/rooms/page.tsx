@@ -5,8 +5,11 @@ import React, { useEffect } from 'react';
 import { RoomAvailable } from 'colyseus.js';
 import { useRouter } from 'next/navigation';
 
+import Drawer from '../../components/drawer/drawer';
+import Login from '../../components/drawer/login';
 import { Spinner } from '../../components/spinner';
 import WebView from '../../components/webView';
+import QueueBoard from '../../lib/features/rooms/components/queueBoard';
 import { getAvailableRooms } from '../../lib/features/rooms/roomsSlice';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
 
@@ -15,6 +18,8 @@ const Page = () => {
   const { availableRooms, state, error } = useAppSelector(
     (state) => state.rooms.availableRooms,
   );
+  const [isOpen, setIsOpen] = React.useState(false);
+  const toggleDrawer = () => setIsOpen((prevState) => !prevState);
 
   useEffect(() => {
     if (state === 'idle') dispatch(getAvailableRooms());
@@ -42,8 +47,14 @@ const Page = () => {
         )}
       </main>
 
+      <Drawer isOpen={isOpen} toggleDrawer={toggleDrawer} title="Join Play">
+        <Login />
+      </Drawer>
       <footer className="flex justify-center items-center bg-primary h-28">
-        <button className="text-white bg-gradient-to-t from-secondary to-darkYellow w-80 h-14 rounded-3xl flex items-center justify-center">
+        <button
+          onClick={toggleDrawer}
+          className="text-white bg-gradient-to-t from-secondary to-darkYellow w-80 h-14 rounded-3xl flex items-center justify-center"
+        >
           Create Room
         </button>
       </footer>

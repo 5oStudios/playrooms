@@ -36,24 +36,23 @@ export class MoveClawCommand extends Command<
 
   async execute({ direction }) {
     if (direction === CLAWS_DIRECTION.DROP) {
-      console.count('dropping');
-      const thisPlayerClient = this.room.clients.find(
-        (client) => client.sessionId === this.state.currentPlayer.sessionId,
-      );
-      if (!thisPlayerClient) {
-        throw new Error('Client not found');
+      try {
+        const thisPlayerClient = this.room.clients.find(
+          (client) => client.sessionId === this.state.currentPlayer.sessionId,
+        );
+
+        const result = await this.state.currentPlayer.dropClaw();
+        if (result === 'lose') {
+          thisPlayerClient.send('drop-state', 'lose');
+        } else {
+          thisPlayerClient.send('drop-state', 'win');
+        }
+        // await this.room.dispatcher.dispatch(new AutoEndPlayerTurn());
+        this.state.currentPlayer.endTurn();
+        await this.room.dispatcher.dispatch(new SelectNextPlayerCommand());
+      } catch (e) {
+        console.error(e);
       }
-      const result = await this.state.currentPlayer.dropClaw();
-      if (result === 'lose') {
-        console.count('lose');
-        thisPlayerClient.send('drop-state', 'lose');
-      } else {
-        console.count('win');
-        thisPlayerClient.send('drop-state', 'win');
-      }
-      // await this.room.dispatcher.dispatch(new AutoEndPlayerTurn());
-      this.state.currentPlayer.endTurn();
-      await this.room.dispatcher.dispatch(new SelectNextPlayerCommand());
     } else {
       await this.state.currentPlayer.moveClaw(direction);
     }
