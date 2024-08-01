@@ -59,7 +59,7 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
     );
 
   return (
-    <div className="max-h-screen flex flex-col justify-center items-center">
+    <div className="md:flex block flex-col justify-center items-center">
       <SingleRoomHeader />
       <div className="flex-grow relative bg-purple-50 2xl:p-96 xl:p-64 lg:p-48 md:p-32 sm:p-16 p-40">
         <IframeResizer
@@ -81,7 +81,7 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
       <footer className="fixed bottom-0 left-0 right-0 flex flex-col items-center bg-white p-4 shadow-md">
         <Controls />
         <button
-          className="mt-4 flex justify-center items-center button-gradient-border w-[380px] h-[58px] sm:w-[300px] sm:h-[48px] rounded-3xl"
+          className="mt-4 flex justify-center items-center button-gradient-border w-80 h-14 rounded-3xl"
           onClick={toggleDrawer}
         >
           Queue Board

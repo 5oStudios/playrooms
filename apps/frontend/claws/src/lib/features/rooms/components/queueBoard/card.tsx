@@ -27,31 +27,29 @@ export default function QueueCard({
     <Image
       src={images}
       alt="profile picture"
-      className="rounded-full mr-3.5"
-      width={54.65}
-      height={54.65}
+      className="rounded-full mr-3"
+      width={54}
+      height={54}
     />
   ) : (
-    <div className="rounded-full mr-3.5 bg-slate-200 w-[54.65px] h-[54.65px] flex justify-center items-center">
-      <p className="text-[16px] font-urbanist">{nameInitials}</p>
+    <div className="rounded-full mr-3 bg-slate-200 w-14 h-14 flex justify-center items-center">
+      <p className="text-lg font-urbanist">{nameInitials}</p>
     </div>
   );
 
   return (
-    <div className="flex flex-col w-full items-center p-4">
-      <div className="flex justify-center items-center w-full mx-5">
-        <div className="flex items-center  text-2xl font-bold w-[238.31px] flex-1">
-          <p className="mr-3.5 text-[32px] font-urbanist w-[24.33px]">
-            {id + 1}
-          </p>
-          {imageComponent}
-          <p className="text-[16px] font-urbanist">
-            {name} {isMyPlayer ? ' (You)' : ''}
-          </p>
+    <div className="flex flex-col w-full py-4 mx-auto ">
+      <div className="flex  flex-row justify-between items-center">
+        <div className="flex items-center flex-1 mb-2 sm:mb-0">
+          <div className="flex items-center text-xl font-bold">
+            <p className="mr-3 text-xl font-urbanist">{id + 1}</p>
+            {imageComponent}
+            <p className="text-lg font-urbanist">
+              {name} {isMyPlayer ? ' (You)' : ''}
+            </p>
+          </div>
         </div>
-        <p className="w-[139px] text-right text-[12.54px] font-urbanist">
-          {points} Point
-        </p>
+        <p className="text-right text-sm font-urbanist">{points} Point</p>
       </div>
     </div>
   );
