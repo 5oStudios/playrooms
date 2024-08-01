@@ -32,7 +32,7 @@ export default function SingleRoomHeader() {
   return (
     <div className="w-full p-4 bg-primary flex items-center">
       <button
-        onClick={() => router.back()} // Navigate back on click
+        onClick={() => router.push('/rooms')}
         className="text-white flex items-center gap-2 mr-auto"
       >
         <IoArrowBack className="w-6 h-6" />

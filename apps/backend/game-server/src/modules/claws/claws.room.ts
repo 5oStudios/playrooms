@@ -55,7 +55,6 @@ export class ClawsRoom extends Room<RoomState> implements OnModuleInit {
     this.setState(new RoomState({ streamUrl }));
     await this.setMetadata({ streamUrl });
     this.onMessage('move-claws', async (client, message) => {
-      console.log('move-claws', message);
       this.dispatcher.dispatch(new MoveClawCommand(), {
         sessionId: client.sessionId,
         direction: message,

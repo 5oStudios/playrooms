@@ -4,7 +4,7 @@ import { CLAWS_CONFIG } from '../claws.config';
 import { ClawsRoom } from '../claws.room';
 import { CLAWS_DIRECTION } from '../state/player.state';
 import { GAME_STATE } from '../state/room.state';
-import { EndPlayerTurn } from './end-player.turn';
+import { AutoEndPlayerTurn } from './auto-end-player.turn';
 import { MoveClawCommand } from './player/move-claw.command';
 
 export class StartPlayerTurnCommand extends Command<ClawsRoom> {
@@ -14,7 +14,7 @@ export class StartPlayerTurnCommand extends Command<ClawsRoom> {
     const currentTurnTimer = this.clock.setInterval(() => {
       if (this.state.currentPlayer.currentTurnTimerInSeconds <= 0) {
         currentTurnTimer.clear();
-        this.room.dispatcher.dispatch(new EndPlayerTurn());
+        this.room.dispatcher.dispatch(new AutoEndPlayerTurn());
       } else this.state.currentPlayer.currentTurnTimerInSeconds -= 1;
     }, 1000);
   }

@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { Room } from 'colyseus.js';
+import { toast } from 'sonner';
 
 import { PlayerState, RoomState, gameClient } from '@kingo/game-client';
 
@@ -82,6 +83,24 @@ export const selectMyPlayerState = (state: RootState) =>
     (player) => player.sessionId === state.rooms.joinedRoom.myPlayerSessionId,
   );
 
+function attachToaster() {
+  let isToasterRunning = false;
+
+  if (isToasterRunning || !joinedRoomInstance) {
+    return;
+  }
+
+  console.count('attachToaster');
+  joinedRoomInstance.onMessage('drop-state', (message) => {
+    if (message === 'lose') {
+      toast.error('You lost!');
+    } else {
+      toast.success('You won!');
+    }
+    console.log('drop-state', message);
+  });
+}
+
 startAppListening({
   actionCreator: joinRoomById.fulfilled,
   effect: async (action, listenerApi) => {
@@ -92,6 +111,8 @@ startAppListening({
     room.onStateChange((roomState) => {
       listenerApi.dispatch(setRoom({ ...roomState }));
     });
+
+    attachToaster();
 
     // room.onLeave(() => {
     //   // listenerApi.dispatch(setRoom(null));

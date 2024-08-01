@@ -3,7 +3,8 @@ import { Client } from 'colyseus';
 
 import { ClawsRoom } from '../../claws.room';
 import { CLAWS_DIRECTION } from '../../state/player.state';
-import { EndPlayerTurn } from '../end-player.turn';
+import { AutoEndPlayerTurn } from '../auto-end-player.turn';
+import { SelectNextPlayerCommand } from '../next-player.command';
 
 type MoveClawCommandPayload = {
   sessionId: Client['sessionId'];
@@ -34,10 +35,25 @@ export class MoveClawCommand extends Command<
   }
 
   async execute({ direction }) {
-    console.log('MoveClawCommand', direction);
     if (direction === CLAWS_DIRECTION.DROP) {
-      await this.state.currentPlayer.dropClaw();
-      await this.room.dispatcher.dispatch(new EndPlayerTurn());
+      console.count('dropping');
+      const thisPlayerClient = this.room.clients.find(
+        (client) => client.sessionId === this.state.currentPlayer.sessionId,
+      );
+      if (!thisPlayerClient) {
+        throw new Error('Client not found');
+      }
+      const result = await this.state.currentPlayer.dropClaw();
+      if (result === 'lose') {
+        console.count('lose');
+        thisPlayerClient.send('drop-state', 'lose');
+      } else {
+        console.count('win');
+        thisPlayerClient.send('drop-state', 'win');
+      }
+      // await this.room.dispatcher.dispatch(new AutoEndPlayerTurn());
+      this.state.currentPlayer.endTurn();
+      await this.room.dispatcher.dispatch(new SelectNextPlayerCommand());
     } else {
       await this.state.currentPlayer.moveClaw(direction);
     }

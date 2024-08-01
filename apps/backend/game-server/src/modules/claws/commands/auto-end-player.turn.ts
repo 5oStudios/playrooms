@@ -5,7 +5,7 @@ import { CLAWS_DIRECTION } from '../state/player.state';
 import { SelectNextPlayerCommand } from './next-player.command';
 import { MoveClawCommand } from './player/move-claw.command';
 
-export class EndPlayerTurn extends Command<ClawsRoom> {
+export class AutoEndPlayerTurn extends Command<ClawsRoom> {
   async execute() {
     this.state.currentPlayer.endTurn();
 

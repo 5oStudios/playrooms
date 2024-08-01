@@ -106,5 +106,7 @@ export class PlayerState extends Player {
       this.totalWins++;
       this.lastWinAt = Date.now();
     }
+
+    return result;
   }
 }
