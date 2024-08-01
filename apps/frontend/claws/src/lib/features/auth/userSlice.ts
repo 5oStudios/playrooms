@@ -1,9 +1,10 @@
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 
+import { gameClient } from '@kingo/game-client';
+
+import { startAppListening } from '../../listenerMiddleware';
 import { User } from './types';
-import {startAppListening} from "../../listenerMiddleware";
-import {gameClient} from "@kingo/game-client";
 
 export const verifySession = createAsyncThunk(
   'user/verifySession',
@@ -53,11 +54,10 @@ export const userSlice = createSlice({
 
 export const { setUser, clearUser } = userSlice.actions;
 
-
 startAppListening({
   actionCreator: verifySession.fulfilled,
   effect: async (action, listenerApi) => {
     gameClient.auth.token = action.payload.id;
     console.log('User token:', action.payload);
   },
-})
+});

@@ -1,8 +1,11 @@
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 
 import '@iframe-resizer/child';
 import { Toaster } from 'sonner';
 
+import { Spinner } from '../components/spinner';
+import { useAppSelector } from '../lib/hooks';
+import { AuthGuard } from './AuthGuard';
 import './global.css';
 import { Providers } from './providers';
 
@@ -16,9 +19,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="en">
       <body>
         <Providers>
-          <Toaster />
-          {/*<UserInformation />*/}
-          {children}
+          <AuthGuard>
+            <Toaster />
+            {/*<UserInformation />*/}
+            {children}
+          </AuthGuard>
         </Providers>
       </body>
     </html>

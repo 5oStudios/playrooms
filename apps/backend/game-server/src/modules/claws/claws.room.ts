@@ -1,6 +1,7 @@
 import { Dispatcher } from '@colyseus/command';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { Client, Delayed, Room, matchMaker } from 'colyseus';
+import supertokens from 'supertokens-node';
 
 import { CLAWS_CONFIG } from './claws.config';
 import { SelectNextPlayerCommand } from './commands/next-player.command';
@@ -34,19 +35,18 @@ export class ClawsRoom extends Room<RoomState> implements OnModuleInit {
   > = new Map();
 
   static async onAuth(token: string, req: any) {
-    // if (process.env.NODE_ENV === 'development') return {};
-
-    console.log('session', req.session);
-
-    // const authService = getInstance().get(KEYCLOAK_INSTANCE);
-    // const user = await authService.grantManager.userInfo(token);
-    // if (!user) {
-    //   throw new UnauthorizedException({
-    //     message: 'User not authenticated',
-    //   });
-    // }
-    // ClawsRoom.authenticatedUser = user;
-    // return user;
+    if (token) {
+      console.log('Token:', token);
+      let usersInfo = await supertokens.getUser(token);
+      console.log('User info:', usersInfo);
+      if (usersInfo) {
+        return {
+          email: usersInfo.emails[0],
+          name: usersInfo.emails[0],
+        };
+      }
+    }
+    return false;
   }
 
   async onCreate({ streamUrl }: { streamUrl: string }) {
