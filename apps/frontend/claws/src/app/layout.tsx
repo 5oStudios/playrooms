@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 
+import '@iframe-resizer/child';
 import { Toaster } from 'sonner';
 
 import './global.css';

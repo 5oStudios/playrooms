@@ -38,6 +38,12 @@ dependencies:
   '@heroiclabs/nakama-js':
     specifier: ^2.7.1
     version: 2.7.1
+  '@iframe-resizer/child':
+    specifier: ^5.2.1
+    version: 5.2.1
+  '@iframe-resizer/react':
+    specifier: ^5.2.1
+    version: 5.2.1(react-dom@18.2.0)(react@18.2.0)
   '@nestjs/common':
     specifier: ^10.0.2
     version: 10.3.8(reflect-metadata@0.1.14)(rxjs@7.8.1)
@@ -3294,6 +3300,13 @@ packages:
     dependencies:
       regenerator-runtime: 0.14.1
 
+  /@babel/runtime@7.25.0:
+    resolution: {integrity: sha512-7dRy4DwXwtzBrPbZflqxnvfxLF8kdZXPkhymtDeFoFqE6ldzjQFgYTtYIFARcLEYDrqfBfYcZt1WqFxRoyC9Rw==}
+    engines: {node: '>=6.9.0'}
+    dependencies:
+      regenerator-runtime: 0.14.1
+    dev: false
+
   /@babel/template@7.24.6:
     resolution: {integrity: sha512-3vgazJlLwNXi9jhrR1ef8qiB65L1RK90+lEQwv4OxveHnqC3BfmnHdgySwRLzf6akhlOYenT+b7AfWq+a//AHw==}
     engines: {node: '>=6.9.0'}
@@ -3737,6 +3750,27 @@ packages:
   /@humanwhocodes/object-schema@2.0.3:
     resolution: {integrity: sha512-93zYdMES/c1D69yZiKDBj0V24vqNzB/koF26KPaagAfd3P/4gUlh3Dys5ogAK+Exi9QyzlD8x/08Zt7wIKcDcA==}
     dev: true
+
+  /@iframe-resizer/child@5.2.1:
+    resolution: {integrity: sha512-VgC6Rv8EFcRezKYFc3tXo3XMfbUxGz3gx1A7LVlqZEnCTX+IbPQCMFmxMdnlwPA34L1HUjw9mRcfcg3KuEH2ow==}
+    dev: false
+
+  /@iframe-resizer/core@5.2.1:
+    resolution: {integrity: sha512-etPA5NfB+K9bALYME/d2k5AYdIKShUNyvJjMQ3HmHKHV4jNIxnqkzN0u6agsOUlwS7fMrRqy0btX0d3becf6Zw==}
+    dev: false
+
+  /@iframe-resizer/react@5.2.1(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-9y//81lit01jMQwT6nfeOdSh48tnS4luXaIcRkqa5oZdsAMnT0zAlGdnOh8yEjHLPmsBDsct5StY+wPlZOnyBg==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      '@babel/runtime': 7.25.0
+      '@iframe-resizer/core': 5.2.1
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+      warning: 4.0.3
+    dev: false
 
   /@internationalized/date@3.5.4:
     resolution: {integrity: sha512-qoVJVro+O0rBaw+8HPjUB1iH8Ihf8oziEnqMnvhJUSuVIrHOuZ6eNLHNvzXJKUvAtaDiqMnRlg8Z2mgh09BlUw==}

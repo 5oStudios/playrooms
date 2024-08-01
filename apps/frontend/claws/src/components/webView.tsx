@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
+
+import IframeResizer from '@iframe-resizer/react';
 
 type WebViewProps = {
   url: string | null; // The URL can be null if not provided
 };
 
 const WebView = ({ url }: WebViewProps) => {
+  const iframeRef = useRef(null);
+
   if (!url) {
     return (
       <div className="w-full h-full flex items-center justify-center text-gray-500">
@@ -14,20 +18,24 @@ const WebView = ({ url }: WebViewProps) => {
   }
 
   return (
-    <div className="relative w-[200px] h-[150px] p-1 overflow-hidden">
-      <iframe
+    <div className="relative p-32 shadow-lg overflow-hidden rounded-xl">
+      <IframeResizer
+        license="GPLv3"
         src={url}
-        title="Web View"
         style={{
-          width: '700px',
-          height: '560px',
-          transform: 'scale(0.2857)',
-          transformOrigin: '0 0',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '120%',
+          height: '120%',
+          pointerEvents: 'none',
         }}
-        className="m-4 mx-auto"
-        allowFullScreen
+        loading="eager"
+        forwardRef={iframeRef}
+        inPageLinks
       />
     </div>
   );
 };
+
 export default WebView;

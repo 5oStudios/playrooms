@@ -16,6 +16,8 @@
     "@colyseus/tools": "^0.15.39",
     "@colyseus/ws-transport": "^0.15.2",
     "@heroiclabs/nakama-js": "^2.7.1",
+    "@iframe-resizer/child": "^5.2.1",
+    "@iframe-resizer/react": "^5.2.1",
     "@nestjs/common": "^10.0.2",
     "@nestjs/core": "^10.0.2",
     "@nestjs/platform-express": "^10.0.2",

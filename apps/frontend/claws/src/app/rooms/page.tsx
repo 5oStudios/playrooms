@@ -10,7 +10,6 @@ import WebView from '../../components/webView';
 import { getAvailableRooms } from '../../lib/features/rooms/roomsSlice';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
 
-
 const Page = () => {
   const dispatch = useAppDispatch();
   const { availableRooms, state, error } = useAppSelector(
@@ -58,15 +57,15 @@ const RoomCard = ({ roomId, maxClients, clients, metadata }: RoomAvailable) => {
   const router = useRouter();
 
   return (
-    <div className="flex flex-col bg-primary p-4 rounded-xl text-white w-full h-full shadow-lg">
-      <p className="mb-2">
+    <div className="flex flex-col bg-primary p-4 gap-3 rounded-xl text-white w-full h-full shadow-lg sm:w-80 md:w-96">
+      <p className="text-center text-lg">
         Players {clients} / {maxClients}
       </p>
-      <div className="flex-grow mb-4">
+      <div className="flex-1">
         <WebView url={metadata.streamUrl} />
       </div>
       <button
-        className="bg-gradient-to-t from-secondary to-darkYellow w-full h-10 rounded-xl mt-auto"
+        className="bg-gradient-to-t from-secondary to-darkYellow w-full h-12 rounded-xl text-lg font-semibold hover:opacity-90"
         onClick={() => router.push(`/rooms/${roomId}`)}
       >
         Join
