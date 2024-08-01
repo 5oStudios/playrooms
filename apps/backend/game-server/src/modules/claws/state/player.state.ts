@@ -77,17 +77,23 @@ export class PlayerState extends Player {
 
   async moveClaw(direction: CLAWS_DIRECTION) {
     this.state = ClawsPlayerState.MOVING;
-    const { data: result } = await axios.post(
-      'https://api.mshemali.dev/control',
-      {
-        direction,
-      },
-    );
-    this.totalMoves++;
-    this.totalMovesThisRound++;
-    this.state = ClawsPlayerState.IDLE;
-    this.lastMoveAt = Date.now();
-    return result;
+    try {
+      const { data: result } = await axios.post(
+        'https://api.mshemali.dev/control',
+        {
+          direction,
+        },
+      );
+      this.totalMoves++;
+      this.totalMovesThisRound++;
+      this.state = ClawsPlayerState.IDLE;
+      this.lastMoveAt = Date.now();
+      return result;
+    } catch (error) {
+      console.error('Failed to move claw', error);
+      this.state = ClawsPlayerState.IDLE;
+      return 'lose';
+    }
   }
 
   async dropClaw() {

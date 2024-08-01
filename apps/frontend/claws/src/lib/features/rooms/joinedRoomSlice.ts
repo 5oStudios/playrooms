@@ -8,6 +8,15 @@ import { RootState } from '../../store';
 
 export let joinedRoomInstance: Room<RoomState> | undefined;
 
+export const moveClaws = createAsyncThunk(
+  'baseRoom/moveClaws',
+  async (direction: 'up' | 'down' | 'left' | 'right' | 'drop') => {
+    if (joinedRoomInstance) {
+      joinedRoomInstance.send('move-claws', direction);
+    }
+  },
+);
+
 export const joinRoomById = createAsyncThunk(
   'baseRoom/joinRoomById',
   async (...props: Parameters<typeof gameClient.joinById<RoomState>>) => {

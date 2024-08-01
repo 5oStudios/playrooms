@@ -23,7 +23,7 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
     setIsOpen((prevState) => !prevState);
   };
   const dispatch = useAppDispatch();
-  const { roomState, myPlayerState, status, error } = useAppSelector(
+  const { roomState, status, error } = useAppSelector(
     (state) => state.rooms.joinedRoom,
   );
 
@@ -51,16 +51,7 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
         <WebView url={roomState.streamUrl} />
       </div>
       <footer className="fixed bottom-0 left-0 right-0 flex flex-col items-center bg-white p-4">
-        <Controls
-          isMyTurn={myPlayerState?.isMyTurn}
-          actions={{
-            drop: () => room?.send('move-claw', { direction: 'drop' }),
-            up: () => room?.send('move-claw', { direction: 'up' }),
-            down: () => room?.send('move-claw', { direction: 'down' }),
-            left: () => room?.send('move-claw', { direction: 'left' }),
-            right: () => room?.send('move-claw', { direction: 'right' }),
-          }}
-        />
+        <Controls />
 
         <button
           className="mt-4 flex justify-center items-center button-gradient-border w-[380px] h-[58px]"

@@ -34,6 +34,7 @@ export class MoveClawCommand extends Command<
   }
 
   async execute({ direction }) {
+    console.log('MoveClawCommand', direction);
     if (direction === CLAWS_DIRECTION.DROP) {
       await this.state.currentPlayer.dropClaw();
       await this.room.dispatcher.dispatch(new EndPlayerTurn());

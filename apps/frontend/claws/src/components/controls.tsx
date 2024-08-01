@@ -7,6 +7,11 @@ import arrowLeft from '../../public/assets/controls/arrowLeft.svg';
 import arrowRight from '../../public/assets/controls/arrowRight.svg';
 import arrowUp from '../../public/assets/controls/arrowUp.svg';
 import dropClaw from '../../public/assets/controls/drop.svg';
+import {
+  moveClaws,
+  selectMyPlayerState,
+} from '../lib/features/rooms/joinedRoomSlice';
+import { useAppDispatch, useAppSelector } from '../lib/hooks';
 import { cn } from '../utils';
 
 // import {
@@ -39,20 +44,11 @@ import { cn } from '../utils';
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-export const Controls = ({
-  actions,
-  isMyTurn,
-}: {
-  actions: {
-    up: () => void;
-    down: () => void;
-    left: () => void;
-    right: () => void;
-    drop: () => void;
-  };
-  isMyTurn: boolean | undefined;
-}) => {
-  const { up, down, left, right, drop } = actions;
+export const Controls = ({}) => {
+  const dispatch = useAppDispatch();
+  const isMyTurn = useAppSelector(
+    (state) => selectMyPlayerState(state)?.isMyTurn,
+  );
   const [controlDisabled, setControlDisabled] = useState({
     up: true,
     down: true,
@@ -70,6 +66,14 @@ export const Controls = ({
         right: true,
         drop: true,
       });
+    } else {
+      setControlDisabled({
+        up: true,
+        down: true,
+        left: true,
+        right: true,
+        drop: true,
+      });
     }
   }, [isMyTurn]);
 
@@ -84,7 +88,7 @@ export const Controls = ({
       <div className="flex flex-col w-[149px] h-[120px] items-center mr-[50px]">
         <button
           onClick={() => {
-            up();
+            dispatch(moveClaws('up'));
             setControlDisabled({ ...controlDisabled, drop: false });
           }}
           disabled={controlDisabled.up}
@@ -98,7 +102,7 @@ export const Controls = ({
         <div className="flex w-[149px] justify-between">
           <button
             onClick={() => {
-              left();
+              dispatch(moveClaws('left'));
               setControlDisabled({ ...controlDisabled, drop: false });
             }}
             disabled={controlDisabled.left}
@@ -111,7 +115,7 @@ export const Controls = ({
           </button>
           <button
             onClick={() => {
-              right();
+              dispatch(moveClaws('right'));
               setControlDisabled({ ...controlDisabled, drop: false });
             }}
             disabled={controlDisabled.right}
@@ -125,7 +129,7 @@ export const Controls = ({
         </div>
         <button
           onClick={() => {
-            down();
+            dispatch(moveClaws('down'));
             setControlDisabled({ ...controlDisabled, drop: false });
           }}
           disabled={controlDisabled.down}
@@ -141,7 +145,7 @@ export const Controls = ({
       <div className="flex flex-col items-center">
         <button
           onClick={async () => {
-            drop();
+            dispatch(moveClaws('drop'));
             await wait(500);
             setControlDisabled({
               up: true,
