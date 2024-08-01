@@ -18,23 +18,22 @@ const WebView = ({ url }: WebViewProps) => {
   }
 
   return (
-    <div className="relative p-32 shadow-lg">
-      <IframeResizer
-        license="GPLv3"
-        src={url}
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '120%',
-          height: '120%',
-          pointerEvents: 'none',
-        }}
-        loading="eager"
-        forwardRef={iframeRef}
-        inPageLinks
-      />
-    </div>
+    <IframeResizer
+      license="GPLv3"
+      src={url}
+      style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '120%',
+        height: '120%',
+        pointerEvents: 'none',
+      }}
+      loading="eager"
+      forwardRef={iframeRef}
+      inPageLinks
+      allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+    />
   );
 };
 

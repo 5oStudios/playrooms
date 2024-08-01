@@ -61,7 +61,7 @@ const RoomCard = ({ roomId, maxClients, clients, metadata }: RoomAvailable) => {
       <p className="text-center text-lg">
         Players {clients} / {maxClients}
       </p>
-      <div className="flex-1 rounded-xl overflow-hidden">
+      <div className="flex-1 rounded-xl overflow-hidden shadow-lg p-32 relative">
         <WebView url={metadata.streamUrl} />
       </div>
       <button

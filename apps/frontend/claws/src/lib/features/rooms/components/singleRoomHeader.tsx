@@ -23,38 +23,35 @@ export default function SingleRoomHeader() {
   const waiting = myPlayer.queueOrder;
 
   return (
-    <div className="flex flex-col justify-end items-center w-full h-[117px] bg-primary">
-      <div className="flex flex-col w-full h-full justify-end items-center">
-        <div className="flex gap-6 mb-4">
-          <p>{currentTurnTimerInSeconds}</p>
+    <div className="w-full  p-4  bg-primary flex justify-center items-center">
+      <div className="flex h-full gap-6">
+        {/*<p>{currentTurnTimerInSeconds}</p>*/}
+        {/*<div className="bg-gray-300/50 w-[1px] " />*/}
 
-          <div className="bg-gray-300/50 w-[1px] h-full" />
-
-          <div className="flex gap-2 text-white">
-            <Image src={users} alt={'players'} />
-            <p>Players</p>
-            <p>{'(' + playersCount + ')'}</p>
-          </div>
-
-          <div className="bg-gray-300/50 w-[1px] h-full" />
-
-          <div className="flex gap-2 text-white">
-            <Image src={eye} alt={'viewers'} />
-            <p>Viewers</p>
-            <p>{'(' + viewersCount + ')'}</p>
-          </div>
-
-          <div className="bg-gray-300/50 w-[1px] h-full" />
-
-          <div className="flex gap-2 text-white">
-            <Image src={users} alt={'waiting'} />
-            <p>waiting</p>
-            <p>{'(' + waiting + ')'}</p>
-          </div>
-
-          <div className="bg-gray-300/50 w-[1px] h-full" />
-          <p>{roomStatus}</p>
+        <div className="flex gap-2 text-white">
+          <Image src={users} alt={'players'} />
+          <p className="hidden md:block">Players</p>
+          <p>{'(' + playersCount + ')'}</p>
         </div>
+
+        <div className="bg-gray-300/50 w-[1px] " />
+
+        <div className="flex gap-2 text-white">
+          <Image src={eye} alt={'viewers'} />
+          <p className="hidden md:block">Viewers</p>
+          <p>{'(' + viewersCount + ')'}</p>
+        </div>
+
+        <div className="bg-gray-300/50 w-[1px] " />
+
+        <div className="flex gap-2 text-white">
+          <Image src={users} alt={'waiting'} />
+          <p className="hidden md:block">waiting</p>
+          <p>{'(' + waiting + ')'}</p>
+        </div>
+
+        {/*<div className="bg-gray-300/50 w-[1px] " />*/}
+        {/*<p>{roomStatus}</p>*/}
       </div>
     </div>
   );

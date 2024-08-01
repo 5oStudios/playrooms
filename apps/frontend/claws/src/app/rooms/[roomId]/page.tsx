@@ -1,7 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
+import IframeResizer from '@iframe-resizer/react';
+import * as stream from 'node:stream';
 import 'react-modern-drawer/dist/index.css';
 
 import { Controls } from '../../../components/controls';
@@ -31,7 +33,7 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
     return () => {
       dispatch(leaveRoom());
     };
-  }, [dispatch, params.roomId, status]);
+  }, []);
 
   if (status === 'failed') {
     return (
@@ -57,15 +59,29 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
     );
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="max-h-screen flex flex-col justify-center items-center">
       <SingleRoomHeader />
-      <div className="flex-grow relative">
-        <WebView url={roomState.streamUrl} />
+      <div className="flex-grow relative bg-purple-50 2xl:p-96 xl:p-64 lg:p-48 md:p-32 sm:p-16 p-40">
+        <IframeResizer
+          license="GPLv3"
+          src={roomState.streamUrl}
+          style={{
+            pointerEvents: 'none',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            height: '100%',
+            width: '100%',
+          }}
+          loading="eager"
+          inPageLinks
+          allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+        />
       </div>
       <footer className="fixed bottom-0 left-0 right-0 flex flex-col items-center bg-white p-4 shadow-md">
         <Controls />
         <button
-          className="mt-4 flex justify-center items-center button-gradient-border w-[380px] h-[58px]"
+          className="mt-4 flex justify-center items-center button-gradient-border w-[380px] h-[58px] sm:w-[300px] sm:h-[48px] rounded-3xl"
           onClick={toggleDrawer}
         >
           Queue Board
