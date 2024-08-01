@@ -18,7 +18,7 @@ export default function QueueCard({
   isMyPlayer,
 }: QueueCardProps) {
   const nameInitials = name
-    .split(' ')
+    .split(' ', 2)
     .map((n) => n[0])
     .join('');
 
