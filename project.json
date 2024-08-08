@@ -24,7 +24,7 @@
             "command": "nx run game-server:serve:production"
           },
           {
-            "command": "nx run claws:start -p 3001"
+            "command": "next start apps/frontend/claws --port 3001"
           }
         ]
       }
