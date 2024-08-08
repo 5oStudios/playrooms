@@ -3,18 +3,15 @@
 import React, { useEffect, useState } from 'react';
 
 import IframeResizer from '@iframe-resizer/react';
-import * as stream from 'node:stream';
 import 'react-modern-drawer/dist/index.css';
 
 import { Controls } from '../../../components/controls';
 import Drawer from '../../../components/drawer/drawer';
-import WebView from '../../../components/webView';
 import QueueBoard from '../../../lib/features/rooms/components/queueBoard';
 import SingleRoomHeader from '../../../lib/features/rooms/components/singleRoomHeader';
 import {
   joinRoomById,
   leaveRoom,
-  selectJoinedRoom,
 } from '../../../lib/features/rooms/joinedRoomSlice';
 import { useAppDispatch, useAppSelector } from '../../../lib/hooks';
 

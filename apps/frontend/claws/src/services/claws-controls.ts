@@ -1,11 +1,10 @@
 import axios from 'axios';
 import { toast } from 'sonner';
 
-const baseURL = process.env.NEXT_PUBLIC_CLAWS_API_URL;
-console.log({ baseURL });
+import { envSchema } from '../env';
 
 export const clawsClient = axios.create({
-  baseURL,
+  baseURL: envSchema.NEXT_PUBLIC_CLAWS_API_URL,
   headers: {
     'Content-Type': 'application/json',
     Accept: '*/*',

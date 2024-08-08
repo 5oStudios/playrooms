@@ -5,6 +5,8 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { getAuthorisationURLWithQueryParamsAndSetState } from 'supertokens-auth-react/recipe/thirdparty';
 
+import { envSchema } from '../../env';
+
 export default function Auth() {
   return (
     <div>
@@ -20,9 +22,8 @@ const AuthButton = ({ thirdPartyId }: { thirdPartyId: string }) => {
   const authButtonClicked = async (thirdPartyId: string) => {
     const authURL = await getAuthorisationURLWithQueryParamsAndSetState({
       thirdPartyId,
-      frontendRedirectURI: `http://localhost:3001/auth/callback`,
+      frontendRedirectURI: envSchema.NEXT_PUBLIC_FRONTEND_REDIRECT_URI,
     });
-    console.log({ authURL });
     router.push(authURL);
   };
 

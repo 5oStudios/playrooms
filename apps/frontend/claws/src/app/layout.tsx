@@ -4,6 +4,7 @@ import '@iframe-resizer/child';
 import { Toaster } from 'sonner';
 
 import { Spinner } from '../components/spinner';
+import { envSchema } from '../env';
 import { useAppSelector } from '../lib/hooks';
 import { AuthGuard } from './AuthGuard';
 import './global.css';

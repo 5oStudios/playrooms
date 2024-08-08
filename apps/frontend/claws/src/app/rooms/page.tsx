@@ -9,7 +9,6 @@ import Drawer from '../../components/drawer/drawer';
 import Login from '../../components/drawer/login';
 import { Spinner } from '../../components/spinner';
 import WebView from '../../components/webView';
-import QueueBoard from '../../lib/features/rooms/components/queueBoard';
 import { getAvailableRooms } from '../../lib/features/rooms/roomsSlice';
 import { useAppDispatch, useAppSelector } from '../../lib/hooks';
 

@@ -3,13 +3,16 @@ import axios from 'axios';
 
 import { gameClient } from '@kingo/game-client';
 
+import { envSchema } from '../../../env';
 import { startAppListening } from '../../listenerMiddleware';
 import { User } from './types';
 
 export const verifySession = createAsyncThunk(
   'user/verifySession',
   async () => {
-    const response = await axios.get('http://localhost:3000/auth/userinfo');
+    const url = new URL(envSchema.NEXT_PUBLIC_BACKEND_URL);
+    url.pathname = '/auth/userinfo';
+    const response = await axios.get(url.toString(), { withCredentials: true });
     return response.data;
   },
 );
