@@ -9,6 +9,25 @@
         "config": ".verdaccio/config.yml",
         "storage": "tmp/local-registry/storage"
       }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "nx run-many -t build -p claws game-server"
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "nx run game-server:serve:production"
+          },
+          {
+            "command": "nx run claws:start -p 3001"
+          }
+        ]
+      }
     }
   }
 }

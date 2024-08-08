@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-// Define the environment variables schema
 const env = z.object({
   NEXT_PUBLIC_CLAWS_API_URL: z.string(),
   NEXT_PUBLIC_FRONTEND_REDIRECT_URI: z.string(),
