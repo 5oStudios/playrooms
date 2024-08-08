@@ -85,6 +85,7 @@
     "use-colyseus": "^0.0.7",
     "use-wasd": "^2.0.6",
     "uuid": "^9.0.1",
+    "zod": "^3.23.8",
     "zustand": "^4.5.1"
   },
   "devDependencies": {

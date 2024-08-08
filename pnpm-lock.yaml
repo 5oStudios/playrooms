@@ -245,6 +245,9 @@ dependencies:
   uuid:
     specifier: ^9.0.1
     version: 9.0.1
+  zod:
+    specifier: ^3.23.8
+    version: 3.23.8
   zustand:
     specifier: ^4.5.1
     version: 4.5.2(@types/react@18.2.33)(react@18.2.0)
@@ -11969,8 +11972,8 @@ packages:
     engines: {node: '>=6.0'}
     dev: true
 
-  /chromedriver@127.0.1:
-    resolution: {integrity: sha512-j57OWXsxdhwK+faTWA2pi+8hf052qVjZjP0wXnjqY/QglHtlOXWhRj4s7/+ybJRNgs1zQ5csfOyV6sQQdH+Fnw==}
+  /chromedriver@127.0.2:
+    resolution: {integrity: sha512-mYfJ/8FqzsdFOs2rPiAI4y0suFnv78cRnzZK0MHdSfSIDeRPbqZz0rNX4lrXt14hXc9vqXa+a8cMxlrhWtXKSQ==}
     engines: {node: '>=18'}
     hasBin: true
     requiresBuild: true
@@ -16861,7 +16864,7 @@ packages:
     dependencies:
       jwk-to-pem: 2.0.5
     optionalDependencies:
-      chromedriver: 127.0.1
+      chromedriver: 127.0.2
     transitivePeerDependencies:
       - debug
       - supports-color
@@ -23906,6 +23909,10 @@ packages:
       property-expr: 2.0.6
       toposort: 2.0.2
     dev: true
+
+  /zod@3.23.8:
+    resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
+    dev: false
 
   /zustand@4.5.2(@types/react@18.2.33)(react@18.2.0):
     resolution: {integrity: sha512-2cN1tPkDVkwCy5ickKrI7vijSjPksFRfqS6237NzT0vqSsztTNnQdHw9mmN7uBdk3gceVXU0a+21jFzFzAc9+g==}
