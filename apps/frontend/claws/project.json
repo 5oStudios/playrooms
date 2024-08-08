@@ -4,6 +4,13 @@
   "sourceRoot": "apps/frontend/claws",
   "projectType": "application",
   "targets": {
+    "build": {
+      "executor": "@nx/next:build",
+      "options": {
+        "root": "apps/frontend/claws",
+        "outputPath": "dist/apps/frontend/claws"
+      }
+    }
   },
   "tags": []
 }
