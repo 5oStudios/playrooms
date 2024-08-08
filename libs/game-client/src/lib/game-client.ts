@@ -7,4 +7,4 @@ import { Client } from 'colyseus.js';
 //   useColyseusRoom,
 //   useColyseusState,
 // } = colyseus<RoomState>('ws://localhost:3000');
-export const gameClient = new Client('ws://localhost:3000');
+export const gameClient = new Client(process.env['BACKEND_WS_URL']);

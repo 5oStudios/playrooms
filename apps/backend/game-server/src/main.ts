@@ -24,14 +24,14 @@ async function bootstrap() {
   const port = process.env.PORT || 3000;
 
   app.enableCors({
-    origin: 'http://localhost:3001',
+    origin: process.env.FRONTEND_URL,
     allowedHeaders: [...supertokens.getAllCORSHeaders(), 'content-type'],
     credentials: true,
   });
 
   matchMaker.controller.getCorsHeaders = function (req) {
     return {
-      'Access-Control-Allow-Origin': 'http://localhost:3001',
+      'Access-Control-Allow-Origin': process.env.FRONTEND_URL,
       Vary: '*',
       'Access-Control-Allow-Headers': [
         'content-type',
