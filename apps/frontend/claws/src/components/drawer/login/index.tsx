@@ -6,6 +6,7 @@ import { getAuthorisationURLWithQueryParamsAndSetState } from 'supertokens-auth-
 import google from '../../../../public/assets/drawer/google.svg';
 import tiktok from '../../../../public/assets/drawer/tiktok.svg';
 import logo from '../../../../public/assets/logo.svg';
+import { envSchema } from '../../../env';
 
 function Index() {
   const router = useRouter();
@@ -13,7 +14,7 @@ function Index() {
   const authButtonClicked = async (thirdPartyId: string) => {
     const authURL = await getAuthorisationURLWithQueryParamsAndSetState({
       thirdPartyId,
-      frontendRedirectURI: `http://localhost:3001/auth/callback`,
+      frontendRedirectURI: envSchema.NEXT_PUBLIC_FRONTEND_REDIRECT_URI,
     });
     router.push(authURL);
   };
