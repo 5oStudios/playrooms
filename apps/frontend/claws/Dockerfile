@@ -14,10 +14,9 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpx nx run claws:build
 
 FROM node:22-alpine AS production
 WORKDIR /app
-COPY --from=build /app/dist/apps/frontend/claws ./
+COPY --from=build /app/dist ./dist
 COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/package.json ./
-COPY --from=build /app/pnpm-lock.yaml ./
+
 EXPOSE 3001
 
-CMD ["npx", "next", "start", "-p", "3001"]
+CMD ["npx", "next", "start", "dist/apps/frontend/claws", "-p", "3001"]

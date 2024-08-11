@@ -19,9 +19,9 @@ FROM node:22-alpine AS production
 
 WORKDIR /app
 
-COPY --from=build /app/dist/apps/backend/game-server ./dist
+COPY --from=build /app/dist ./dist
 COPY --from=build /app/node_modules ./node_modules
 
 EXPOSE 3000
 
-CMD ["node", "dist/main.js", "--port", "3000"]
+CMD ["node", "dist/apps/backend/game-server/main.js", "--port", "3000"]
