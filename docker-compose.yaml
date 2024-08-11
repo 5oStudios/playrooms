@@ -1,0 +1,22 @@
+services:
+  claws:
+    build:
+      dockerfile: apps/frontend/claws/Dockerfile
+      context: .
+    ports:
+      - "3001:3001"
+    networks:
+        - kingo-network
+
+  backend:
+    build:
+      dockerfile: apps/backend/game-server/Dockerfile
+      context: .
+    ports:
+      - "3000:3000"
+    networks:
+        - kingo-network
+
+networks:
+    kingo-network:
+        driver: bridge
