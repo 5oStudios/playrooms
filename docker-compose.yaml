@@ -7,6 +7,13 @@ services:
       - "3001:3001"
     networks:
         - kingo-network
+    environment:
+      - NEXT_PUBLIC_BACKEND_URL=${NEXT_PUBLIC_BACKEND_URL}
+      - NEXT_PUBLIC_CLAWS_API_URL=${NEXT_PUBLIC_CLAWS_API_URL}
+      - NEXT_PUBLIC_FRONTEND_REDIRECT_URI=${NEXT_PUBLIC_FRONTEND_REDIRECT_URI}
+      - FRONTEND_URL=${FRONTEND_URL}
+      - BACKEND_WS_URL=${BACKEND_WS_URL}
+      - NODE_ENV=production
 
   backend:
     build:
@@ -16,6 +23,14 @@ services:
       - "3000:3000"
     networks:
         - kingo-network
+    environment:
+      - NEXT_PUBLIC_BACKEND_URL=${NEXT_PUBLIC_BACKEND_URL}
+      - NEXT_PUBLIC_CLAWS_API_URL=${NEXT_PUBLIC_CLAWS_API_URL}
+      - NEXT_PUBLIC_FRONTEND_REDIRECT_URI=${NEXT_PUBLIC_FRONTEND_REDIRECT_URI}
+      - FRONTEND_URL=${FRONTEND_URL}
+      - BACKEND_WS_URL=${BACKEND_WS_URL}
+      - NODE_ENV=production
+
 
 networks:
     kingo-network:
